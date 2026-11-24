@@ -18,6 +18,7 @@ import {
 import { getDaysRemaining, useApp } from "@/context/AppContext";
 import { canInviteMoreStudents, getSaasPlanById } from "@/lib/saas-plans";
 import { DynamicBannerHeader } from "@/components/DynamicBannerHeader";
+import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
 
 type RosterFilter = "all" | "active" | "expiring" | "expired" | "pending";
 type QuickModal = "workout" | "diet" | "renew" | null;
@@ -471,6 +472,9 @@ export default function CoachDashboardPage() {
           </div>
         </section>
       </div>
+
+      {/* Native Ad Slot (Only visible on Free plan, hidden automatically on paid plans) */}
+      <FreeTierAdSlot variant="native_banner" viewerRole="coach" />
 
       {/* Quick Action Modal */}
       {quickModal && (

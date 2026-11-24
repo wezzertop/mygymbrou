@@ -21,6 +21,7 @@ import { useApp } from "@/context/AppContext";
 import { VerifiedPersonBadge } from "@/components/VerificationBadge";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { SanctionNoticeBanner } from "@/components/SanctionNoticeBanner";
+import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
 
 const STUDENT_NAV = [
   { href: "/student", label: "Inicio", icon: Home, exact: true },
@@ -324,6 +325,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
         <main className="mx-auto w-full min-w-0 max-w-4xl flex-1 px-4 py-6 pb-safe-nav lg:px-8 lg:py-8 lg:pb-12">
           <SanctionNoticeBanner profile={studentProfile} />
           {children}
+          <FreeTierAdSlot variant="banner_320x50" viewerRole="student" />
         </main>
 
         {/* Mobile Fixed Bottom Navigation Bar */}

@@ -531,11 +531,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       active_students_count: 0,
     }));
 
+    const linkedCoachId =
+      userRole === "student" ? studentsList[0]?.coach_id : undefined;
+    let resolvedCoachProfile: Profile = emptyRealState.coachProfile;
+    if (userRole === "coach") {
+      resolvedCoachProfile = builtProfile;
+    } else if (linkedCoachId) {
+      const fromDir = builtDirectoryCoaches.find((c) => c.id === linkedCoachId);
+      if (fromDir) {
+        resolvedCoachProfile = fromDir;
+      } else {
+        const { data: linkedCoachRow } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", linkedCoachId)
+          .maybeSingle();
+        if (linkedCoachRow) {
+          resolvedCoachProfile = linkedCoachRow as Profile;
+        }
+      }
+    }
+
     setState((prev) => ({
       ...emptyRealState,
       exerciseLibrary: prev.exerciseLibrary,
-      coachProfile:
-        userRole === "coach" ? builtProfile : emptyRealState.coachProfile,
+      coachProfile: resolvedCoachProfile,
       studentProfile:
         userRole === "student" ? builtProfile : emptyRealState.studentProfile,
       coachCertifications:
