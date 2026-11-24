@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   CalendarCheck,
   CalendarDays,
@@ -10,6 +10,7 @@ import {
   Dumbbell,
   HelpCircle,
   LayoutDashboard,
+  LogOut,
   Smartphone,
   UserCircle2,
   Users,
@@ -21,6 +22,7 @@ import { SanctionNoticeBanner } from "@/components/SanctionNoticeBanner";
 import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
 import { SmartNotificationsCenter } from "@/components/SmartNotificationsCenter";
 import { PwaInstallButton } from "@/components/PwaInstallPrompt";
+import { DemoModeBanner } from "@/components/DemoModeBanner";
 
 const COACH_NAV = [
   { href: "/coach", label: "Inicio", icon: LayoutDashboard, exact: true },
@@ -32,14 +34,30 @@ const COACH_NAV = [
 
 export function CoachShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
   const {
     coachProfile,
     students,
     appointments,
     coachInquiries,
     isDemoMode,
+    authUserId,
     resetOnboarding,
+    signOut,
   } = useApp();
+
+  const isDemoView = isDemoMode || !authUserId;
+
+  const handleLogout = async () => {
+    setSigningOut(true);
+    try {
+      await signOut();
+      router.push("/auth");
+    } finally {
+      setSigningOut(false);
+    }
+  };
 
   const upcomingAppointmentsCount = appointments.filter(
     (a) => a.status === "scheduled"
@@ -76,8 +94,12 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
               <span className="block text-[15px] font-semibold tracking-tight text-white">
                 MiGym<span className="text-emerald-400">Brou</span>
               </span>
-              <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-zinc-500">
-                Panel Coach
+              <span
+                className={`block text-[10px] font-semibold uppercase tracking-[0.14em] ${
+                  isDemoView ? "text-amber-400" : "text-zinc-500"
+                }`}
+              >
+                {isDemoView ? "Demo Coach" : "Panel Coach"}
               </span>
             </div>
           </Link>
@@ -207,6 +229,19 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
               </p>
             </div>
           </Link>
+          <button
+            type="button"
+            disabled={signingOut}
+            onClick={handleLogout}
+            className="flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 text-xs font-medium text-zinc-300 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 disabled:opacity-50"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            {signingOut
+              ? "Saliendo..."
+              : isDemoView
+              ? "Salir de la Demo"
+              : "Cerrar sesión"}
+          </button>
           <div className="flex items-center justify-center gap-3 pt-1 text-[10px] text-zinc-500">
             <Link href="/legal" className="transition hover:text-zinc-300">
               Términos
@@ -230,29 +265,37 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
             <span className="text-[15px] font-semibold tracking-tight text-white">
               MiGym<span className="text-emerald-400">Brou</span>
             </span>
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-zinc-400">
-              Coach
+            <span
+              className={`rounded-md border px-2 py-0.5 text-[10px] font-semibold ${
+                isDemoView
+                  ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
+                  : "border-white/10 bg-white/[0.04] text-zinc-400"
+              }`}
+            >
+              {isDemoView ? "DEMO" : "Coach"}
             </span>
           </Link>
 
-          <div className="flex items-center gap-2">
-            {isDemoMode && (
-              <Link
-                href="/student"
-                className="inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.04] px-2.5 text-[11px] font-medium text-zinc-300"
-              >
-                Alumno
-              </Link>
-            )}
+          <div className="flex items-center gap-1.5">
             <PwaInstallButton variant="icon" />
             <SmartNotificationsCenter role="coach" />
             <button
               type="button"
               onClick={() => resetOnboarding("coach")}
               aria-label="Abrir tutorial guiado"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:text-white"
             >
               <HelpCircle className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              disabled={signingOut}
+              onClick={handleLogout}
+              aria-label={isDemoView ? "Salir de la Demo" : "Cerrar sesión"}
+              title={isDemoView ? "Salir de la Demo" : "Cerrar sesión"}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300"
+            >
+              <LogOut className="h-4 w-4" />
             </button>
             <Link
               href="/coach/profile"
@@ -272,6 +315,7 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-safe-nav lg:px-8 lg:py-8 lg:pb-12">
+          {isDemoView && <DemoModeBanner role="coach" />}
           <SanctionNoticeBanner profile={coachProfile} />
           {children}
           {pathname !== "/coach" && (

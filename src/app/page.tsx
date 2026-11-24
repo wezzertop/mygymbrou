@@ -133,18 +133,18 @@ export default function LandingPage() {
               </span>
               <Link
                 href="/student"
-                className="transition hover:text-zinc-200"
+                className="transition hover:text-amber-300"
               >
-                Ver App Alumno
+                Ver Demo Alumno
               </Link>
               <span aria-hidden="true" className="hidden text-zinc-700 sm:inline">
                 ·
               </span>
               <Link
                 href="/coach"
-                className="transition hover:text-zinc-200"
+                className="transition hover:text-amber-300"
               >
-                Ver Panel Coach
+                Ver Demo Coach
               </Link>
             </div>
           </div>
@@ -286,16 +286,16 @@ export default function LandingPage() {
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <Link
                 href="/student/workouts"
-                className="inline-flex h-11 items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 text-xs font-semibold text-white transition hover:border-white/30 hover:bg-white/[0.08] sm:text-sm"
+                className="inline-flex h-11 items-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-5 text-xs font-semibold text-white transition hover:border-emerald-500/40 hover:bg-white/[0.08] sm:text-sm"
               >
-                Probar rutina interactiva
+                Ver Demo de Rutina
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/student/diet"
                 className="inline-flex items-center gap-1 text-xs font-medium text-zinc-400 transition hover:text-white sm:text-sm"
               >
-                Ver plan nutricional
+                Ver Demo de Dieta
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
             </div>
@@ -349,16 +349,16 @@ export default function LandingPage() {
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Link
                   href="/student"
-                  className="inline-flex h-11 items-center gap-2 rounded-full bg-white px-6 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:text-sm"
+                  className="inline-flex h-11 items-center gap-2 rounded-lg bg-emerald-500 px-5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-400 sm:text-sm"
                 >
-                  Explorar App Alumno
+                  Ver Demo App Alumno
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/coach/students/student-1"
-                  className="inline-flex h-11 items-center gap-2 rounded-full border border-white/15 px-5 text-xs font-medium text-zinc-200 transition hover:border-white/30 hover:text-white sm:text-sm"
+                  className="inline-flex h-11 items-center gap-2 rounded-lg border border-white/15 px-5 text-xs font-medium text-zinc-200 transition hover:border-white/30 hover:text-white sm:text-sm"
                 >
-                  Ver Expediente 360°
+                  Ver Demo Expediente 360°
                 </Link>
               </div>
             </div>

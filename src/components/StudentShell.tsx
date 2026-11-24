@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Bell,
   CalendarCheck,
@@ -12,6 +12,7 @@ import {
   HelpCircle,
   Home,
   LayoutDashboard,
+  LogOut,
   Search,
   TrendingUp,
   UserCircle2,
@@ -24,6 +25,7 @@ import { SanctionNoticeBanner } from "@/components/SanctionNoticeBanner";
 import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
 import { SmartNotificationsCenter } from "@/components/SmartNotificationsCenter";
 import { PwaInstallButton } from "@/components/PwaInstallPrompt";
+import { DemoModeBanner } from "@/components/DemoModeBanner";
 
 const STUDENT_NAV = [
   { href: "/student", label: "Inicio", icon: Home, exact: true },
@@ -35,13 +37,29 @@ const STUDENT_NAV = [
 
 export function StudentShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
   const {
     studentProfile,
     notifications,
     appointments,
     isDemoMode,
+    authUserId,
     resetOnboarding,
+    signOut,
   } = useApp();
+
+  const isDemoView = isDemoMode || !authUserId;
+
+  const handleLogout = async () => {
+    setSigningOut(true);
+    try {
+      await signOut();
+      router.push("/auth");
+    } finally {
+      setSigningOut(false);
+    }
+  };
 
   const unreadCount = notifications.filter(
     (n) => n.user_id === studentProfile.id && !n.is_read
@@ -69,8 +87,12 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
               <span className="block text-[15px] font-semibold tracking-tight text-white">
                 MiGym<span className="text-emerald-400">Brou</span>
               </span>
-              <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-zinc-500">
-                App Alumno
+              <span
+                className={`block text-[10px] font-semibold uppercase tracking-[0.14em] ${
+                  isDemoView ? "text-amber-400" : "text-zinc-500"
+                }`}
+              >
+                {isDemoView ? "Demo Alumno" : "App Alumno"}
               </span>
             </div>
           </Link>
@@ -239,6 +261,19 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
               </p>
             </div>
           </Link>
+          <button
+            type="button"
+            disabled={signingOut}
+            onClick={handleLogout}
+            className="flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 text-xs font-medium text-zinc-300 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 disabled:opacity-50"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            {signingOut
+              ? "Saliendo..."
+              : isDemoView
+              ? "Salir de la Demo"
+              : "Cerrar sesión"}
+          </button>
           <div className="flex items-center justify-center gap-3 pt-1 text-[10px] text-zinc-500">
             <Link href="/legal" className="transition hover:text-zinc-300">
               Términos
@@ -261,6 +296,11 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
             <span className="text-[15px] font-semibold tracking-tight text-white">
               MiGym<span className="text-emerald-400">Brou</span>
             </span>
+            {isDemoView && (
+              <span className="rounded-md border border-amber-500/40 bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300">
+                DEMO
+              </span>
+            )}
           </Link>
 
           <div className="hidden lg:block">
@@ -300,12 +340,26 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
               type="button"
               onClick={() => resetOnboarding("student")}
               aria-label="Abrir tutorial guiado"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:text-white"
             >
               <HelpCircle className="h-4 w-4" />
             </button>
 
             <SmartNotificationsCenter role="student" />
+
+            <button
+              type="button"
+              disabled={signingOut}
+              onClick={handleLogout}
+              aria-label={isDemoView ? "Salir de la Demo" : "Cerrar sesión"}
+              title={isDemoView ? "Salir de la Demo" : "Cerrar sesión"}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 text-xs font-medium text-zinc-300 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 disabled:opacity-50"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">
+                {isDemoView ? "Salir Demo" : "Cerrar sesión"}
+              </span>
+            </button>
 
             <Link
               href="/student/profile"
@@ -325,6 +379,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <main className="mx-auto w-full min-w-0 max-w-4xl flex-1 px-4 py-6 pb-safe-nav lg:px-8 lg:py-8 lg:pb-12">
+          {isDemoView && <DemoModeBanner role="student" />}
           <SanctionNoticeBanner profile={studentProfile} />
           {children}
           {pathname !== "/student" && (
