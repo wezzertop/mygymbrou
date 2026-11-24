@@ -36,8 +36,23 @@ export interface Profile {
   identity_document_url?: string;
   identity_document_name?: string;
   identity_document_type?: IdentityDocumentType;
+  identity_back_url?: string;
   face_verification_url?: string;
   face_verification_name?: string;
+  liveness_left_url?: string;
+  liveness_right_url?: string;
+  verification_confidence_score?: number;
+  verification_checks?: {
+    idFrontScore: number;
+    idBackScore: number;
+    livenessScore: number;
+    faceMatchScore: number;
+    totalScore: number;
+    level: "high" | "medium" | "low";
+    recommendation: string;
+    flags: string[];
+    livenessPassed: boolean;
+  };
   verification_deadline_at?: string;
   verification_notes?: string;
   referral_code?: string;
@@ -196,8 +211,23 @@ export interface CoachStudentRelation {
   identity_document_url?: string;
   identity_document_name?: string;
   identity_document_type?: IdentityDocumentType;
+  identity_back_url?: string;
   face_verification_url?: string;
   face_verification_name?: string;
+  liveness_left_url?: string;
+  liveness_right_url?: string;
+  verification_confidence_score?: number;
+  verification_checks?: {
+    idFrontScore: number;
+    idBackScore: number;
+    livenessScore: number;
+    faceMatchScore: number;
+    totalScore: number;
+    level: "high" | "medium" | "low";
+    recommendation: string;
+    flags: string[];
+    livenessPassed: boolean;
+  };
   verification_deadline_at?: string;
   verification_notes?: string;
   referral_code?: string;

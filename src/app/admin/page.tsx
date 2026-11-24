@@ -828,10 +828,21 @@ export default function AdminDashboardPage() {
                           href={coach.identity_document_url}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/15 px-3.5 text-xs font-medium text-zinc-200 hover:border-white/30 hover:text-white"
+                          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-white/15 px-3 text-[11px] font-medium text-zinc-200 hover:border-white/30 hover:text-white"
                         >
-                          Ver ID oficial
-                          <ExternalLink className="h-3.5 w-3.5" />
+                          ID Frente
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      {coach.identity_back_url && (
+                        <a
+                          href={coach.identity_back_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-white/15 px-3 text-[11px] font-medium text-zinc-200 hover:border-white/30 hover:text-white"
+                        >
+                          ID Reverso
+                          <ExternalLink className="h-3 w-3" />
                         </a>
                       )}
                       {coach.face_verification_url && (
@@ -839,14 +850,102 @@ export default function AdminDashboardPage() {
                           href={coach.face_verification_url}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3.5 text-xs font-medium text-emerald-300 hover:bg-emerald-500/20"
+                          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3 text-[11px] font-medium text-emerald-300 hover:bg-emerald-500/20"
                         >
-                          Ver Rostro / Selfie
-                          <ExternalLink className="h-3.5 w-3.5" />
+                          Rostro Frente
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      {coach.liveness_left_url && (
+                        <a
+                          href={coach.liveness_left_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/5 px-3 text-[11px] font-medium text-emerald-300"
+                        >
+                          Giro Izq ←
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                      {coach.liveness_right_url && (
+                        <a
+                          href={coach.liveness_right_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/5 px-3 text-[11px] font-medium text-emerald-300"
+                        >
+                          Giro Der →
+                          <ExternalLink className="h-3 w-3" />
                         </a>
                       )}
                     </div>
                   </div>
+
+                  {/* Smart Verification Confidence Score & Breakdown */}
+                  {(coach.verification_confidence_score !== undefined ||
+                    coach.verification_checks) && (() => {
+                    const score =
+                      coach.verification_checks?.totalScore ??
+                      coach.verification_confidence_score ??
+                      0;
+                    const level =
+                      coach.verification_checks?.level ||
+                      (score >= 80 ? "high" : score >= 55 ? "medium" : "low");
+                    const checks = coach.verification_checks;
+                    return (
+                      <div
+                        className={`space-y-2.5 rounded-xl border p-3.5 text-xs ${
+                          level === "high"
+                            ? "border-emerald-500/35 bg-emerald-500/[0.07]"
+                            : level === "medium"
+                            ? "border-amber-500/35 bg-amber-500/[0.07]"
+                            : "border-rose-500/40 bg-rose-500/[0.08]"
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`rounded-full px-2.5 py-0.5 text-xs font-extrabold tabular-nums ${
+                                level === "high"
+                                  ? "bg-emerald-500 text-[#0a0a0a]"
+                                  : level === "medium"
+                                  ? "bg-amber-400 text-[#0a0a0a]"
+                                  : "bg-rose-500 text-white"
+                              }`}
+                            >
+                              {score}% Confianza
+                            </span>
+                            <span className="font-semibold text-white">
+                              {level === "high"
+                                ? "Probablemente real · Aprobación rápida"
+                                : level === "medium"
+                                ? "Revisión visual sugerida"
+                                : "Atención manual prioritaria"}
+                            </span>
+                          </div>
+                          {checks && (
+                            <span className="text-[11px] text-zinc-300">
+                              ID Frente: {checks.idFrontScore}/20 · Reverso:{" "}
+                              {checks.idBackScore}/20 · Vida: {checks.livenessScore}
+                              /30 · Rostro-ID: {checks.faceMatchScore}/30
+                            </span>
+                          )}
+                        </div>
+                        {checks?.recommendation && (
+                          <p className="text-[11px] text-zinc-300">
+                            {checks.recommendation}
+                          </p>
+                        )}
+                        {checks?.flags && checks.flags.length > 0 && (
+                          <ul className="list-disc space-y-0.5 pl-4 text-[11px] text-amber-200">
+                            {checks.flags.map((flag) => (
+                              <li key={flag}>{flag}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   {/* Diplomas list */}
                   <div className="rounded-xl border border-white/[0.06] bg-[#060607] p-3.5">
