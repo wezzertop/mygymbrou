@@ -30,14 +30,20 @@ export function isSupabaseConfigured(): boolean {
 }
 
 export function getAppUrl(): string {
-  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (configured && configured.startsWith("http")) {
-    return configured.replace(/\/+$/, "");
+  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/+$/, "");
+  const isLocal = (u?: string) =>
+    !u ||
+    u.includes("localhost") ||
+    u.includes("127.0.0.1") ||
+    u.includes("0.0.0.0");
+
+  if (configured && configured.startsWith("http") && !isLocal(configured)) {
+    return configured;
   }
   if (typeof window !== "undefined" && window.location?.origin) {
     return window.location.origin.replace(/\/+$/, "");
   }
-  return "http://localhost:3000";
+  return "https://mygymbrou.nocodepy.com";
 }
 
 export function createClient() {

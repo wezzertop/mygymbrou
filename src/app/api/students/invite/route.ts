@@ -2,6 +2,38 @@ import { NextResponse } from "next/server";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
 import { canInviteMoreStudents, getSaasPlanById } from "@/lib/saas-plans";
 
+const PROD_FALLBACK_URL = "https://mygymbrou.nocodepy.com";
+
+function isLocalUrl(url?: string | null): boolean {
+  if (!url) return true;
+  const lower = url.toLowerCase();
+  return (
+    lower.includes("localhost") ||
+    lower.includes("127.0.0.1") ||
+    lower.includes("0.0.0.0")
+  );
+}
+
+function resolvePublicAppUrl(request: Request): string {
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/+$/, "");
+  if (envUrl && envUrl.startsWith("http") && !isLocalUrl(envUrl)) {
+    return envUrl;
+  }
+
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
+  if (forwardedHost && !isLocalUrl(forwardedHost)) {
+    return `${forwardedProto}://${forwardedHost}`.replace(/\/+$/, "");
+  }
+
+  const host = request.headers.get("host")?.trim();
+  if (host && !isLocalUrl(host)) {
+    return `https://${host}`.replace(/\/+$/, "");
+  }
+
+  return PROD_FALLBACK_URL;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -23,9 +55,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const appUrl = (
-      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    ).replace(/\/+$/, "");
+    const appUrl = resolvePublicAppUrl(request);
 
     const inviteToken = token || `tok-${Date.now()}`;
     const activatePath = `/auth/activate?token=${encodeURIComponent(

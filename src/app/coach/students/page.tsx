@@ -165,7 +165,7 @@ function CoachStudentsContent() {
         email,
         link:
           data.activationLink ||
-          `/auth/activate?token=${created.invite_token}&email=${encodeURIComponent(
+          `${window.location.origin}/auth/activate?token=${created.invite_token}&email=${encodeURIComponent(
             email
           )}&name=${encodeURIComponent(name)}`,
         mode: data.mode || "demo",
@@ -175,7 +175,7 @@ function CoachStudentsContent() {
     } catch {
       setInviteResult({
         email,
-        link: `/auth/activate?token=${created.invite_token}&email=${encodeURIComponent(
+        link: `${window.location.origin}/auth/activate?token=${created.invite_token}&email=${encodeURIComponent(
           email
         )}&name=${encodeURIComponent(name)}`,
         mode: "demo",
@@ -561,18 +561,19 @@ function CoachStudentsContent() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-semibold text-zinc-400">
-                    Enlace de activación ({inviteResult.mode === "supabase" ? "Supabase" : "Demo local"}):
+                  <label className="text-[11px] font-medium text-zinc-400">
+                    Enlace personal de activación (solo para el alumno):
                   </label>
                   <div className="flex items-center gap-2">
                     <input
                       readOnly
                       value={inviteResult.link}
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-cyan-300"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-emerald-300"
                     />
                     <button
                       type="button"
                       onClick={() => handleCopy(inviteResult.link)}
+                      aria-label="Copiar enlace de invitación"
                       className="rounded-xl border border-white/15 bg-white/[0.06] p-2 text-zinc-200 hover:bg-white/[0.12]"
                     >
                       {copied ? (
@@ -582,21 +583,35 @@ function CoachStudentsContent() {
                       )}
                     </button>
                   </div>
+                  <p className="text-[11px] text-zinc-500">
+                    Comparte este enlace con tu alumno o pídele que revise su correo para crear su contraseña.
+                  </p>
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                  <Link
-                    href={inviteResult.link}
-                    className="flex-1 rounded-xl bg-emerald-500 py-2.5 text-center text-xs font-bold text-zinc-950"
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(inviteResult.link)}
+                    className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
                   >
-                    Probar Activación Ahora
-                  </Link>
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4 text-emerald-600" />
+                        ¡Enlace copiado!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4" />
+                        Copiar enlace para enviar
+                      </>
+                    )}
+                  </button>
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
-                    className="rounded-xl border border-white/15 bg-white/[0.06] px-4 py-2.5 text-xs font-semibold text-white"
+                    className="h-11 rounded-full border border-white/15 bg-white/[0.06] px-5 text-xs font-semibold text-white hover:bg-white/[0.12]"
                   >
-                    Cerrar
+                    Listo
                   </button>
                 </div>
               </div>

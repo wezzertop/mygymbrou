@@ -16,8 +16,28 @@ export async function GET(request: Request) {
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = sanitizeNextPath(searchParams.get("next"));
 
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/+$/, "");
+  const forwardedHost = request.headers
+    .get("x-forwarded-host")
+    ?.split(",")[0]
+    ?.trim();
+  const forwardedProto =
+    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
+
+  const isLocal = (u?: string | null) =>
+    !u ||
+    u.includes("localhost") ||
+    u.includes("127.0.0.1") ||
+    u.includes("0.0.0.0");
+
   const appOrigin =
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, "") || origin;
+    envUrl && !isLocal(envUrl)
+      ? envUrl
+      : forwardedHost && !isLocal(forwardedHost)
+      ? `${forwardedProto}://${forwardedHost}`
+      : !isLocal(origin)
+      ? origin
+      : "https://mygymbrou.nocodepy.com";
 
   const supabase = await createServerSupabaseClient();
 
