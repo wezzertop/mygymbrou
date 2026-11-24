@@ -6,6 +6,7 @@ export type AccountStatus = "active" | "warned" | "suspended" | "banned";
 export type ReportStatus = "pendiente" | "en_revision" | "resuelto" | "descartado";
 export type ReportCategory = "servicio" | "conducta" | "contenido" | "seguimiento" | "otro";
 export type SanctionType = "warning" | "temporary_suspension" | "permanent_ban";
+export type PaymentRequestStatus = "pendiente" | "aprobado" | "rechazado";
 export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
 export type IdentityDocumentType = "ine_id" | "passport" | "selfie_id";
 export type CertificationCategory =
@@ -81,6 +82,24 @@ export interface UserSanction {
   is_active: boolean;
   issued_by?: string;
   lifted_at?: string;
+  created_at: string;
+}
+
+export interface SaasPaymentRequest {
+  id: string;
+  coach_id?: string | null;
+  coach_name: string;
+  coach_email: string;
+  plan_tier: "base" | "pro" | "studio";
+  amount_mxn: number;
+  transfer_reference?: string;
+  receipt_url: string;
+  receipt_name: string;
+  notes?: string;
+  status: PaymentRequestStatus;
+  admin_notes?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
   created_at: string;
 }
 

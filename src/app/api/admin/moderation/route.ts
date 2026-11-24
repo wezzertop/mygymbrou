@@ -3,6 +3,7 @@ import {
   createAdminSupabaseClient,
   createServerSupabaseClient,
 } from "@/lib/supabase/server";
+import { getSaasPlanById } from "@/lib/saas-plans";
 
 async function verifyAdminSession() {
   const adminClient = createAdminSupabaseClient();
@@ -53,25 +54,30 @@ export async function GET() {
     }
 
     const admin = auth.adminClient;
-    const [profilesRes, certsRes, reportsRes, sanctionsRes] = await Promise.all([
-      admin
-        .from("profiles")
-        .select("*")
-        .in("role", ["coach", "student"])
-        .order("created_at", { ascending: false }),
-      admin
-        .from("coach_certifications")
-        .select("*")
-        .order("uploaded_at", { ascending: false }),
-      admin
-        .from("user_reports")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      admin
-        .from("user_sanctions")
-        .select("*")
-        .order("created_at", { ascending: false }),
-    ]);
+    const [profilesRes, certsRes, reportsRes, sanctionsRes, paymentsRes] =
+      await Promise.all([
+        admin
+          .from("profiles")
+          .select("*")
+          .in("role", ["coach", "student"])
+          .order("created_at", { ascending: false }),
+        admin
+          .from("coach_certifications")
+          .select("*")
+          .order("uploaded_at", { ascending: false }),
+        admin
+          .from("user_reports")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        admin
+          .from("user_sanctions")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        admin
+          .from("saas_payment_requests")
+          .select("*")
+          .order("created_at", { ascending: false }),
+      ]);
 
     return NextResponse.json({
       mode: "supabase",
@@ -79,6 +85,7 @@ export async function GET() {
       certifications: certsRes.data || [],
       reports: reportsRes.data || [],
       sanctions: sanctionsRes.data || [],
+      paymentRequests: paymentsRes.data || [],
     });
   } catch {
     return NextResponse.json(
@@ -283,6 +290,82 @@ export async function POST(request: Request) {
         message: "Tu cuenta ha sido restablecida y se encuentra nuevamente activa.",
         type: "verification",
       });
+
+      return NextResponse.json({ ok: true });
+    }
+
+    if (action === "review_payment") {
+      const { paymentId, decision, adminNotes } = body as {
+        paymentId: string;
+        decision: "aprobado" | "rechazado";
+        adminNotes?: string;
+      };
+
+      const { data: payment } = await admin
+        .from("saas_payment_requests")
+        .select("*")
+        .eq("id", paymentId)
+        .maybeSingle();
+
+      if (!payment) {
+        return NextResponse.json(
+          { error: "Solicitud de pago no encontrada." },
+          { status: 404 }
+        );
+      }
+
+      const { error: updErr } = await admin
+        .from("saas_payment_requests")
+        .update({
+          status: decision,
+          admin_notes: adminNotes?.trim() || null,
+          reviewed_by: auth.adminUserId,
+          reviewed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", paymentId);
+
+      if (updErr) {
+        return NextResponse.json({ error: updErr.message }, { status: 400 });
+      }
+
+      // Buscar coach por coach_id o por correo
+      let targetCoachId: string | null = payment.coach_id || null;
+      if (!targetCoachId && payment.coach_email) {
+        const { data: prof } = await admin
+          .from("profiles")
+          .select("id")
+          .ilike("email", payment.coach_email)
+          .maybeSingle();
+        targetCoachId = prof?.id || null;
+      }
+
+      if (decision === "aprobado" && targetCoachId) {
+        const planConfig = getSaasPlanById(payment.plan_tier);
+        await admin
+          .from("profiles")
+          .update({
+            saas_plan_tier: planConfig.id,
+            saas_student_limit: planConfig.studentLimit,
+          })
+          .eq("id", targetCoachId);
+
+        await admin.from("notifications").insert({
+          user_id: targetCoachId,
+          title: `¡Plan ${planConfig.name} activado!`,
+          message: `Tu pago SPEI fue aprobado. Ya cuentas con ${planConfig.studentLimitLabel} y 0% publicidad.`,
+          type: "subscription",
+        });
+      } else if (decision === "rechazado" && targetCoachId) {
+        await admin.from("notifications").insert({
+          user_id: targetCoachId,
+          title: "Comprobante de pago rechazado",
+          message:
+            adminNotes?.trim() ||
+            "No pudimos validar tu comprobante SPEI. Por favor sube un comprobante legible desde Mi Plan MXN.",
+          type: "subscription",
+        });
+      }
 
       return NextResponse.json({ ok: true });
     }

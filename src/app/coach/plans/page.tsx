@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle2,
   CreditCard,
@@ -29,6 +29,7 @@ const COACHING_LABELS: Record<CoachingMode, string> = {
 };
 
 function CoachPlansContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab =
     searchParams.get("tab") === "saas"
@@ -347,18 +348,24 @@ function CoachPlansContent() {
                     type="button"
                     disabled={isCurrent}
                     onClick={() => {
-                      updateCoachSaasPlan(plan.id);
-                      notify(
-                        `Plan actualizado a ${plan.name} (${plan.studentLimitLabel}).`
-                      );
+                      if (plan.id === "free") {
+                        updateCoachSaasPlan("free");
+                        notify("Plan actualizado a Inicio / Free.");
+                      } else {
+                        router.push(`/coach/billing/checkout?plan=${plan.id}`);
+                      }
                     }}
-                    className={`min-h-[44px] w-full rounded-xl px-4 py-2.5 text-xs font-bold transition ${
+                    className={`min-h-[44px] w-full rounded-full px-4 py-2.5 text-xs font-semibold transition ${
                       isCurrent
                         ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
-                        : "bg-white hover:bg-zinc-200 text-zinc-950 "
+                        : "bg-white text-zinc-950 hover:bg-zinc-200"
                     }`}
                   >
-                    {isCurrent ? "Plan Activo Actual" : `Cambiar a ${plan.name}`}
+                    {isCurrent
+                      ? "Plan Activo Actual"
+                      : plan.id === "free"
+                      ? "Cambiar a Inicio / Free"
+                      : `Pagar y activar ${plan.name}`}
                   </button>
                 </div>
               );

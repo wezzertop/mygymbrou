@@ -12,6 +12,7 @@ import {
   Dumbbell,
   ExternalLink,
   Flag,
+  Landmark,
   Lock,
   RefreshCw,
   ShieldAlert,
@@ -22,14 +23,17 @@ import {
 import { useApp } from "@/context/AppContext";
 import {
   CoachCertification,
+  PaymentRequestStatus,
   Profile,
   ReportStatus,
+  SaasPaymentRequest,
   SanctionType,
   UserReport,
   UserSanction,
 } from "@/types/database";
+import { getSaasPlanById } from "@/lib/saas-plans";
 
-type AdminTab = "verificaciones" | "reportes" | "sanciones";
+type AdminTab = "pagos" | "verificaciones" | "reportes" | "sanciones";
 
 const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
   pendiente: "Pendiente",
@@ -60,7 +64,7 @@ export default function AdminDashboardPage() {
     liftSanction,
   } = useApp();
 
-  const [tab, setTab] = useState<AdminTab>("verificaciones");
+  const [tab, setTab] = useState<AdminTab>("pagos");
   const [loading, setLoading] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -70,6 +74,11 @@ export default function AdminDashboardPage() {
   const [dbCerts, setDbCerts] = useState<CoachCertification[]>([]);
   const [dbReports, setDbReports] = useState<UserReport[]>([]);
   const [dbSanctions, setDbSanctions] = useState<UserSanction[]>([]);
+  const [dbPayments, setDbPayments] = useState<SaasPaymentRequest[]>([]);
+  const [paymentFilter, setPaymentFilter] = useState<
+    PaymentRequestStatus | "all"
+  >("all");
+  const [paymentNotes, setPaymentNotes] = useState<Record<string, string>>({});
 
   // Verification rejection reason per coach
   const [rejectReasons, setRejectReasons] = useState<Record<string, string>>({});
@@ -108,6 +117,7 @@ export default function AdminDashboardPage() {
         setDbCerts(data.certifications || []);
         setDbReports(data.reports || []);
         setDbSanctions(data.sanctions || []);
+        setDbPayments(data.paymentRequests || []);
         setAccessDenied(false);
       }
     } catch {
@@ -149,6 +159,52 @@ export default function AdminDashboardPage() {
     (r) => r.status === "pendiente" || r.status === "en_revision"
   ).length;
   const activeSanctionsCount = sanctions.filter((s) => s.is_active).length;
+  const pendingPaymentsCount = dbPayments.filter(
+    (p) => p.status === "pendiente"
+  ).length;
+
+  const filteredPayments = dbPayments.filter(
+    (p) => paymentFilter === "all" || p.status === paymentFilter
+  );
+
+  const handleReviewPayment = async (
+    paymentId: string,
+    decision: "aprobado" | "rechazado"
+  ) => {
+    const adminNotes = paymentNotes[paymentId]?.trim();
+    if (decision === "rechazado" && !adminNotes) {
+      showToast("Indica el motivo del rechazo antes de continuar.");
+      return;
+    }
+
+    if (!isDemoMode) {
+      const res = await fetch("/api/admin/moderation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "review_payment",
+          paymentId,
+          decision,
+          adminNotes,
+        }),
+      });
+      if (res.ok) {
+        await loadAdminData();
+        showToast(
+          decision === "aprobado"
+            ? "Pago aprobado y plan activado automáticamente."
+            : "Comprobante rechazado y notificación enviada al Coach."
+        );
+      }
+      return;
+    }
+
+    showToast(
+      decision === "aprobado"
+        ? "Pago aprobado (Modo Demo)."
+        : "Pago rechazado (Modo Demo)."
+    );
+  };
 
   const filteredReports = reports.filter(
     (r) => reportFilter === "all" || r.status === reportFilter
@@ -371,7 +427,15 @@ export default function AdminDashboardPage() {
         )}
 
         {/* KPI Strip */}
-        <div className="grid grid-cols-3 divide-x divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12]">
+        <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12] sm:grid-cols-4 sm:divide-y-0">
+          <div className="p-4 sm:p-5">
+            <p className="text-[11px] font-medium text-zinc-500">
+              Pagos SPEI pendientes
+            </p>
+            <p className="mt-1.5 text-2xl font-semibold tabular-nums text-emerald-400 sm:text-3xl">
+              {pendingPaymentsCount}
+            </p>
+          </div>
           <div className="p-4 sm:p-5">
             <p className="text-[11px] font-medium text-zinc-500">
               Coaches por verificar
@@ -402,6 +466,11 @@ export default function AdminDashboardPage() {
         <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-1">
           {(
             [
+              {
+                key: "pagos",
+                label: `Pagos SPEI (${pendingPaymentsCount})`,
+                icon: Landmark,
+              },
               {
                 key: "verificaciones",
                 label: `Verificaciones (${coaches.length})`,
@@ -438,6 +507,145 @@ export default function AdminDashboardPage() {
             );
           })}
         </div>
+
+        {/* ================= TAB 0: PAGOS SPEI Y COMPROBANTES ================= */}
+        {tab === "pagos" && (
+          <div className="space-y-4">
+            <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-1">
+              {(["all", "pendiente", "aprobado", "rechazado"] as const).map(
+                (st) => (
+                  <button
+                    key={st}
+                    type="button"
+                    onClick={() => setPaymentFilter(st)}
+                    className={`h-8 shrink-0 rounded-full px-3.5 text-xs font-medium transition ${
+                      paymentFilter === st
+                        ? "bg-white text-zinc-950"
+                        : "border border-white/10 text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    {st === "all"
+                      ? "Todos"
+                      : st === "pendiente"
+                      ? "Pendientes"
+                      : st === "aprobado"
+                      ? "Aprobados"
+                      : "Rechazados"}
+                  </button>
+                )
+              )}
+            </div>
+
+            {filteredPayments.map((pay) => {
+              const planInfo = getSaasPlanById(pay.plan_tier);
+              return (
+                <div
+                  key={pay.id}
+                  className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5"
+                >
+                  <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h2 className="text-base font-semibold text-white">
+                          {pay.coach_name}
+                        </h2>
+                        <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-400">
+                          {planInfo.name} · ${pay.amount_mxn} MXN
+                        </span>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
+                            pay.status === "aprobado"
+                              ? "bg-emerald-500/15 text-emerald-400"
+                              : pay.status === "rechazado"
+                              ? "bg-rose-500/15 text-rose-300"
+                              : "bg-amber-500/15 text-amber-300"
+                          }`}
+                        >
+                          {pay.status === "aprobado"
+                            ? "Aprobado"
+                            : pay.status === "rechazado"
+                            ? "Rechazado"
+                            : "Pendiente de validación"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-400">
+                        {pay.coach_email} ·{" "}
+                        {new Date(pay.created_at).toLocaleString("es-MX", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </p>
+                      {pay.transfer_reference && (
+                        <p className="text-xs text-zinc-300">
+                          Referencia SPEI:{" "}
+                          <span className="font-mono text-white">
+                            {pay.transfer_reference}
+                          </span>
+                        </p>
+                      )}
+                      {pay.notes && (
+                        <p className="text-xs italic text-zinc-400">
+                          &ldquo;{pay.notes}&rdquo;
+                        </p>
+                      )}
+                    </div>
+
+                    <a
+                      href={pay.receipt_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-9 shrink-0 items-center gap-1.5 self-start rounded-full border border-white/15 bg-white/[0.04] px-4 text-xs font-medium text-white transition hover:border-white/30"
+                    >
+                      Ver comprobante
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+
+                  {pay.status === "pendiente" && (
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+                      <input
+                        type="text"
+                        value={paymentNotes[pay.id] || ""}
+                        onChange={(e) =>
+                          setPaymentNotes((prev) => ({
+                            ...prev,
+                            [pay.id]: e.target.value,
+                          }))
+                        }
+                        placeholder="Notas internas o motivo de rechazo..."
+                        className="min-h-[42px] flex-1 rounded-xl border border-white/10 bg-[#060607] px-3.5 text-xs text-white outline-none focus:border-emerald-500/60"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleReviewPayment(pay.id, "aprobado")}
+                          className="inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
+                        >
+                          <CheckCircle2 className="h-4 w-4" />
+                          Aprobar y activar plan
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleReviewPayment(pay.id, "rechazado")}
+                          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-500/10 px-4 text-xs font-medium text-rose-300 transition hover:bg-rose-500/20"
+                        >
+                          <XCircle className="h-4 w-4" />
+                          Rechazar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {filteredPayments.length === 0 && (
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
+                No hay solicitudes de pago SPEI en esta categoría.
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ================= TAB 1: VERIFICACIONES DE COACHES ================= */}
         {tab === "verificaciones" && (

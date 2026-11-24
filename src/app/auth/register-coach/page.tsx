@@ -2,10 +2,11 @@
 
 import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Building2,
+  Check,
   CheckCircle2,
   Dumbbell,
   Eye,
@@ -16,12 +17,20 @@ import {
 } from "lucide-react";
 import { createClient, getAppUrl, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useApp } from "@/context/AppContext";
-import { getSaasPlanById, SaasPlanTier } from "@/lib/saas-plans";
+import {
+  getSaasPlanById,
+  SAAS_PLANS_MXN,
+  SaasPlanTier,
+} from "@/lib/saas-plans";
 
 function RegisterCoachContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const planParam = (searchParams.get("plan") as SaasPlanTier) || "free";
-  const selectedPlan = getSaasPlanById(planParam);
+  const initialPlanParam = (searchParams.get("plan") as SaasPlanTier) || "free";
+  const [selectedPlanId, setSelectedPlanId] = useState<SaasPlanTier>(
+    getSaasPlanById(initialPlanParam).id
+  );
+  const selectedPlan = getSaasPlanById(selectedPlanId);
 
   const { updateCoachProfile, isDemoMode } = useApp();
   const [fullName, setFullName] = useState("");
@@ -53,19 +62,28 @@ function RegisterCoachContent() {
     const termsTimestamp = new Date().toISOString();
 
     try {
+      const isPaidPlan = selectedPlan.id !== "free";
+      const checkoutPath = `/coach/billing/checkout?plan=${selectedPlan.id}&email=${encodeURIComponent(
+        email.trim()
+      )}&name=${encodeURIComponent(fullName.trim())}`;
+
       if (isSupabaseConfigured()) {
         const supabase = createClient();
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${getAppUrl()}/auth/callback?next=/coach`,
+            emailRedirectTo: `${getAppUrl()}/auth/callback?next=${encodeURIComponent(
+              isPaidPlan ? checkoutPath : "/coach"
+            )}`,
             data: {
               role: "coach",
               full_name: fullName,
               brand_name: brandName,
               specialty,
-              saas_plan_tier: selectedPlan.id,
+              // Las cuentas de pago inician en 'free' hasta aprobar el comprobante SPEI
+              saas_plan_tier: "free",
+              requested_plan_tier: selectedPlan.id,
               terms_accepted_at: termsTimestamp,
             },
           },
@@ -81,10 +99,15 @@ function RegisterCoachContent() {
           email,
           brand_name: brandName,
           specialty,
-          saas_plan_tier: selectedPlan.id,
-          saas_student_limit: selectedPlan.studentLimit,
+          saas_plan_tier: "free",
+          saas_student_limit: 5,
           terms_accepted_at: termsTimestamp,
         });
+      }
+
+      if (isPaidPlan) {
+        router.push(checkoutPath);
+        return;
       }
 
       setSubmitted(true);
@@ -176,6 +199,54 @@ function RegisterCoachContent() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Plan Selector */}
+                <div>
+                  <label className="mb-2 block text-xs font-semibold text-zinc-300">
+                    Elige tu plan en MXN *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SAAS_PLANS_MXN.map((plan) => {
+                      const active = selectedPlanId === plan.id;
+                      return (
+                        <button
+                          key={plan.id}
+                          type="button"
+                          onClick={() => setSelectedPlanId(plan.id)}
+                          className={`relative flex flex-col items-start rounded-2xl border p-3 text-left transition ${
+                            active
+                              ? "border-emerald-500/70 bg-emerald-500/10"
+                              : "border-white/10 bg-[#060607] hover:border-white/25"
+                          }`}
+                        >
+                          <div className="flex w-full items-center justify-between gap-1">
+                            <span className="text-xs font-semibold text-white">
+                              {plan.name}
+                            </span>
+                            {active && (
+                              <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                            )}
+                          </div>
+                          <span className="mt-1 text-sm font-bold tabular-nums text-white">
+                            {plan.priceLabel}{" "}
+                            <span className="text-[10px] font-normal text-zinc-400">
+                              /mes
+                            </span>
+                          </span>
+                          <span className="mt-0.5 text-[10px] text-zinc-400">
+                            {plan.studentLimitLabel}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {selectedPlan.id !== "free" && (
+                    <p className="mt-2 text-[11px] text-emerald-400">
+                      Al crear tu cuenta te llevaremos a los datos de transferencia SPEI para subir tu comprobante y activar{" "}
+                      <strong>{selectedPlan.name}</strong>.
+                    </p>
+                  )}
+                </div>
+
                 <div>
                   <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
                     Nombre completo *
