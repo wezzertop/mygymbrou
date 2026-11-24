@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   Check,
   Dumbbell,
+  X,
 } from "lucide-react";
 import {
   LandingHeaderAuth,
@@ -497,14 +498,35 @@ export default function LandingPage() {
                   </p>
                 </div>
 
-                <ul className="my-6 flex-1 space-y-3 text-xs text-zinc-300">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5">
-                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="my-6 flex-1 space-y-4">
+                  <ul className="space-y-2.5 text-xs text-zinc-200">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2.5">
+                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {plan.excludedFeatures.length > 0 ? (
+                    <div className="border-t border-white/[0.06] pt-3.5">
+                      <ul className="space-y-2 text-[11px] text-zinc-500">
+                        {plan.excludedFeatures.map((ex) => (
+                          <li key={ex} className="flex items-start gap-2">
+                            <X className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-600" />
+                            <span>{ex}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <div className="border-t border-white/[0.06] pt-3.5">
+                      <p className="text-[11px] font-medium text-emerald-400">
+                        Sin limitaciones · Acceso completo
+                      </p>
+                    </div>
+                  )}
+                </div>
 
                 <Link
                   href={`/auth/register-coach?plan=${plan.id}`}

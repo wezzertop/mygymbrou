@@ -10,6 +10,7 @@ import {
   Trash2,
   UserCheck,
   Utensils,
+  X,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { CoachingMode } from "@/types/database";
@@ -322,14 +323,26 @@ function CoachPlansContent() {
                   <p className="mb-3 rounded-lg bg-[#060607] px-2.5 py-1.5 text-[11px] font-bold text-cyan-300">
                     {plan.studentLimitLabel}
                   </p>
-                  <ul className="mb-5 flex-1 space-y-2 text-xs text-zinc-300">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2">
-                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="mb-5 flex-1 space-y-3">
+                    <ul className="space-y-2 text-xs text-zinc-200">
+                      {plan.features.map((f) => (
+                        <li key={f} className="flex items-start gap-2">
+                          <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    {plan.excludedFeatures.length > 0 && (
+                      <ul className="space-y-1.5 border-t border-white/[0.06] pt-3 text-[11px] text-zinc-500">
+                        {plan.excludedFeatures.map((ex) => (
+                          <li key={ex} className="flex items-start gap-2">
+                            <X className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-600" />
+                            <span>{ex}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                   <button
                     type="button"
                     disabled={isCurrent}

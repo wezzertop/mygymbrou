@@ -13,6 +13,7 @@ export interface SaasPlanConfig {
   coachLimitLabel?: string;
   description: string;
   features: string[];
+  excludedFeatures: string[];
   featured: boolean;
   ctaLabel: string;
 }
@@ -27,12 +28,19 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
     studentLimit: 5,
     studentLimitLabel: "Hasta 5 alumnos activos",
     description:
-      "Ideal para probar la plataforma o iniciar tu práctica digital sin costo fijo.",
+      "Trabaja cómodo con tus primeros 5 alumnos y prueba la plataforma sin costo fijo.",
     features: [
       "Hasta 5 alumnos activos",
-      "Rutinas y dieta básica",
-      "Evaluaciones antropométricas y agenda",
+      "Rutinas directas y dieta básica por alumno",
+      "Evaluaciones antropométricas básicas",
+      "Hasta 2 citas activas y 1 paquete de asesoría",
       "App móvil gratuita para tus alumnos",
+    ],
+    excludedFeatures: [
+      "Incluye publicidad en app (Plan Free)",
+      "Sin plantillas reutilizables de rutinas ni dietas",
+      "Sin citas ni paquetes ilimitados",
+      "Sin soporte prioritario ni multi-coach",
     ],
     featured: false,
     ctaLabel: "Empezar Gratis",
@@ -47,12 +55,18 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
     studentLimit: 15,
     studentLimitLabel: "Hasta 15 alumnos activos",
     description:
-      "Para entrenadores independientes que buscan una experiencia profesional todos los días.",
+      "Para entrenadores independientes que buscan una experiencia limpia y sin anuncios.",
     features: [
       "Hasta 15 alumnos activos",
-      "Biblioteca de rutinas y dietas",
+      "0% publicidad para ti y tus alumnos",
+      "Agenda de citas y paquetes ilimitados",
+      "Plantillas reutilizables de rutinas y dietas",
       "Historial antropométrico ilimitado",
-      "Agenda de citas y app móvil para alumnos",
+    ],
+    excludedFeatures: [
+      "Sin galería comparativa avanzada 360°",
+      "Sin soporte prioritario",
+      "Solo 1 entrenador (sin multi-coach)",
     ],
     featured: false,
     ctaLabel: "Elegir Coach Base",
@@ -68,13 +82,16 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
     studentLimit: 50,
     studentLimitLabel: "Hasta 50 alumnos activos",
     description:
-      "Diseñado para coaches con cartera en crecimiento que necesitan velocidad y control.",
+      "Para coaches con cartera en crecimiento que necesitan velocidad, control y presentación.",
     features: [
       "Hasta 50 alumnos activos",
-      "Plantillas reutilizables de rutinas y dietas",
+      "0% publicidad en toda la experiencia",
+      "Todo lo incluido en Coach Base",
       "Comparativas visuales y galería de progreso",
-      "Gestión de cortes y membresías",
-      "Soporte prioritario",
+      "Gestión de cortes, renovaciones y soporte prioritario",
+    ],
+    excludedFeatures: [
+      "Solo 1 entrenador (sin equipo multi-coach)",
     ],
     featured: true,
     ctaLabel: "Elegir Coach Pro",
@@ -90,14 +107,15 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
     studentLimitLabel: "Alumnos ilimitados",
     coachLimitLabel: "Hasta 3–5 coaches bajo misma marca",
     description:
-      "Para estudios de entrenamiento, boxes y equipos multidisciplinarios.",
+      "Para estudios de entrenamiento, boxes y equipos multidisciplinarios sin límites.",
     features: [
       "Alumnos ilimitados",
+      "0% publicidad en toda la plataforma",
+      "Todo lo incluido en Coach Pro",
       "Hasta 3–5 coaches bajo una misma marca",
-      "Identidad personalizada para el estudio",
-      "Herramientas de gestión de equipo",
-      "Listo para conectar Stripe / Mercado Pago",
+      "Identidad personalizada y listo para Stripe / Mercado Pago",
     ],
+    excludedFeatures: [],
     featured: false,
     ctaLabel: "Elegir Estudio / Gym",
   },
@@ -172,4 +190,3 @@ export function getPlanCapabilities(
     hasAds: false,
   };
 }
-
