@@ -4,18 +4,14 @@ import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Activity,
-  AlertTriangle,
-  ArrowRight,
+  ArrowUpRight,
   Calendar,
   CheckCircle2,
   Clock,
-  CreditCard,
-  Crown,
   Dumbbell,
   Plus,
   RefreshCw,
   UserPlus,
-  Users,
   Utensils,
   X,
 } from "lucide-react";
@@ -125,7 +121,7 @@ export default function CoachDashboardPage() {
     e.preventDefault();
     if (quickModal === "workout" && selectedTemplateId && targetStudentId) {
       assignWorkoutToStudent(selectedTemplateId, targetStudentId);
-      showToast("Rutina asignada y notificada al alumno al instante.");
+      showToast("Rutina asignada y notificada al alumno.");
     } else if (quickModal === "diet" && selectedTemplateId && targetStudentId) {
       assignNutritionToStudent(selectedTemplateId, targetStudentId);
       showToast("Plan nutricional actualizado y enviado al alumno.");
@@ -135,211 +131,193 @@ export default function CoachDashboardPage() {
       targetRelationId
     ) {
       assignSubscriptionPlanToStudent(targetRelationId, selectedTemplateId);
-      showToast("Plan de alumno renovado con éxito.");
+      showToast("Plan de alumno renovado correctamente.");
     }
     setQuickModal(null);
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      {/* Editorial Header */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
-            {coachProfile.brand_name || "Panel de Control"}
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
+            {coachProfile.brand_name || "Panel Coach"}
           </p>
-          <h1 className="mt-1 text-2xl font-extrabold text-white sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
             Hola, {coachProfile.full_name.split(" ")[0]}
           </h1>
-          <p className="text-sm text-slate-400">
-            Acciones diarias rápidas, cartera de alumnos y citas en un vistazo.
+          <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
+            Resumen diario de tu cartera, citas y accesos rápidos.
           </p>
         </div>
 
-        <Link
-          href="/coach/plans?tab=saas"
-          className="inline-flex min-h-[44px] items-center gap-2 rounded-2xl border border-slate-800 bg-[#121212] px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:border-cyan-500/40"
-        >
-          <Crown className="h-4 w-4 text-emerald-400" />
-          <span>{currentSaasPlan.name}</span>
-          <span className="rounded-full bg-cyan-500/15 px-2 py-0.5 text-[11px] font-bold text-cyan-300">
-            {quota.limit === null
-              ? `${occupiedSlots} / ∞`
-              : `${occupiedSlots} / ${quota.limit}`}
-          </span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link
+            href="/coach/plans?tab=saas"
+            className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-[#0e0f12] px-4 text-xs font-medium text-zinc-300 transition hover:border-white/25 hover:text-white"
+          >
+            <span>{currentSaasPlan.name}</span>
+            <span className="h-1 w-1 rounded-full bg-zinc-600" />
+            <span className="font-semibold tabular-nums text-emerald-400">
+              {quota.limit === null
+                ? `${occupiedSlots} / ∞`
+                : `${occupiedSlots} / ${quota.limit}`}
+            </span>
+          </Link>
+          <Link
+            href="/coach/students?invite=true"
+            className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98]"
+          >
+            <UserPlus className="h-3.5 w-3.5" />
+            Invitar Alumno
+          </Link>
+        </div>
       </div>
 
       {/* Toast Feedback */}
       {toast && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-xs font-semibold text-emerald-300">
+        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           {toast}
         </div>
       )}
 
-      {/* Daily Quick Actions Bar (Zero Friction) */}
-      <section aria-label="Acciones rápidas del Coach">
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
-          <Link
-            href="/coach/students?invite=true"
-            className="flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-3 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 active:scale-[0.98]"
-          >
-            <UserPlus className="h-4 w-4 shrink-0" />
-            <span>Invitar Alumno</span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => openQuickModal("workout")}
-            className="flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-[#121212] px-3 py-2.5 text-xs font-bold text-white transition hover:border-emerald-500/40 active:scale-[0.98]"
-          >
-            <Dumbbell className="h-4 w-4 shrink-0 text-emerald-400" />
-            <span>Asignar Rutina</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => openQuickModal("diet")}
-            className="flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-[#121212] px-3 py-2.5 text-xs font-bold text-white transition hover:border-cyan-500/40 active:scale-[0.98]"
-          >
-            <Utensils className="h-4 w-4 shrink-0 text-cyan-400" />
-            <span>Actualizar Dieta</span>
-          </button>
-          <Link
-            href={newAssessmentHref}
-            className="flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-[#121212] px-3 py-2.5 text-xs font-bold text-white transition hover:border-emerald-500/40 active:scale-[0.98]"
-          >
-            <Activity className="h-4 w-4 shrink-0 text-emerald-400" />
-            <span>Evaluación</span>
-          </Link>
-          <Link
-            href="/coach/agenda"
-            className="flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-[#121212] px-3 py-2.5 text-xs font-bold text-white transition hover:border-cyan-500/40 active:scale-[0.98]"
-          >
-            <Calendar className="h-4 w-4 shrink-0 text-cyan-400" />
-            <span>Agendar Cita</span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => openQuickModal("renew")}
-            className="flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-[#121212] px-3 py-2.5 text-xs font-bold text-white transition hover:border-amber-500/40 active:scale-[0.98]"
-          >
-            <RefreshCw className="h-4 w-4 shrink-0 text-amber-400" />
-            <span>Renovar Plan</span>
-          </button>
-        </div>
-      </section>
-
-      {/* KPIs Grid */}
-      <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
+      {/* Architectural KPI Strip (Stripe / Linear style) */}
+      <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12] lg:grid-cols-4 lg:divide-y-0">
         <Link
           href="/coach/students"
-          className="rounded-2xl border border-slate-800/90 bg-[#121212] p-4 transition hover:border-cyan-500/40"
+          className="p-4 transition hover:bg-white/[0.02] sm:p-5"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
-              Alumnos Activos
-            </span>
-            <Users className="h-4 w-4 text-cyan-400" />
-          </div>
-          <p className="mt-2 text-2xl font-black text-white">
+          <p className="text-[11px] font-medium text-zinc-500">Alumnos activos</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums text-white sm:text-3xl">
             {activeStudents.length}
           </p>
-          <p className="mt-1 text-[11px] text-slate-400">
-            +{pendingInvites.length} invitación(es) pendiente(s)
+          <p className="mt-1 text-[11px] text-zinc-400">
+            +{pendingInvites.length} pendiente(s)
           </p>
         </Link>
 
         <Link
           href="/coach/plans"
-          className="rounded-2xl border border-slate-800/90 bg-[#121212] p-4 transition hover:border-emerald-500/40"
+          className="p-4 transition hover:bg-white/[0.02] sm:p-5"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
-              Ingresos Activos
-            </span>
-            <CreditCard className="h-4 w-4 text-emerald-400" />
-          </div>
-          <p className="mt-2 text-2xl font-black text-emerald-400">
+          <p className="text-[11px] font-medium text-zinc-500">Ingresos activos</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums text-emerald-400 sm:text-3xl">
             ${monthlyRevenue.toLocaleString("es-MX")}
           </p>
-          <p className="mt-1 text-[11px] text-amber-400">
+          <p className="mt-1 text-[11px] text-zinc-400">
             {expiringCount} por vencer · {expiredCount} vencido(s)
           </p>
         </Link>
 
         <Link
           href="/coach/agenda"
-          className="rounded-2xl border border-slate-800/90 bg-[#121212] p-4 transition hover:border-cyan-500/40"
+          className="p-4 transition hover:bg-white/[0.02] sm:p-5"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
-              Próximas Citas
-            </span>
-            <Calendar className="h-4 w-4 text-cyan-400" />
-          </div>
-          <p className="mt-2 text-2xl font-black text-white">
+          <p className="text-[11px] font-medium text-zinc-500">Próximas citas</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums text-white sm:text-3xl">
             {upcomingAppointments.length}
           </p>
-          <p className="mt-1 text-[11px] text-slate-400">
+          <p className="mt-1 text-[11px] text-zinc-400">
             Valoraciones y check-ins
           </p>
         </Link>
 
         <Link
           href={newAssessmentHref}
-          className="rounded-2xl border border-slate-800/90 bg-[#121212] p-4 transition hover:border-emerald-500/40"
+          className="p-4 transition hover:bg-white/[0.02] sm:p-5"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
-              Evaluaciones
-            </span>
-            <Activity className="h-4 w-4 text-emerald-400" />
-          </div>
-          <p className="mt-2 text-2xl font-black text-white">
+          <p className="text-[11px] font-medium text-zinc-500">Evaluaciones</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums text-white sm:text-3xl">
             {assessments.length}
           </p>
-          <p className="mt-1 text-[11px] text-emerald-400">
+          <p className="mt-1 text-[11px] text-zinc-400">
             Historial antropométrico
           </p>
         </Link>
       </div>
 
+      {/* Sleek Daily Quick Actions */}
+      <section aria-label="Acciones rápidas del Coach">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-5 sm:overflow-visible">
+          <button
+            type="button"
+            onClick={() => openQuickModal("workout")}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-white/[0.08] bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+          >
+            <Dumbbell className="h-4 w-4 text-emerald-400" />
+            Asignar Rutina
+          </button>
+          <button
+            type="button"
+            onClick={() => openQuickModal("diet")}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-white/[0.08] bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+          >
+            <Utensils className="h-4 w-4 text-emerald-400" />
+            Actualizar Dieta
+          </button>
+          <Link
+            href={newAssessmentHref}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-white/[0.08] bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+          >
+            <Activity className="h-4 w-4 text-emerald-400" />
+            Evaluación
+          </Link>
+          <Link
+            href="/coach/agenda"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-white/[0.08] bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+          >
+            <Calendar className="h-4 w-4 text-emerald-400" />
+            Agendar Cita
+          </Link>
+          <button
+            type="button"
+            onClick={() => openQuickModal("renew")}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-white/[0.08] bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+          >
+            <RefreshCw className="h-4 w-4 text-emerald-400" />
+            Renovar Plan
+          </button>
+        </div>
+      </section>
+
       {/* Main Two-Column Content */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Alertas de Alumnos y Suscripciones con Filtros Rápidos */}
-        <section className="min-w-0 rounded-2xl border border-slate-800/90 bg-[#121212] p-4 sm:p-5 lg:col-span-7">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-base font-bold text-white">
+        {/* Roster Status with Clean Filters */}
+        <section className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-7">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-base font-semibold tracking-tight text-white">
               Estado de Cartera
             </h2>
             <Link
               href="/coach/students"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-400 hover:text-cyan-300"
+              className="inline-flex items-center gap-1 text-xs font-medium text-zinc-400 transition hover:text-white"
             >
               Ver todos
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
-          {/* Quick Status Filters */}
+          {/* Quick Status Pills */}
           <div className="no-scrollbar mb-4 flex gap-1.5 overflow-x-auto pb-1">
             {(
               [
                 { key: "all", label: `Todos (${students.length})` },
-                { key: "active", label: "Activo" },
+                { key: "active", label: "Activos" },
                 { key: "expiring", label: `Por vencer (${expiringCount})` },
-                { key: "expired", label: `Vencido (${expiredCount})` },
-                { key: "pending", label: `Pendiente (${pendingInvites.length})` },
+                { key: "expired", label: `Vencidos (${expiredCount})` },
+                { key: "pending", label: `Pendientes (${pendingInvites.length})` },
               ] as const
             ).map((f) => (
               <button
                 key={f.key}
                 type="button"
                 onClick={() => setRosterFilter(f.key)}
-                className={`min-h-[36px] shrink-0 rounded-xl px-3 text-xs font-bold transition ${
+                className={`h-8 shrink-0 whitespace-nowrap rounded-full px-3.5 text-xs font-medium transition ${
                   rosterFilter === f.key
-                    ? "bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-500/40"
-                    : "border border-slate-800 bg-[#0a0a0a] text-slate-400 hover:text-white"
+                    ? "bg-white text-zinc-950"
+                    : "border border-white/10 bg-transparent text-zinc-400 hover:border-white/25 hover:text-white"
                 }`}
               >
                 {f.label}
@@ -347,7 +325,7 @@ export default function CoachDashboardPage() {
             ))}
           </div>
 
-          <div className="space-y-2.5">
+          <div className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
             {filteredStudents.map((st) => {
               const targetId = st.student_id || st.id;
               const expired = isExpired(st);
@@ -355,7 +333,7 @@ export default function CoachDashboardPage() {
               return (
                 <div
                   key={st.id}
-                  className="flex flex-col justify-between gap-2.5 rounded-xl border border-slate-800 bg-[#0a0a0a] p-3 sm:flex-row sm:items-center"
+                  className="flex flex-col justify-between gap-3 py-3.5 sm:flex-row sm:items-center"
                 >
                   <Link
                     href={
@@ -363,24 +341,24 @@ export default function CoachDashboardPage() {
                         ? `/coach/students/${targetId}`
                         : "/coach/students"
                     }
-                    className="flex min-w-0 flex-1 items-center gap-3"
+                    className="flex min-w-0 flex-1 items-center gap-3 group"
                   >
                     {st.avatar_url ? (
                       <img
                         src={st.avatar_url}
                         alt={st.invited_name}
-                        className="h-10 w-10 shrink-0 rounded-full object-cover"
+                        className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-white/10"
                       />
                     ) : (
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-cyan-400">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-xs font-semibold text-zinc-300">
                         {st.invited_name.slice(0, 2).toUpperCase()}
                       </div>
                     )}
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-white">
+                      <p className="truncate text-sm font-medium text-white transition group-hover:text-emerald-400">
                         {st.invited_name}
                       </p>
-                      <p className="truncate text-xs text-slate-400">
+                      <p className="truncate text-xs text-zinc-500">
                         {st.subscription_plan_name} · Vence{" "}
                         {st.expires_at || st.next_billing_date}
                       </p>
@@ -389,22 +367,19 @@ export default function CoachDashboardPage() {
 
                   <div className="flex items-center justify-between gap-2 sm:justify-end">
                     {st.invite_status === "pending" ? (
-                      <span className="shrink-0 rounded-full bg-amber-500/15 px-2.5 py-1 text-[10px] font-bold text-amber-300">
-                        Invitación pendiente
+                      <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-medium text-amber-300">
+                        Pendiente
                       </span>
                     ) : expired ? (
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-rose-500/15 px-2.5 py-1 text-[10px] font-bold text-rose-300">
-                        <AlertTriangle className="h-3 w-3" />
+                      <span className="rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-medium text-rose-300">
                         Vencido
                       </span>
                     ) : expiring ? (
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-2.5 py-1 text-[10px] font-bold text-amber-300">
-                        <AlertTriangle className="h-3 w-3" />
+                      <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-medium text-amber-300">
                         Por vencer
                       </span>
                     ) : (
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[10px] font-bold text-emerald-300">
-                        <CheckCircle2 className="h-3 w-3" />
+                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
                         Activo
                       </span>
                     )}
@@ -413,7 +388,7 @@ export default function CoachDashboardPage() {
                       <button
                         type="button"
                         onClick={() => openQuickModal("renew", st.id)}
-                        className="min-h-[34px] rounded-lg bg-emerald-500/15 px-2.5 text-[11px] font-bold text-emerald-300 transition hover:bg-emerald-500 hover:text-slate-950"
+                        className="h-8 rounded-full bg-white px-3 text-[11px] font-semibold text-zinc-950 transition hover:bg-zinc-200"
                       >
                         Renovar
                       </button>
@@ -423,17 +398,17 @@ export default function CoachDashboardPage() {
               );
             })}
             {filteredStudents.length === 0 && (
-              <div className="rounded-xl border border-dashed border-slate-800 py-6 text-center">
-                <p className="text-sm text-slate-400">
+              <div className="py-10 text-center">
+                <p className="text-sm text-zinc-500">
                   No hay alumnos en esta categoría.
                 </p>
                 {students.length === 0 && (
                   <Link
                     href="/coach/students?invite=true"
-                    className="mt-3 inline-flex min-h-[42px] items-center gap-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2 text-xs font-bold text-slate-950"
+                    className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-5 text-xs font-semibold text-zinc-950"
                   >
                     <UserPlus className="h-3.5 w-3.5" />
-                    Invitar Primer Alumno
+                    Invitar primer alumno
                   </Link>
                 )}
               </div>
@@ -441,62 +416,61 @@ export default function CoachDashboardPage() {
           </div>
         </section>
 
-        {/* Próximas Citas */}
-        <section className="min-w-0 rounded-2xl border border-slate-800/90 bg-[#121212] p-4 sm:p-5 lg:col-span-5">
+        {/* Upcoming Appointments */}
+        <section className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-5">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-bold text-white">
+            <h2 className="text-base font-semibold tracking-tight text-white">
               Agenda Próxima
             </h2>
             <Link
               href="/coach/agenda"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-400 hover:text-cyan-300"
+              className="inline-flex items-center gap-1 text-xs font-medium text-zinc-400 transition hover:text-white"
             >
               Ver agenda
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
-          <div className="space-y-3">
+          <div className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
             {upcomingAppointments.slice(0, 4).map((apt) => (
-              <div
-                key={apt.id}
-                className="flex flex-col justify-between gap-2 rounded-xl border border-slate-800 bg-[#0a0a0a] p-3.5"
-              >
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-300">
-                      {apt.student_name}
-                    </span>
-                    <span className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <Clock className="h-3 w-3" />
-                      {new Date(apt.scheduled_at).toLocaleString("es-MX", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
-                    </span>
-                  </div>
-                  <p className="text-sm font-semibold text-white">{apt.title}</p>
-                  <p className="text-xs text-slate-400">{apt.location_or_link}</p>
+              <div key={apt.id} className="space-y-2 py-3.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-emerald-400">
+                    {apt.student_name}
+                  </span>
+                  <span className="flex items-center gap-1 text-[11px] text-zinc-500">
+                    <Clock className="h-3 w-3" />
+                    {new Date(apt.scheduled_at).toLocaleString("es-MX", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </span>
                 </div>
-                <Link
-                  href={`/coach/students/${apt.student_id}`}
-                  className="inline-flex min-h-[38px] items-center justify-center rounded-lg border border-slate-700 bg-slate-900 px-3 text-xs font-semibold text-slate-200 transition hover:border-cyan-500/40"
-                >
-                  Abrir Expediente
-                </Link>
+                <p className="text-sm font-medium text-white">{apt.title}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="truncate text-xs text-zinc-500">
+                    {apt.location_or_link}
+                  </p>
+                  <Link
+                    href={`/coach/students/${apt.student_id}`}
+                    className="shrink-0 text-xs font-medium text-zinc-300 transition hover:text-white"
+                  >
+                    Expediente →
+                  </Link>
+                </div>
               </div>
             ))}
             {upcomingAppointments.length === 0 && (
-              <div className="rounded-xl border border-dashed border-slate-800 py-6 text-center">
-                <p className="text-sm text-slate-400">
+              <div className="py-10 text-center">
+                <p className="text-sm text-zinc-500">
                   No tienes citas programadas por ahora.
                 </p>
                 <Link
                   href="/coach/agenda"
-                  className="mt-3 inline-flex min-h-[42px] items-center gap-1.5 rounded-xl bg-cyan-500/15 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/25"
+                  className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-full border border-white/15 px-4 text-xs font-medium text-zinc-200 transition hover:border-white/30 hover:text-white"
                 >
                   <Plus className="h-3.5 w-3.5" />
-                  Programar primera cita
+                  Programar cita
                 </Link>
               </div>
             )}
@@ -504,20 +478,20 @@ export default function CoachDashboardPage() {
         </section>
       </div>
 
-      {/* Quick Action Modal (Asignar Rutina / Actualizar Dieta / Renovar Plan) */}
+      {/* Quick Action Modal */}
       {quickModal && (
         <div
           role="dialog"
           aria-modal="true"
           onClick={() => setQuickModal(null)}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-slate-800 bg-[#121212] p-5 shadow-2xl sm:p-6"
+            className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0e0f12] p-5 shadow-2xl sm:p-6"
           >
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold text-white">
+              <h2 className="text-lg font-semibold tracking-tight text-white">
                 {quickModal === "workout"
                   ? "Asignar Rutina Rápida"
                   : quickModal === "diet"
@@ -528,7 +502,7 @@ export default function CoachDashboardPage() {
                 type="button"
                 onClick={() => setQuickModal(null)}
                 aria-label="Cerrar"
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:bg-white/[0.06] hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -536,7 +510,7 @@ export default function CoachDashboardPage() {
 
             <form onSubmit={handleQuickActionSubmit} className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                <label className="mb-1.5 block text-xs font-medium text-zinc-400">
                   Selecciona el alumno
                 </label>
                 {quickModal === "renew" ? (
@@ -544,7 +518,7 @@ export default function CoachDashboardPage() {
                     required
                     value={targetRelationId}
                     onChange={(e) => setTargetRelationId(e.target.value)}
-                    className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-[#0a0a0a] px-3 text-white outline-none focus:border-cyan-500"
+                    className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-white outline-none focus:border-emerald-500/60"
                   >
                     {students.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -557,7 +531,7 @@ export default function CoachDashboardPage() {
                     required
                     value={targetStudentId}
                     onChange={(e) => setTargetStudentId(e.target.value)}
-                    className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-[#0a0a0a] px-3 text-white outline-none focus:border-cyan-500"
+                    className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-white outline-none focus:border-emerald-500/60"
                   >
                     {activeStudents
                       .filter((s) => s.student_id)
@@ -571,7 +545,7 @@ export default function CoachDashboardPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                <label className="mb-1.5 block text-xs font-medium text-zinc-400">
                   {quickModal === "workout"
                     ? "Plantilla de rutina"
                     : quickModal === "diet"
@@ -582,7 +556,7 @@ export default function CoachDashboardPage() {
                   required
                   value={selectedTemplateId}
                   onChange={(e) => setSelectedTemplateId(e.target.value)}
-                  className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-[#0a0a0a] px-3 text-white outline-none focus:border-cyan-500"
+                  className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-white outline-none focus:border-emerald-500/60"
                 >
                   {quickModal === "workout" &&
                     workouts.map((w) => (
@@ -607,21 +581,21 @@ export default function CoachDashboardPage() {
 
               <button
                 type="submit"
-                className="min-h-[48px] w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-sm font-bold text-slate-950 shadow-lg transition hover:brightness-110"
+                className="h-12 w-full rounded-full bg-white text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
               >
-                Confirmar y Notificar al Alumno
+                Confirmar y notificar
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Mobile Floating Action Button (FAB) */}
+      {/* Minimalist Mobile FAB */}
       {fabOpen && (
         <div
           aria-hidden="true"
           onClick={() => setFabOpen(false)}
-          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-[1px] lg:hidden"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[2px] lg:hidden"
         />
       )}
       <div className="fixed bottom-24 right-4 z-40 flex flex-col items-end gap-2 lg:hidden">
@@ -630,9 +604,9 @@ export default function CoachDashboardPage() {
             <Link
               href="/coach/students?invite=true"
               onClick={() => setFabOpen(false)}
-              className="flex min-h-[44px] items-center gap-2 rounded-full border border-cyan-500/40 bg-[#121212] px-4 text-xs font-bold text-cyan-300 shadow-xl"
+              className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-white shadow-xl"
             >
-              <UserPlus className="h-4 w-4" />
+              <UserPlus className="h-3.5 w-3.5 text-emerald-400" />
               Invitar Alumno
             </Link>
             <button
@@ -641,9 +615,9 @@ export default function CoachDashboardPage() {
                 setFabOpen(false);
                 openQuickModal("workout");
               }}
-              className="flex min-h-[44px] items-center gap-2 rounded-full border border-emerald-500/40 bg-[#121212] px-4 text-xs font-bold text-emerald-300 shadow-xl"
+              className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-white shadow-xl"
             >
-              <Dumbbell className="h-4 w-4" />
+              <Dumbbell className="h-3.5 w-3.5 text-emerald-400" />
               Asignar Rutina
             </button>
             <button
@@ -652,9 +626,9 @@ export default function CoachDashboardPage() {
                 setFabOpen(false);
                 openQuickModal("renew");
               }}
-              className="flex min-h-[44px] items-center gap-2 rounded-full border border-amber-500/40 bg-[#121212] px-4 text-xs font-bold text-amber-300 shadow-xl"
+              className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-white shadow-xl"
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className="h-3.5 w-3.5 text-emerald-400" />
               Renovar Plan
             </button>
           </div>
@@ -664,9 +638,9 @@ export default function CoachDashboardPage() {
           onClick={() => setFabOpen((o) => !o)}
           aria-expanded={fabOpen}
           aria-label={fabOpen ? "Cerrar acciones rápidas" : "Abrir acciones rápidas"}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 shadow-2xl shadow-cyan-500/30 transition hover:scale-105 active:scale-95"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-zinc-950 shadow-2xl transition hover:bg-zinc-200 active:scale-95"
         >
-          {fabOpen ? <X className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
+          {fabOpen ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
         </button>
       </div>
     </div>

@@ -28,7 +28,7 @@ export default function StudentAppointmentsPage() {
           Seguimiento con tu Coach
         </span>
         <h1 className="text-2xl font-extrabold text-white">Mis Citas</h1>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-zinc-400">
           Evaluaciones presenciales, toma de medidas y sesiones de revisión.
         </p>
       </div>
@@ -41,7 +41,7 @@ export default function StudentAppointmentsPage() {
               <CalendarDays className="h-3.5 w-3.5" />
               Próxima Cita Agendada
             </span>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-zinc-400">
               Coach {coachProfile.full_name}
             </span>
           </div>
@@ -50,7 +50,7 @@ export default function StudentAppointmentsPage() {
             {nextApt.title}
           </h2>
 
-          <div className="mt-4 space-y-2 text-sm text-slate-200">
+          <div className="mt-4 space-y-2 text-sm text-zinc-200">
             <p className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-cyan-400" />
               {new Date(nextApt.scheduled_at).toLocaleString("es-MX", {
@@ -77,7 +77,7 @@ export default function StudentAppointmentsPage() {
           </div>
 
           {nextApt.notes && (
-            <div className="mt-4 rounded-2xl border border-slate-800 bg-slate-950/70 p-3.5 text-xs leading-relaxed text-slate-300">
+            <div className="mt-4 rounded-2xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs leading-relaxed text-zinc-300">
               <span className="font-semibold text-emerald-400">
                 Recomendaciones previas:{" "}
               </span>
@@ -86,7 +86,7 @@ export default function StudentAppointmentsPage() {
           )}
         </section>
       ) : (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 text-center text-sm text-slate-400">
+        <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
           No tienes citas próximas agendadas por el momento.
         </div>
       )}
@@ -98,10 +98,10 @@ export default function StudentAppointmentsPage() {
           {upcoming.slice(1).map((apt) => (
             <div
               key={apt.id}
-              className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"
+              className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4"
             >
               <p className="text-sm font-bold text-white">{apt.title}</p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-zinc-400">
                 {new Date(apt.scheduled_at).toLocaleString("es-MX", {
                   dateStyle: "medium",
                   timeStyle: "short",
@@ -119,27 +119,27 @@ export default function StudentAppointmentsPage() {
         {past.map((apt) => (
           <div
             key={apt.id}
-            className="rounded-2xl border border-slate-800/80 bg-slate-900/50 p-4"
+            className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4"
           >
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-bold text-slate-200">{apt.title}</p>
+              <p className="text-sm font-bold text-zinc-200">{apt.title}</p>
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
                 <CheckCircle2 className="h-3 w-3" />
                 {apt.status === "completed" ? "Completada" : "Cancelada"}
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-zinc-400">
               {new Date(apt.scheduled_at).toLocaleDateString("es-MX", {
                 dateStyle: "long",
               })}
             </p>
             {apt.notes && (
-              <p className="mt-2 text-xs text-slate-300">{apt.notes}</p>
+              <p className="mt-2 text-xs text-zinc-300">{apt.notes}</p>
             )}
           </div>
         ))}
         {past.length === 0 && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-zinc-500">
             Aún no hay citas anteriores registradas.
           </p>
         )}

@@ -154,14 +154,14 @@ function CoachPlansContent() {
           <h1 className="text-2xl font-extrabold text-white">
             Planes de Suscripción y Dietas
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-zinc-400">
             Configura tus paquetes de asesoría con duración y permisos de módulos
             para tus alumnos.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs">
-          <span className="text-slate-400">Alumno rápido:</span>
+        <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#0e0f12] px-3 py-2 text-xs">
+          <span className="text-zinc-400">Alumno rápido:</span>
           {students.length > 0 ? (
             <select
               aria-label="Seleccionar alumno para asignación rápida"
@@ -170,13 +170,13 @@ function CoachPlansContent() {
               className="bg-transparent font-bold text-cyan-400 outline-none"
             >
               {students.map((s) => (
-                <option key={s.id} value={s.id} className="bg-slate-900 text-white">
+                <option key={s.id} value={s.id} className="bg-[#0e0f12] text-white">
                   {s.invited_name}
                 </option>
               ))}
             </select>
           ) : (
-            <span className="font-semibold text-slate-500">Sin alumnos aún</span>
+            <span className="font-semibold text-zinc-500">Sin alumnos aún</span>
           )}
         </div>
       </div>
@@ -189,14 +189,14 @@ function CoachPlansContent() {
       )}
 
       {/* Tabs */}
-      <div className="grid grid-cols-3 gap-1.5 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 sm:max-w-xl">
+      <div className="grid grid-cols-3 gap-1.5 rounded-2xl border border-white/[0.08] bg-[#060607] p-1.5 sm:max-w-xl">
         <button
           type="button"
           onClick={() => setTab("subscriptions")}
           className={`flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition ${
             tab === "subscriptions"
-              ? "bg-cyan-500 text-slate-950"
-              : "text-slate-400 hover:text-white"
+              ? "bg-cyan-500 text-zinc-950"
+              : "text-zinc-400 hover:text-white"
           }`}
         >
           <CreditCard className="h-4 w-4 shrink-0" />
@@ -207,8 +207,8 @@ function CoachPlansContent() {
           onClick={() => setTab("diets")}
           className={`flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition ${
             tab === "diets"
-              ? "bg-emerald-500 text-slate-950"
-              : "text-slate-400 hover:text-white"
+              ? "bg-emerald-500 text-zinc-950"
+              : "text-zinc-400 hover:text-white"
           }`}
         >
           <Utensils className="h-4 w-4 shrink-0" />
@@ -219,8 +219,8 @@ function CoachPlansContent() {
           onClick={() => setTab("saas")}
           className={`flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition ${
             tab === "saas"
-              ? "bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950"
-              : "text-slate-400 hover:text-white"
+              ? "bg-white hover:bg-zinc-200 text-zinc-950"
+              : "text-zinc-400 hover:text-white"
           }`}
         >
           <Crown className="h-4 w-4 shrink-0" />
@@ -230,7 +230,7 @@ function CoachPlansContent() {
 
       {tab === "saas" ? (
         <div className="space-y-6">
-          <div className="flex flex-col justify-between gap-4 rounded-2xl border border-cyan-500/30 bg-[#121212] p-5 sm:flex-row sm:items-center">
+          <div className="flex flex-col justify-between gap-4 rounded-2xl border border-cyan-500/30 bg-[#0e0f12] p-5 sm:flex-row sm:items-center">
             <div className="space-y-1">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
                 <Crown className="h-3.5 w-3.5" />
@@ -242,21 +242,21 @@ function CoachPlansContent() {
                   ? `Tienes ${occupiedSlots} alumnos en cartera (cupo ilimitado).`
                   : `Cupo usado: ${occupiedSlots} de ${quota.limit} alumnos (${quota.remaining} disponibles).`}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-zinc-400">
                 Actualiza tu plan en cualquier momento para ampliar tu límite de alumnos activos.
               </p>
             </div>
             {quota.limit !== null && (
               <div className="w-full sm:w-48">
-                <div className="mb-1 flex justify-between text-[11px] font-semibold text-slate-400">
+                <div className="mb-1 flex justify-between text-[11px] font-semibold text-zinc-400">
                   <span>Uso del cupo</span>
                   <span>
                     {Math.min(100, Math.round((occupiedSlots / quota.limit) * 100))}%
                   </span>
                 </div>
-                <div className="h-2.5 overflow-hidden rounded-full bg-slate-800">
+                <div className="h-2.5 overflow-hidden rounded-full bg-white/[0.06]">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400"
+                    className="h-full rounded-full bg-white hover:bg-zinc-200"
                     style={{
                       width: `${Math.min(
                         100,
@@ -277,14 +277,14 @@ function CoachPlansContent() {
                   key={plan.id}
                   className={`relative flex flex-col rounded-3xl border p-5 ${
                     isCurrent
-                      ? "border-emerald-500 bg-[#121212] ring-1 ring-emerald-500/40"
+                      ? "border-emerald-500 bg-[#0e0f12] ring-1 ring-emerald-500/40"
                       : plan.featured
-                      ? "border-cyan-500/50 bg-[#121212]"
-                      : "border-slate-800 bg-[#121212]/80"
+                      ? "border-cyan-500/50 bg-[#0e0f12]"
+                      : "border-white/[0.08] bg-[#0e0f12]/80"
                   }`}
                 >
                   {plan.badge && (
-                    <span className="absolute -top-2.5 right-4 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-950">
+                    <span className="absolute -top-2.5 right-4 rounded-full bg-white hover:bg-zinc-200 px-2.5 py-0.5 text-[10px] font-extrabold text-zinc-950">
                       {plan.badge}
                     </span>
                   )}
@@ -295,14 +295,14 @@ function CoachPlansContent() {
                     <span className="text-3xl font-black text-white">
                       {plan.priceLabel}
                     </span>
-                    <span className="text-[11px] font-semibold text-slate-400">
+                    <span className="text-[11px] font-semibold text-zinc-400">
                       {plan.period}
                     </span>
                   </div>
-                  <p className="mb-3 rounded-lg bg-[#0a0a0a] px-2.5 py-1.5 text-[11px] font-bold text-cyan-300">
+                  <p className="mb-3 rounded-lg bg-[#060607] px-2.5 py-1.5 text-[11px] font-bold text-cyan-300">
                     {plan.studentLimitLabel}
                   </p>
-                  <ul className="mb-5 flex-1 space-y-2 text-xs text-slate-300">
+                  <ul className="mb-5 flex-1 space-y-2 text-xs text-zinc-300">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2">
                         <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
@@ -322,7 +322,7 @@ function CoachPlansContent() {
                     className={`min-h-[44px] w-full rounded-xl px-4 py-2.5 text-xs font-bold transition ${
                       isCurrent
                         ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
-                        : "bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 hover:brightness-110"
+                        : "bg-white hover:bg-zinc-200 text-zinc-950 "
                     }`}
                   >
                     {isCurrent ? "Plan Activo Actual" : `Cambiar a ${plan.name}`}
@@ -332,7 +332,7 @@ function CoachPlansContent() {
             })}
           </div>
 
-          <p className="rounded-2xl border border-slate-800 bg-[#121212] p-3.5 text-center text-xs text-slate-400">
+          <p className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3.5 text-center text-xs text-zinc-400">
             {PRICING_FOOTNOTE_MXN}
           </p>
         </div>
@@ -341,7 +341,7 @@ function CoachPlansContent() {
           {/* Creator Form */}
           <form
             onSubmit={handleCreateSubPlan}
-            className="min-w-0 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5 lg:col-span-5"
+            className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
           >
             <h2 className="flex items-center gap-2 text-base font-bold text-white">
               <Plus className="h-4 w-4 text-cyan-400" />
@@ -349,7 +349,7 @@ function CoachPlansContent() {
             </h2>
 
             <div>
-              <label className="mb-1 block text-xs text-slate-300">
+              <label className="mb-1 block text-xs text-zinc-300">
                 Nombre del Plan *
               </label>
               <input
@@ -358,12 +358,12 @@ function CoachPlansContent() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ej. Plan Trimestral VIP"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-xs text-slate-300">
+              <label className="mb-1 block text-xs text-zinc-300">
                 Descripción visible para alumnos
               </label>
               <textarea
@@ -371,13 +371,13 @@ function CoachPlansContent() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Ej. Incluye nutrición, rutinas guiadas y seguimiento semanal."
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] p-2.5 text-xs text-white"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs text-slate-300">
+                <label className="mb-1 block text-xs text-zinc-300">
                   Precio ($)
                 </label>
                 <input
@@ -385,17 +385,17 @@ function CoachPlansContent() {
                   required
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-300">
+                <label className="mb-1 block text-xs text-zinc-300">
                   Duración (días)
                 </label>
                 <select
                   value={durationDays}
                   onChange={(e) => setDurationDays(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
                 >
                   <option value="7">7 días (Semanal)</option>
                   <option value="15">15 días (Quincenal)</option>
@@ -406,7 +406,7 @@ function CoachPlansContent() {
             </div>
 
             <div>
-              <label className="mb-1 block text-xs text-slate-300">
+              <label className="mb-1 block text-xs text-zinc-300">
                 Modalidad de Coaching
               </label>
               <select
@@ -414,7 +414,7 @@ function CoachPlansContent() {
                 onChange={(e) =>
                   setCoachingMode(e.target.value as CoachingMode)
                 }
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-xs text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white"
               >
                 <option value="none">Sin sesiones 1:1 (Solo app)</option>
                 <option value="intermittent">Coach Online Intermitente</option>
@@ -422,8 +422,8 @@ function CoachPlansContent() {
               </select>
             </div>
 
-            <div className="space-y-2 rounded-xl border border-slate-800 bg-slate-950/70 p-3 text-xs">
-              <p className="font-semibold text-slate-300">
+            <div className="space-y-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3 text-xs">
+              <p className="font-semibold text-zinc-300">
                 Módulos habilitados para el alumno:
               </p>
               <label className="flex cursor-pointer items-center gap-2.5">
@@ -457,7 +457,7 @@ function CoachPlansContent() {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3 text-xs font-bold text-slate-950"
+              className="w-full rounded-xl bg-white hover:bg-zinc-200 py-3 text-xs font-bold text-zinc-950"
             >
               Guardar Plan de Suscripción
             </button>
@@ -468,7 +468,7 @@ function CoachPlansContent() {
             {subscriptionPlans.map((plan) => (
               <div
                 key={plan.id}
-                className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/75 p-5 transition hover:border-cyan-500/40"
+                className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12]/75 p-5 transition hover:border-cyan-500/40"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
@@ -496,7 +496,7 @@ function CoachPlansContent() {
                         <button
                           type="button"
                           onClick={() => setConfirmDeleteId(null)}
-                          className="rounded-lg border border-slate-700 bg-slate-800 px-2 py-1 text-[10px] font-semibold text-slate-300 hover:text-white"
+                          className="rounded-lg border border-white/15 bg-white/[0.06] px-2 py-1 text-[10px] font-semibold text-zinc-300 hover:text-white"
                         >
                           No
                         </button>
@@ -506,7 +506,7 @@ function CoachPlansContent() {
                         type="button"
                         onClick={() => setConfirmDeleteId(plan.id)}
                         aria-label={`Eliminar ${plan.name}`}
-                        className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-800 hover:text-rose-400"
+                        className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-white/[0.06] hover:text-rose-400"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -515,13 +515,13 @@ function CoachPlansContent() {
 
                   <p className="text-2xl font-black text-emerald-400">
                     ${plan.price.toLocaleString("es-MX")}
-                    <span className="text-xs font-normal text-slate-400">
+                    <span className="text-xs font-normal text-zinc-400">
                       {" "}
                       / {plan.duration_days}d
                     </span>
                   </p>
 
-                  <p className="text-xs leading-relaxed text-slate-400">
+                  <p className="text-xs leading-relaxed text-zinc-400">
                     {plan.description}
                   </p>
 
@@ -530,7 +530,7 @@ function CoachPlansContent() {
                       className={`rounded-md px-2 py-0.5 ${
                         plan.includes_nutrition
                           ? "bg-emerald-500/15 text-emerald-300"
-                          : "bg-slate-800 text-slate-500 line-through"
+                          : "bg-white/[0.06] text-zinc-500 line-through"
                       }`}
                     >
                       Nutrición
@@ -539,12 +539,12 @@ function CoachPlansContent() {
                       className={`rounded-md px-2 py-0.5 ${
                         plan.includes_workouts
                           ? "bg-cyan-500/15 text-cyan-300"
-                          : "bg-slate-800 text-slate-500 line-through"
+                          : "bg-white/[0.06] text-zinc-500 line-through"
                       }`}
                     >
                       Rutinas
                     </span>
-                    <span className="rounded-md bg-slate-800 px-2 py-0.5 text-slate-200">
+                    <span className="rounded-md bg-white/[0.06] px-2 py-0.5 text-zinc-200">
                       {COACHING_LABELS[plan.coaching_mode]}
                     </span>
                   </div>
@@ -563,7 +563,7 @@ function CoachPlansContent() {
                       `Asignado "${plan.name}" a ${selectedStudent.invited_name}. Fecha de vencimiento calculada automáticamente.`
                     );
                   }}
-                  className="inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-xl bg-slate-800 py-2.5 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500 hover:text-slate-950 active:scale-[0.98] disabled:opacity-40"
+                  className="inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-xl bg-white/[0.06] py-2.5 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500 hover:text-zinc-950 active:scale-[0.98] disabled:opacity-40"
                 >
                   <UserCheck className="h-3.5 w-3.5" />
                   {selectedStudent
@@ -578,14 +578,14 @@ function CoachPlansContent() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <form
             onSubmit={handleCreateDietTemplate}
-            className="min-w-0 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5 lg:col-span-5"
+            className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
           >
             <h2 className="flex items-center gap-2 text-base font-bold text-white">
               <Plus className="h-4 w-4 text-emerald-400" />
               Nueva Plantilla de Dieta
             </h2>
             <div>
-              <label className="mb-1 block text-xs text-slate-400">
+              <label className="mb-1 block text-xs text-zinc-400">
                 Nombre del plan nutricional *
               </label>
               <input
@@ -594,23 +594,23 @@ function CoachPlansContent() {
                 value={dTitle}
                 onChange={(e) => setDTitle(e.target.value)}
                 placeholder="Ej. Definición Moderada 1,900 kcal"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs text-slate-400">
+                <label className="mb-1 block text-xs text-zinc-400">
                   Calorías / día
                 </label>
                 <input
                   type="number"
                   value={dCals}
                   onChange={(e) => setDCals(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-slate-400">
+                <label className="mb-1 block text-xs text-zinc-400">
                   Agua (Litros)
                 </label>
                 <input
@@ -618,59 +618,59 @@ function CoachPlansContent() {
                   step="0.1"
                   value={dWater}
                   onChange={(e) => setDWater(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
                 />
               </div>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <label className="mb-1 block text-[11px] text-slate-400">
+                <label className="mb-1 block text-[11px] text-zinc-400">
                   Proteína (g)
                 </label>
                 <input
                   type="number"
                   value={dProt}
                   onChange={(e) => setDProt(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-2.5 py-2 text-xs text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-2.5 py-2 text-xs text-white"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-[11px] text-slate-400">
+                <label className="mb-1 block text-[11px] text-zinc-400">
                   Carbs (g)
                 </label>
                 <input
                   type="number"
                   value={dCarbs}
                   onChange={(e) => setDCarbs(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-2.5 py-2 text-xs text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-2.5 py-2 text-xs text-white"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-[11px] text-slate-400">
+                <label className="mb-1 block text-[11px] text-zinc-400">
                   Grasas (g)
                 </label>
                 <input
                   type="number"
                   value={dFats}
                   onChange={(e) => setDFats(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-2.5 py-2 text-xs text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-2.5 py-2 text-xs text-white"
                 />
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs text-slate-400">
+              <label className="mb-1 block text-xs text-zinc-400">
                 Desayuno base
               </label>
               <textarea
                 rows={2}
                 value={dMealDesc}
                 onChange={(e) => setDMealDesc(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] p-2.5 text-xs text-white"
               />
             </div>
             <button
               type="submit"
-              className="w-full rounded-xl bg-emerald-500 py-3 text-xs font-bold text-slate-950"
+              className="w-full rounded-xl bg-emerald-500 py-3 text-xs font-bold text-zinc-950"
             >
               Guardar Plantilla de Dieta
             </button>
@@ -680,11 +680,11 @@ function CoachPlansContent() {
             {nutritionPlans.map((plan) => (
               <div
                 key={plan.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/70 p-4"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4"
               >
                 <div>
                   <h3 className="text-sm font-bold text-white">{plan.title}</h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-zinc-400">
                     {plan.daily_calories} kcal · P:{plan.protein_g}g · C:
                     {plan.carbs_g}g · G:{plan.fats_g}g
                   </p>
@@ -699,7 +699,7 @@ function CoachPlansContent() {
                       );
                       notify("Plan nutricional asignado al alumno.");
                     }}
-                    className="rounded-xl bg-emerald-500/15 px-3 py-2 text-xs font-bold text-emerald-300 hover:bg-emerald-500 hover:text-slate-950"
+                    className="rounded-xl bg-emerald-500/15 px-3 py-2 text-xs font-bold text-emerald-300 hover:bg-emerald-500 hover:text-zinc-950"
                   >
                     Asignar a {selectedStudent.invited_name.split(" ")[0]}
                   </button>
@@ -717,7 +717,7 @@ export default function CoachPlansPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-12 text-center text-sm text-slate-400">
+        <div className="py-12 text-center text-sm text-zinc-400">
           Cargando planes...
         </div>
       }

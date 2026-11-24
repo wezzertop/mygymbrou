@@ -117,55 +117,57 @@ function AuthLoginContent() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0b1120] px-4 py-10">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#060607] px-4 py-10">
       <div className="w-full max-w-md space-y-6">
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 transition hover:text-white"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 transition hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
-            Volver al inicio
+            Inicio
           </Link>
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white">
-            <Dumbbell className="h-4 w-4 text-cyan-400" />
-            MiGym<span className="text-cyan-400">Brou</span>
-          </span>
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-white">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-zinc-950">
+              <Dumbbell className="h-3.5 w-3.5 stroke-[2.25]" />
+            </span>
+            MiGym<span className="text-emerald-400">Brou</span>
+          </Link>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl sm:p-8">
+        <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
           <div className="mb-6 text-center">
-            <h1 className="text-2xl font-extrabold text-white">
-              Iniciar Sesión
+            <h1 className="text-2xl font-semibold tracking-[-0.025em] text-white">
+              Iniciar sesión
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1.5 text-xs text-zinc-400 sm:text-sm">
               Selecciona tu perfil para ingresar a la plataforma
             </p>
           </div>
 
           {/* Role Selector Tabs */}
-          <div className="mb-6 grid grid-cols-2 gap-2 rounded-2xl border border-slate-800 bg-slate-950 p-1.5">
+          <div className="mb-6 grid grid-cols-2 gap-1.5 rounded-full border border-white/[0.08] bg-[#060607] p-1">
             <button
               type="button"
               onClick={() => handleRoleChange("coach")}
-              className={`rounded-xl py-2.5 text-xs font-bold transition ${
+              className={`h-9 rounded-full text-xs font-semibold transition ${
                 role === "coach"
-                  ? "bg-cyan-500 text-slate-950 shadow"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-white text-zinc-950"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
-              Acceso Coaches
+              Coach
             </button>
             <button
               type="button"
               onClick={() => handleRoleChange("student")}
-              className={`rounded-xl py-2.5 text-xs font-bold transition ${
+              className={`h-9 rounded-full text-xs font-semibold transition ${
                 role === "student"
-                  ? "bg-emerald-500 text-slate-950 shadow"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-white text-zinc-950"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
-              Acceso Alumnos
+              Alumno
             </button>
           </div>
 
@@ -194,17 +196,17 @@ function AuthLoginContent() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+              <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
                 Correo electrónico
               </label>
               <div className="relative">
-                <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3 pl-10 pr-4 text-sm text-white outline-none transition focus:border-cyan-500"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none transition focus:border-cyan-500"
                   placeholder="tu@correo.com"
                 />
               </div>
@@ -212,7 +214,7 @@ function AuthLoginContent() {
 
             <div>
               <div className="mb-1.5 flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-300">
+                <label className="text-xs font-semibold text-zinc-300">
                   Contraseña
                 </label>
                 <Link
@@ -223,20 +225,20 @@ function AuthLoginContent() {
                 </Link>
               </div>
               <div className="relative">
-                <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                 <input
                   type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3 pl-10 pr-11 text-sm text-white outline-none transition focus:border-cyan-500"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-11 text-sm text-white outline-none transition focus:border-cyan-500"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
                   aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                  className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                  className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -250,11 +252,7 @@ function AuthLoginContent() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full rounded-xl py-3.5 text-sm font-bold text-slate-950 shadow-lg transition disabled:opacity-60 ${
-                role === "coach"
-                  ? "bg-gradient-to-r from-cyan-500 to-cyan-400 shadow-cyan-500/20 hover:brightness-110"
-                  : "bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-emerald-500/20 hover:brightness-110"
-              }`}
+              className="h-12 w-full rounded-full bg-white text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-60"
             >
               {loading
                 ? "Ingresando..."
@@ -265,7 +263,7 @@ function AuthLoginContent() {
           </form>
 
           {/* Contextual Info */}
-          <div className="mt-6 border-t border-slate-800 pt-5 text-center text-xs text-slate-400">
+          <div className="mt-6 border-t border-white/[0.08] pt-5 text-center text-xs text-zinc-400">
             {role === "coach" ? (
               <p>
                 ¿Eres entrenador y aún no tienes cuenta?{" "}
@@ -278,7 +276,7 @@ function AuthLoginContent() {
               </p>
             ) : (
               <div className="space-y-2">
-                <p className="flex items-center justify-center gap-1.5 text-slate-300">
+                <p className="flex items-center justify-center gap-1.5 text-zinc-300">
                   <UserCheck className="h-4 w-4 text-emerald-400" />
                   Los alumnos acceden por invitación de su Coach.
                 </p>
@@ -293,7 +291,7 @@ function AuthLoginContent() {
                     </Link>
                   </p>
                 ) : (
-                  <p className="text-slate-400">
+                  <p className="text-zinc-400">
                     Revisa el enlace de activación enviado a tu correo por tu Coach.
                   </p>
                 )}
@@ -302,7 +300,7 @@ function AuthLoginContent() {
           </div>
         </div>
 
-        <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-500">
+        <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-500">
           <ShieldCheck className="h-3.5 w-3.5 text-cyan-500" />
           {isSupabaseConfigured()
             ? "Autenticación protegida por Supabase Auth + RLS"
@@ -317,7 +315,7 @@ export default function AuthPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#0b1120] text-sm text-slate-400">
+        <div className="flex min-h-screen items-center justify-center bg-[#060607] text-sm text-zinc-400">
           Cargando acceso...
         </div>
       }

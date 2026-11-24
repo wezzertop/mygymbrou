@@ -246,16 +246,16 @@ function ActivateAccountContent() {
   )}`;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0a] px-4 py-10">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#060607] px-4 py-10">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-zinc-950 shadow-lg shadow-none">
             <Flame className="h-6 w-6" />
           </div>
           <h1 className="text-2xl font-extrabold text-white">
             Invitación de Entrenamiento
           </h1>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-zinc-400">
             Invitado por{" "}
             <span className="font-semibold text-cyan-400">
               {coachName} ({coachBrand})
@@ -263,9 +263,9 @@ function ActivateAccountContent() {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-[#121212] p-6 shadow-2xl sm:p-8">
+        <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
           {loadingMeta ? (
-            <div className="py-8 text-center text-sm text-slate-400">
+            <div className="py-8 text-center text-sm text-zinc-400">
               Validando enlace de invitación...
             </div>
           ) : activated ? (
@@ -276,7 +276,7 @@ function ActivateAccountContent() {
               <h2 className="text-xl font-bold text-white">
                 ¡Vinculación completada!
               </h2>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-zinc-300">
                 Ya formas parte del equipo de{" "}
                 <span className="font-semibold text-white">{coachName}</span> con{" "}
                 <span className="font-semibold text-emerald-400">{planName}</span>.
@@ -284,7 +284,7 @@ function ActivateAccountContent() {
               <button
                 type="button"
                 onClick={() => router.push("/student")}
-                className="min-h-[48px] w-full rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-3.5 text-sm font-bold text-slate-950 transition hover:brightness-110"
+                className="min-h-[48px] w-full rounded-xl bg-white hover:bg-zinc-200 py-3.5 text-sm font-bold text-zinc-950 transition "
               >
                 Entrar a mi App de Alumno
               </button>
@@ -297,7 +297,7 @@ function ActivateAccountContent() {
               <h2 className="text-xl font-bold text-white">
                 Confirma tu correo para entrar
               </h2>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-zinc-300">
                 Enviamos un enlace de confirmación a{" "}
                 <span className="font-semibold text-cyan-400">{invitedEmail}</span>.
                 Al confirmarlo quedarás vinculado automáticamente con{" "}
@@ -305,7 +305,7 @@ function ActivateAccountContent() {
               </p>
               <Link
                 href="/auth?role=student"
-                className="inline-flex min-h-[48px] w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-3 text-sm font-bold text-slate-950"
+                className="inline-flex min-h-[48px] w-full items-center justify-center rounded-xl bg-white hover:bg-zinc-200 py-3 text-sm font-bold text-zinc-950"
               >
                 Ir a Iniciar Sesión
               </Link>
@@ -317,7 +317,7 @@ function ActivateAccountContent() {
                   <UserCheck className="h-4 w-4" />
                   Cuenta existente detectada
                 </p>
-                <p className="mt-1.5 text-slate-300">
+                <p className="mt-1.5 text-zinc-300">
                   Ya iniciaste sesión como{" "}
                   <span className="font-bold text-white">
                     {studentProfile.full_name || invitedEmail}
@@ -337,7 +337,7 @@ function ActivateAccountContent() {
                 type="button"
                 disabled={loading}
                 onClick={handleOneClickAccept}
-                className="min-h-[48px] w-full rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:brightness-110 disabled:opacity-60"
+                className="min-h-[48px] w-full rounded-xl bg-white hover:bg-zinc-200 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-none transition  disabled:opacity-60"
               >
                 {loading
                   ? "Vinculando cuenta..."
@@ -346,7 +346,7 @@ function ActivateAccountContent() {
             </div>
           ) : inviteMeta?.has_existing_account && !isDemoMode ? (
             <div className="space-y-5 text-center">
-              <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-left text-xs text-slate-300">
+              <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-left text-xs text-zinc-300">
                 <p className="flex items-center gap-1.5 font-bold text-cyan-300">
                   <UserCheck className="h-4 w-4" />
                   ¡Ya tienes una cuenta en MiGymBrou!
@@ -361,7 +361,7 @@ function ActivateAccountContent() {
               </div>
               <Link
                 href={loginReturnUrl}
-                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/20"
+                className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-none"
               >
                 <LogIn className="h-4 w-4" />
                 Iniciar sesión y aceptar en 1 clic
@@ -386,7 +386,7 @@ function ActivateAccountContent() {
               )}
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
                   Tu nombre completo
                 </label>
                 <input
@@ -394,19 +394,19 @@ function ActivateAccountContent() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
+                  className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                  <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
                     Objetivo inicial
                   </label>
                   <select
                     value={fitnessGoal}
                     onChange={(e) => setFitnessGoal(e.target.value)}
-                    className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
+                    className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
                   >
                     <option value="Recomposición corporal">Recomposición</option>
                     <option value="Pérdida de grasa">Pérdida de grasa</option>
@@ -415,13 +415,13 @@ function ActivateAccountContent() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                  <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
                     Guía visual
                   </label>
                   <select
                     value={gender}
                     onChange={(e) => setGender(e.target.value as Gender)}
-                    className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
+                    className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
                   >
                     <option value="female">Femenino</option>
                     <option value="male">Masculino</option>
@@ -430,11 +430,11 @@ function ActivateAccountContent() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
                   Define tu contraseña *
                 </label>
                 <div className="relative">
-                  <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                  <KeyRound className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
@@ -442,13 +442,13 @@ function ActivateAccountContent() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Mínimo 8 caracteres"
-                    className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-slate-950 py-2.5 pl-10 pr-11 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
+                    className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#060607] py-2.5 pl-10 pr-11 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
                     aria-label={showPassword ? "Ocultar" : "Mostrar"}
-                    className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white"
+                    className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/[0.06] hover:text-white"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -460,7 +460,7 @@ function ActivateAccountContent() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+                <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
                   Confirmar contraseña *
                 </label>
                 <input
@@ -470,18 +470,18 @@ function ActivateAccountContent() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repite tu contraseña"
-                  className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
+                  className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-base text-white outline-none focus:border-emerald-500 sm:text-sm"
                 />
               </div>
 
-              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-800 bg-slate-950/70 p-3.5">
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/[0.08] bg-[#060607] p-3.5">
                 <input
                   type="checkbox"
                   checked={acceptedTerms}
                   onChange={(e) => setAcceptedTerms(e.target.checked)}
-                  className="mt-0.5 h-5 w-5 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-emerald-500"
+                  className="mt-0.5 h-5 w-5 rounded border-slate-600 bg-[#0e0f12] text-emerald-500 focus:ring-emerald-500"
                 />
-                <span className="text-xs leading-relaxed text-slate-300">
+                <span className="text-xs leading-relaxed text-zinc-300">
                   Acepto obligatoriamente los{" "}
                   <span className="font-semibold text-emerald-400">
                     Términos y Condiciones
@@ -494,7 +494,7 @@ function ActivateAccountContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="min-h-[48px] w-full rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:brightness-110 disabled:opacity-60"
+                className="min-h-[48px] w-full rounded-xl bg-white hover:bg-zinc-200 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-none transition  disabled:opacity-60"
               >
                 {loading ? "Activando cuenta..." : "Activar Cuenta y Entrar"}
               </button>
@@ -502,9 +502,9 @@ function ActivateAccountContent() {
           )}
         </div>
 
-        <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-500">
+        <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-500">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-          <Link href={loginReturnUrl} className="hover:text-slate-300">
+          <Link href={loginReturnUrl} className="hover:text-zinc-300">
             ¿Ya tienes cuenta en MiGymBrou? Inicia sesión para vincular en 1 clic
           </Link>
         </p>
@@ -517,7 +517,7 @@ export default function ActivatePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] text-sm text-slate-400">
+        <div className="flex min-h-screen items-center justify-center bg-[#060607] text-sm text-zinc-400">
           Verificando invitación...
         </div>
       }

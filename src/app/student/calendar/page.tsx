@@ -140,7 +140,7 @@ export default function StudentCalendarPage() {
             Agenda Sincronizada
           </span>
           <h1 className="text-2xl font-extrabold text-white">Mi Calendario</h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-zinc-400">
             Días de entreno, rutinas cumplidas, citas y fecha de corte de tu
             plan.
           </p>
@@ -155,14 +155,14 @@ export default function StudentCalendarPage() {
             Mis Citas
           </Link>
 
-          <div className="flex rounded-xl border border-slate-800 bg-slate-950 p-1 text-xs font-bold">
+          <div className="flex rounded-xl border border-white/[0.08] bg-[#060607] p-1 text-xs font-bold">
             <button
               type="button"
               onClick={() => setViewMode("month")}
               className={`rounded-lg px-3 py-1.5 transition ${
                 viewMode === "month"
-                  ? "bg-emerald-500 text-slate-950"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-emerald-500 text-zinc-950"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Mensual
@@ -172,8 +172,8 @@ export default function StudentCalendarPage() {
               onClick={() => setViewMode("week")}
               className={`rounded-lg px-3 py-1.5 transition ${
                 viewMode === "week"
-                  ? "bg-emerald-500 text-slate-950"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-emerald-500 text-zinc-950"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Semanal
@@ -183,7 +183,7 @@ export default function StudentCalendarPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-[11px] text-slate-300">
+      <div className="flex flex-wrap gap-3 text-[11px] text-zinc-300">
         <span className="flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
           Rutina completada
@@ -203,7 +203,7 @@ export default function StudentCalendarPage() {
       </div>
 
       {/* Calendar */}
-      <div className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-3 sm:p-4">
+      <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3 sm:p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-bold capitalize text-white">
             {currentMonth.toLocaleDateString("es-MX", {
@@ -216,14 +216,14 @@ export default function StudentCalendarPage() {
               type="button"
               onClick={handlePrevPeriod}
               aria-label={viewMode === "week" ? "Semana anterior" : "Mes anterior"}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 text-slate-300 transition hover:border-emerald-500 hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#060607] text-zinc-300 transition hover:border-emerald-500 hover:text-white"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={handleJumpToday}
-              className="h-8 rounded-lg border border-slate-800 bg-slate-950 px-2.5 text-[11px] font-bold text-emerald-300 transition hover:border-emerald-500 hover:bg-slate-900"
+              className="h-8 rounded-lg border border-white/[0.08] bg-[#060607] px-2.5 text-[11px] font-bold text-emerald-300 transition hover:border-emerald-500 hover:bg-[#0e0f12]"
             >
               Hoy
             </button>
@@ -231,14 +231,14 @@ export default function StudentCalendarPage() {
               type="button"
               onClick={handleNextPeriod}
               aria-label={viewMode === "week" ? "Semana siguiente" : "Mes siguiente"}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 text-slate-300 transition hover:border-emerald-500 hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#060607] text-zinc-300 transition hover:border-emerald-500 hover:text-white"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-400">
+        <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-zinc-400">
           {WEEKDAY_HEADERS.map((h) => (
             <div key={h} className="py-1">
               {h}
@@ -264,14 +264,14 @@ export default function StudentCalendarPage() {
                   isSelected
                     ? "border-emerald-400 bg-emerald-500/15"
                     : isToday
-                    ? "border-cyan-500/60 bg-slate-900"
-                    : "border-slate-800/80 bg-slate-950/70 hover:border-slate-700"
+                    ? "border-cyan-500/60 bg-[#0e0f12]"
+                    : "border-white/[0.08] bg-[#060607] hover:border-white/15"
                 } ${!isCurrentMonth && viewMode === "month" ? "opacity-35" : ""}`}
               >
                 <div className="flex w-full items-center justify-between">
                   <span
                     className={`text-xs font-bold ${
-                      isToday ? "text-cyan-400" : "text-slate-200"
+                      isToday ? "text-cyan-400" : "text-zinc-200"
                     }`}
                   >
                     {dayObj.getDate()}
@@ -299,7 +299,7 @@ export default function StudentCalendarPage() {
       </div>
 
       {/* Selected Day Interactive Panel */}
-      <section className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
+      <section className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
         <h3 className="text-base font-bold capitalize text-white">
           {new Date(`${selectedDate}T12:00:00`).toLocaleDateString("es-MX", {
             weekday: "long",
@@ -319,7 +319,7 @@ export default function StudentCalendarPage() {
             </div>
             <Link
               href="/student/subscription"
-              className="shrink-0 rounded-lg bg-amber-400 px-3 py-1.5 text-[11px] font-bold text-slate-950"
+              className="shrink-0 rounded-lg bg-amber-400 px-3 py-1.5 text-[11px] font-bold text-zinc-950"
             >
               Renovar
             </Link>
@@ -327,7 +327,7 @@ export default function StudentCalendarPage() {
         )}
 
         {selInfo.assignedDay ? (
-          <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#060607] p-4 sm:flex-row sm:items-center">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Dumbbell className="h-4 w-4 text-emerald-400" />
@@ -342,7 +342,7 @@ export default function StudentCalendarPage() {
                   {selInfo.completedLog.total_exercises} ejercicios)
                 </p>
               ) : (
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-zinc-400">
                   {selInfo.assignedDay.exercises.length} ejercicios ·{" "}
                   {selInfo.assignedDay.estimated_minutes || 55} min
                 </p>
@@ -350,14 +350,14 @@ export default function StudentCalendarPage() {
             </div>
             <Link
               href={`/student/workouts?day=${selInfo.dayIndex}`}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-xs font-bold text-slate-950"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2 text-xs font-bold text-zinc-950"
             >
               {selInfo.completedLog ? "Ver Rutina" : "Abrir y Entrenar"}
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         ) : (
-          <p className="rounded-xl border border-slate-800/70 bg-slate-950/50 p-3.5 text-xs text-slate-400">
+          <p className="rounded-xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs text-zinc-400">
             Día de descanso activo / recuperación. ¡Aprovecha para cumplir tus
             macros e hidratación!
           </p>
@@ -372,13 +372,13 @@ export default function StudentCalendarPage() {
               <CalendarDays className="h-4 w-4" />
               Cita con tu Coach: {apt.title}
             </p>
-            <p className="mt-1 flex items-center gap-1.5 text-slate-200">
+            <p className="mt-1 flex items-center gap-1.5 text-zinc-200">
               <Clock className="h-3.5 w-3.5 text-cyan-400" />
               {new Date(apt.scheduled_at).toLocaleTimeString("es-MX", {
                 timeStyle: "short",
               })}
             </p>
-            <p className="mt-1 flex items-center gap-1.5 text-slate-300">
+            <p className="mt-1 flex items-center gap-1.5 text-zinc-300">
               <MapPin className="h-3.5 w-3.5 text-emerald-400" />
               {apt.location_or_link}
             </p>

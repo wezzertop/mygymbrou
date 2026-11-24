@@ -45,7 +45,7 @@ function DeltaBadge({
   if (current === undefined || previous === undefined) return null;
   const diff = Number((current - previous).toFixed(1));
   if (diff === 0)
-    return <span className="text-[11px] text-slate-400">Sin cambio</span>;
+    return <span className="text-[11px] text-zinc-400">Sin cambio</span>;
 
   const isPositive = lowerIsBetter ? diff < 0 : diff > 0;
   return (
@@ -171,10 +171,10 @@ export default function Student360Page() {
   if (!student) {
     return (
       <div className="space-y-4 py-10 text-center">
-        <p className="text-slate-400">No encontramos este expediente.</p>
+        <p className="text-zinc-400">No encontramos este expediente.</p>
         <Link
           href="/coach/students"
-          className="inline-block rounded-xl bg-cyan-500 px-4 py-2 text-xs font-bold text-slate-950"
+          className="inline-block rounded-xl bg-cyan-500 px-4 py-2 text-xs font-bold text-zinc-950"
         >
           Volver a Alumnos
         </Link>
@@ -232,13 +232,13 @@ export default function Student360Page() {
       <div className="space-y-4">
         <Link
           href="/coach/students"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-white"
         >
           <ArrowLeft className="h-4 w-4" />
           Volver a Mis Alumnos
         </Link>
 
-        <div className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:flex-row sm:items-center sm:p-5">
+        <div className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center sm:p-5">
           <div className="flex min-w-0 items-center gap-3.5 sm:gap-4">
             {student.avatar_url ? (
               <img
@@ -247,7 +247,7 @@ export default function Student360Page() {
                 className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-cyan-500/50"
               />
             ) : (
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-slate-800 text-lg font-bold text-cyan-400">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-lg font-bold text-cyan-400">
                 {student.invited_name.slice(0, 2).toUpperCase()}
               </div>
             )}
@@ -263,7 +263,7 @@ export default function Student360Page() {
                   />
                 )}
               </div>
-              <p className="truncate text-xs text-slate-400">{student.invited_email}</p>
+              <p className="truncate text-xs text-zinc-400">{student.invited_email}</p>
               <span className="mt-1 inline-block rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-300">
                 {student.fitness_goal || "Plan Personalizado"}
               </span>
@@ -273,7 +273,7 @@ export default function Student360Page() {
           <div className="flex flex-wrap gap-2">
             <Link
               href={`/coach/agenda?student=${studentId}`}
-              className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950 px-4 py-2.5 text-xs font-bold text-slate-200 transition hover:border-cyan-500/50 hover:text-white active:scale-[0.98]"
+              className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-[#060607] px-4 py-2.5 text-xs font-bold text-zinc-200 transition hover:border-cyan-500/50 hover:text-white active:scale-[0.98]"
             >
               <Calendar className="h-4 w-4 text-cyan-400" />
               Agendar Cita
@@ -284,7 +284,7 @@ export default function Student360Page() {
                 setActiveTab("assessment");
                 setShowNewForm(true);
               }}
-              className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 active:scale-[0.98]"
+              className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98]"
             >
               <Plus className="h-4 w-4" />
               Nueva Medición
@@ -302,7 +302,7 @@ export default function Student360Page() {
                   <ShieldCheck className="h-4 w-4" />
                   Validación de Persona Real
                 </p>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-zinc-300">
                   {student.is_verified_identity
                     ? `Identidad confirmada${
                         student.verified_at
@@ -318,7 +318,7 @@ export default function Student360Page() {
                   <button
                     type="button"
                     onClick={() => setShowIdPreview((v) => !v)}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-sky-500/50 hover:text-white"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs font-semibold text-zinc-200 transition hover:border-sky-500/50 hover:text-white"
                   >
                     <Eye className="h-3.5 w-3.5 text-sky-400" />
                     {showIdPreview ? "Ocultar Documento" : "Ver Documento ID"}
@@ -338,7 +338,7 @@ export default function Student360Page() {
                           `¡${student.invited_name} fue verificado como Persona Real!`
                         );
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 px-3.5 py-2 text-xs font-bold text-slate-950 transition hover:bg-sky-400"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 px-3.5 py-2 text-xs font-bold text-zinc-950 transition hover:bg-sky-400"
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       Aprobar Persona Real
@@ -364,14 +364,14 @@ export default function Student360Page() {
             </div>
 
             {showIdPreview && student.identity_document_url && (
-              <div className="mt-3 overflow-hidden rounded-xl border border-slate-800 bg-slate-950 p-3">
-                <p className="mb-2 text-[11px] font-mono text-slate-400">
+              <div className="mt-3 overflow-hidden rounded-xl border border-white/[0.08] bg-[#060607] p-3">
+                <p className="mb-2 text-[11px] font-mono text-zinc-400">
                   Archivo: {student.identity_document_name || "documento-identidad"}
                 </p>
                 <img
                   src={student.identity_document_url}
                   alt={`Identificación de ${student.invited_name}`}
-                  className="max-h-64 w-auto rounded-lg border border-slate-800 object-contain"
+                  className="max-h-64 w-auto rounded-lg border border-white/[0.08] object-contain"
                 />
               </div>
             )}
@@ -386,7 +386,7 @@ export default function Student360Page() {
                 <Target className="h-4 w-4" />
                 Metas Activas del Alumno (Sincronizadas)
               </p>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-zinc-400">
                 {studentGoal.days_per_week} días/sem disponibles
                 {studentGoal.target_weight_kg
                   ? ` · Peso objetivo: ${studentGoal.target_weight_kg} kg`
@@ -401,7 +401,7 @@ export default function Student360Page() {
               {studentGoal.priority_zones.map((zone) => (
                 <span
                   key={zone}
-                  className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 text-[11px] font-semibold text-slate-200"
+                  className="rounded-lg border border-white/15 bg-[#060607] px-2.5 py-1 text-[11px] font-semibold text-zinc-200"
                 >
                   Zona: {zone}
                 </span>
@@ -429,7 +429,7 @@ export default function Student360Page() {
       )}
 
       {/* 360° Tabs */}
-      <div className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 rounded-2xl border border-white/[0.08] bg-[#060607] p-1.5 sm:grid-cols-4">
         {(
           [
             { key: "assessment", label: "Evaluación y Medidas", icon: Activity },
@@ -447,8 +447,8 @@ export default function Student360Page() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition ${
                 active
-                  ? "bg-cyan-500 text-slate-950 shadow"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  ? "bg-cyan-500 text-zinc-950 shadow"
+                  : "text-zinc-400 hover:bg-[#0e0f12] hover:text-white"
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -464,7 +464,7 @@ export default function Student360Page() {
           {showNewForm && (
             <form
               onSubmit={handleSaveAssessment}
-              className="space-y-4 rounded-2xl border border-cyan-500/40 bg-slate-900/90 p-5"
+              className="space-y-4 rounded-2xl border border-cyan-500/40 bg-[#0e0f12] p-5"
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-white">
@@ -473,7 +473,7 @@ export default function Student360Page() {
                 <button
                   type="button"
                   onClick={() => setShowNewForm(false)}
-                  className="text-xs text-slate-400 hover:text-white"
+                  className="text-xs text-zinc-400 hover:text-white"
                 >
                   Cancelar
                 </button>
@@ -481,7 +481,7 @@ export default function Student360Page() {
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-400">
+                  <label className="mb-1 block text-[11px] text-zinc-400">
                     Fecha
                   </label>
                   <input
@@ -491,11 +491,11 @@ export default function Student360Page() {
                     onChange={(e) =>
                       setForm({ ...form, assessment_date: e.target.value })
                     }
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-400">
+                  <label className="mb-1 block text-[11px] text-zinc-400">
                     Peso (kg) *
                   </label>
                   <input
@@ -506,11 +506,11 @@ export default function Student360Page() {
                     onChange={(e) =>
                       setForm({ ...form, weight_kg: e.target.value })
                     }
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-400">
+                  <label className="mb-1 block text-[11px] text-zinc-400">
                     % Grasa
                   </label>
                   <input
@@ -520,11 +520,11 @@ export default function Student360Page() {
                     onChange={(e) =>
                       setForm({ ...form, body_fat_percentage: e.target.value })
                     }
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-400">
+                  <label className="mb-1 block text-[11px] text-zinc-400">
                     Masa Muscular (kg)
                   </label>
                   <input
@@ -534,7 +534,7 @@ export default function Student360Page() {
                     onChange={(e) =>
                       setForm({ ...form, muscle_mass_kg: e.target.value })
                     }
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                   />
                 </div>
               </div>
@@ -556,7 +556,7 @@ export default function Student360Page() {
                   ] as const
                 ).map(([key, label]) => (
                   <div key={key}>
-                    <label className="mb-1 block text-[11px] text-slate-400">
+                    <label className="mb-1 block text-[11px] text-zinc-400">
                       {label}
                     </label>
                     <input
@@ -566,14 +566,14 @@ export default function Student360Page() {
                       onChange={(e) =>
                         setForm({ ...form, [key]: e.target.value })
                       }
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                     />
                   </div>
                 ))}
               </div>
 
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
+                <label className="mb-1 block text-xs font-semibold text-zinc-300">
                   Análisis y Diagnóstico Profesional del Coach *
                 </label>
                 <textarea
@@ -584,13 +584,13 @@ export default function Student360Page() {
                     setForm({ ...form, coach_analysis_notes: e.target.value })
                   }
                   placeholder="Ej. Excelente reducción abdominal manteniendo masa magra. Ajustaremos cargas en tren superior..."
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3 text-sm text-white outline-none focus:border-cyan-500"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] p-3 text-sm text-white outline-none focus:border-cyan-500"
                 />
               </div>
 
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-5 py-2.5 text-xs font-bold text-slate-950"
+                className="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-5 py-2.5 text-xs font-bold text-zinc-950"
               >
                 <Save className="h-4 w-4" />
                 Guardar Evaluación y Notificar Alumno
@@ -612,7 +612,7 @@ export default function Student360Page() {
                     </span>
                   )}
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-slate-200">
+                <p className="mt-3 text-sm leading-relaxed text-zinc-200">
                   {latest.coach_analysis_notes}
                 </p>
               </div>
@@ -674,12 +674,12 @@ export default function Student360Page() {
                 ].map((m) => (
                   <div
                     key={m.label}
-                    className="rounded-2xl border border-slate-800 bg-slate-900/70 p-3.5"
+                    className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3.5"
                   >
-                    <p className="text-[11px] text-slate-400">{m.label}</p>
+                    <p className="text-[11px] text-zinc-400">{m.label}</p>
                     <p className="mt-1 text-xl font-extrabold text-white">
                       {m.val ?? "—"}{" "}
-                      <span className="text-xs font-normal text-slate-400">
+                      <span className="text-xs font-normal text-zinc-400">
                         {m.val !== undefined ? m.unit : ""}
                       </span>
                     </p>
@@ -705,7 +705,7 @@ export default function Student360Page() {
       {activeTab === "workout" && (
         <div className="space-y-5">
           {activeWorkout ? (
-            <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+            <div className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-bold uppercase text-emerald-400">
@@ -714,7 +714,7 @@ export default function Student360Page() {
                   <h2 className="text-lg font-bold text-white">
                     {activeWorkout.title}
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-zinc-400">
                     {activeWorkout.description}
                   </p>
                 </div>
@@ -724,12 +724,12 @@ export default function Student360Page() {
                 {activeWorkout.days.map((day) => (
                   <div
                     key={day.id}
-                    className="rounded-xl border border-slate-800 bg-slate-950/80 p-4"
+                    className="rounded-xl border border-white/[0.08] bg-[#060607] p-4"
                   >
                     <h3 className="text-sm font-bold text-cyan-300">
                       {day.title}
                     </h3>
-                    <div className="mt-2.5 divide-y divide-slate-800/70">
+                    <div className="mt-2.5 divide-y divide-white/[0.06]/70">
                       {day.exercises.map((ex) => (
                         <div
                           key={ex.id}
@@ -737,11 +737,11 @@ export default function Student360Page() {
                         >
                           <div>
                             <p className="font-semibold text-white">{ex.name}</p>
-                            <p className="text-[11px] text-slate-400">
+                            <p className="text-[11px] text-zinc-400">
                               {ex.muscle_group} · {ex.target_weight_or_rpe}
                             </p>
                           </div>
-                          <span className="rounded-lg bg-slate-800 px-2.5 py-1 font-mono text-[11px] text-emerald-300">
+                          <span className="rounded-lg bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] text-emerald-300">
                             {ex.sets}x{ex.reps} · {ex.rest_seconds}s
                           </span>
                         </div>
@@ -752,13 +752,13 @@ export default function Student360Page() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center text-sm text-slate-400">
+            <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
               Este alumno aún no tiene una rutina asignada.
             </div>
           )}
 
           {/* Assign template */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
             <h3 className="text-sm font-bold text-white">
               Asignar desde Plantilla Reutilizable
             </h3>
@@ -766,11 +766,11 @@ export default function Student360Page() {
               {workoutTemplates.map((tpl) => (
                 <div
                   key={tpl.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3.5"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#060607] p-3.5"
                 >
                   <div>
                     <p className="text-xs font-bold text-white">{tpl.title}</p>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-zinc-400">
                       {tpl.days.length} día(s) · {tpl.goal}
                     </p>
                   </div>
@@ -780,7 +780,7 @@ export default function Student360Page() {
                       assignWorkoutToStudent(tpl.id, studentId);
                       showToast("Rutina asignada y alumno notificado.");
                     }}
-                    className="rounded-lg bg-cyan-500 px-3 py-1.5 text-xs font-bold text-slate-950 hover:bg-cyan-400"
+                    className="rounded-lg bg-cyan-500 px-3 py-1.5 text-xs font-bold text-zinc-950 hover:bg-cyan-400"
                   >
                     Asignar
                   </button>
@@ -795,7 +795,7 @@ export default function Student360Page() {
       {activeTab === "diet" && (
         <div className="space-y-5">
           {activeDiet ? (
-            <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+            <div className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
               <div>
                 <span className="text-[11px] font-bold uppercase text-emerald-400">
                   Plan Nutricional Activo
@@ -806,32 +806,32 @@ export default function Student360Page() {
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-                <div className="rounded-xl bg-slate-950 p-3 text-center">
-                  <p className="text-[10px] text-slate-400">Calorías</p>
+                <div className="rounded-xl bg-[#060607] p-3 text-center">
+                  <p className="text-[10px] text-zinc-400">Calorías</p>
                   <p className="text-base font-black text-white">
                     {activeDiet.daily_calories}
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-950 p-3 text-center">
-                  <p className="text-[10px] text-slate-400">Proteína</p>
+                <div className="rounded-xl bg-[#060607] p-3 text-center">
+                  <p className="text-[10px] text-zinc-400">Proteína</p>
                   <p className="text-base font-black text-cyan-400">
                     {activeDiet.protein_g}g
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-950 p-3 text-center">
-                  <p className="text-[10px] text-slate-400">Carbs</p>
+                <div className="rounded-xl bg-[#060607] p-3 text-center">
+                  <p className="text-[10px] text-zinc-400">Carbs</p>
                   <p className="text-base font-black text-emerald-400">
                     {activeDiet.carbs_g}g
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-950 p-3 text-center">
-                  <p className="text-[10px] text-slate-400">Grasas</p>
+                <div className="rounded-xl bg-[#060607] p-3 text-center">
+                  <p className="text-[10px] text-zinc-400">Grasas</p>
                   <p className="text-base font-black text-amber-400">
                     {activeDiet.fats_g}g
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-950 p-3 text-center">
-                  <p className="text-[10px] text-slate-400">Agua</p>
+                <div className="rounded-xl bg-[#060607] p-3 text-center">
+                  <p className="text-[10px] text-zinc-400">Agua</p>
                   <p className="text-base font-black text-sky-400">
                     {activeDiet.water_liters}L
                   </p>
@@ -842,17 +842,17 @@ export default function Student360Page() {
                 {activeDiet.meals.map((meal) => (
                   <div
                     key={meal.id}
-                    className="rounded-xl border border-slate-800 bg-slate-950/80 p-3.5"
+                    className="rounded-xl border border-white/[0.08] bg-[#060607] p-3.5"
                   >
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-bold text-emerald-300">
                         {meal.meal_time}
                       </p>
-                      <span className="text-[11px] text-slate-400">
+                      <span className="text-[11px] text-zinc-400">
                         {meal.suggested_hour} · {meal.calories} kcal
                       </span>
                     </div>
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-200">
+                    <p className="mt-1.5 text-xs leading-relaxed text-zinc-200">
                       {meal.foods_description}
                     </p>
                   </div>
@@ -860,12 +860,12 @@ export default function Student360Page() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center text-sm text-slate-400">
+            <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
               Este alumno aún no tiene una dieta asignada.
             </div>
           )}
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
             <h3 className="text-sm font-bold text-white">
               Asignar Plantilla de Dieta
             </h3>
@@ -873,11 +873,11 @@ export default function Student360Page() {
               {dietTemplates.map((tpl) => (
                 <div
                   key={tpl.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3.5"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#060607] p-3.5"
                 >
                   <div>
                     <p className="text-xs font-bold text-white">{tpl.title}</p>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-zinc-400">
                       {tpl.daily_calories} kcal · {tpl.protein_g}g P
                     </p>
                   </div>
@@ -887,7 +887,7 @@ export default function Student360Page() {
                       assignNutritionToStudent(tpl.id, studentId);
                       showToast("Plan nutricional asignado al alumno.");
                     }}
-                    className="rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-bold text-slate-950"
+                    className="rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-bold text-zinc-950"
                   >
                     Asignar
                   </button>
@@ -902,7 +902,7 @@ export default function Student360Page() {
       {activeTab === "subscription" && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Quick Assign Coach Plan */}
-          <div className="min-w-0 space-y-4 rounded-2xl border border-cyan-500/30 bg-slate-900/80 p-4 sm:p-6 lg:col-span-6">
+          <div className="min-w-0 space-y-4 rounded-2xl border border-cyan-500/30 bg-[#0e0f12] p-4 sm:p-6 lg:col-span-6">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-white">
                 Asignar o Renovar Plan del Coach
@@ -914,8 +914,8 @@ export default function Student360Page() {
               </span>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3.5 text-xs">
-              <p className="text-slate-400">Plan actual:</p>
+            <div className="rounded-xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs">
+              <p className="text-zinc-400">Plan actual:</p>
               <p className="mt-0.5 text-sm font-bold text-white">
                 {student.subscription_plan_name} — ${student.subscription_price}
               </p>
@@ -926,13 +926,13 @@ export default function Student360Page() {
             </div>
 
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Elegir paquete configurado
               </label>
               <select
                 value={selectedPlanId}
                 onChange={(e) => setSelectedPlanId(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
               >
                 {subscriptionPlans.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -943,14 +943,14 @@ export default function Student360Page() {
             </div>
 
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Fecha de inicio (calcula vencimiento automático)
               </label>
               <input
                 type="date"
                 value={planStartDate}
                 onChange={(e) => setPlanStartDate(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
               />
             </div>
 
@@ -967,7 +967,7 @@ export default function Student360Page() {
                   "Plan asignado. Fecha de vencimiento y permisos actualizados en la app del alumno."
                 );
               }}
-              className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3 text-xs font-bold text-slate-950"
+              className="w-full rounded-xl bg-white hover:bg-zinc-200 py-3 text-xs font-bold text-zinc-950"
             >
               Aplicar Plan y Calcular Vencimiento
             </button>
@@ -976,25 +976,25 @@ export default function Student360Page() {
           {/* Manual override */}
           <form
             onSubmit={handleSaveSubscription}
-            className="min-w-0 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-6 lg:col-span-6"
+            className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-6 lg:col-span-6"
           >
             <h2 className="text-base font-bold text-white">
               Ajuste Manual de Suscripción
             </h2>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Nombre del Plan
               </label>
               <input
                 type="text"
                 value={subPlan}
                 onChange={(e) => setSubPlan(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
+                <label className="mb-1 block text-xs font-semibold text-zinc-300">
                   Estado de Pago
                 </label>
                 <select
@@ -1002,7 +1002,7 @@ export default function Student360Page() {
                   onChange={(e) =>
                     setSubStatus(e.target.value as SubscriptionStatus)
                   }
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
                 >
                   <option value="active">Activa</option>
                   <option value="trial">Prueba</option>
@@ -1011,31 +1011,31 @@ export default function Student360Page() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
+                <label className="mb-1 block text-xs font-semibold text-zinc-300">
                   Costo ($)
                 </label>
                 <input
                   type="number"
                   value={subPrice}
                   onChange={(e) => setSubPrice(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
                 />
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Fecha de vencimiento / corte
               </label>
               <input
                 type="date"
                 value={subDate}
                 onChange={(e) => setSubDate(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
               />
             </div>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-5 py-3 text-xs font-bold text-white hover:bg-slate-700"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.06] px-5 py-3 text-xs font-bold text-white hover:bg-white/[0.12]"
             >
               <Save className="h-4 w-4" />
               Guardar Ajuste Manual

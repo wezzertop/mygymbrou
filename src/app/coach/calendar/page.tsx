@@ -161,7 +161,7 @@ export default function CoachCalendarPage() {
           <h1 className="text-2xl font-extrabold text-white">
             Calendario Operativo del Coach
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-zinc-400">
             Supervisa cumplimiento de rutinas, citas y alertas de vencimiento de
             suscripciones.
           </p>
@@ -179,7 +179,7 @@ export default function CoachCalendarPage() {
             aria-label="Filtrar por alumno"
             value={selectedStudentId}
             onChange={(e) => setSelectedStudentId(e.target.value)}
-            className="min-h-[38px] rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-semibold text-white outline-none focus:border-cyan-500"
+            className="min-h-[38px] rounded-xl border border-white/[0.08] bg-[#0e0f12] px-3 py-2 text-xs font-semibold text-white outline-none focus:border-cyan-500"
           >
             <option value="all">Todos los alumnos</option>
             {activeStudents.map((s) => (
@@ -189,14 +189,14 @@ export default function CoachCalendarPage() {
             ))}
           </select>
 
-          <div className="flex rounded-xl border border-slate-800 bg-slate-950 p-1 text-xs font-bold">
+          <div className="flex rounded-xl border border-white/[0.08] bg-[#060607] p-1 text-xs font-bold">
             <button
               type="button"
               onClick={() => setViewMode("month")}
               className={`rounded-lg px-3 py-1 ${
                 viewMode === "month"
-                  ? "bg-cyan-500 text-slate-950"
-                  : "text-slate-400"
+                  ? "bg-cyan-500 text-zinc-950"
+                  : "text-zinc-400"
               }`}
             >
               Mensual
@@ -206,8 +206,8 @@ export default function CoachCalendarPage() {
               onClick={() => setViewMode("week")}
               className={`rounded-lg px-3 py-1 ${
                 viewMode === "week"
-                  ? "bg-cyan-500 text-slate-950"
-                  : "text-slate-400"
+                  ? "bg-cyan-500 text-zinc-950"
+                  : "text-zinc-400"
               }`}
             >
               Semanal
@@ -217,7 +217,7 @@ export default function CoachCalendarPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-[11px] text-slate-300">
+      <div className="flex flex-wrap gap-3 text-[11px] text-zinc-300">
         <span className="flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
           Cumplió rutina
@@ -238,7 +238,7 @@ export default function CoachCalendarPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Calendar Grid */}
-        <div className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/70 p-3 sm:p-4 lg:col-span-8">
+        <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3 sm:p-4 lg:col-span-8">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-bold capitalize text-white">
               {currentMonth.toLocaleDateString("es-MX", {
@@ -251,14 +251,14 @@ export default function CoachCalendarPage() {
                 type="button"
                 onClick={handlePrevPeriod}
                 aria-label={viewMode === "week" ? "Semana anterior" : "Mes anterior"}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 text-slate-300 transition hover:border-cyan-500 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#060607] text-zinc-300 transition hover:border-cyan-500 hover:text-white"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 type="button"
                 onClick={handleJumpToday}
-                className="h-8 rounded-lg border border-slate-800 bg-slate-950 px-2.5 text-[11px] font-bold text-cyan-300 transition hover:border-cyan-500 hover:bg-slate-900"
+                className="h-8 rounded-lg border border-white/[0.08] bg-[#060607] px-2.5 text-[11px] font-bold text-cyan-300 transition hover:border-cyan-500 hover:bg-[#0e0f12]"
               >
                 Hoy
               </button>
@@ -266,14 +266,14 @@ export default function CoachCalendarPage() {
                 type="button"
                 onClick={handleNextPeriod}
                 aria-label={viewMode === "week" ? "Semana siguiente" : "Mes siguiente"}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 text-slate-300 transition hover:border-cyan-500 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#060607] text-zinc-300 transition hover:border-cyan-500 hover:text-white"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-400">
+          <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-zinc-400">
             {WEEKDAY_HEADERS.map((h) => (
               <div key={h} className="py-1">
                 {h}
@@ -307,13 +307,13 @@ export default function CoachCalendarPage() {
                     isSelected
                       ? "border-cyan-400 bg-cyan-500/15"
                       : isToday
-                      ? "border-emerald-500/50 bg-slate-900"
-                      : "border-slate-800/80 bg-slate-950/70 hover:border-slate-700"
+                      ? "border-emerald-500/50 bg-[#0e0f12]"
+                      : "border-white/[0.08] bg-[#060607] hover:border-white/15"
                   } ${!isCurrentMonth && viewMode === "month" ? "opacity-35" : ""}`}
                 >
                   <span
                     className={`text-xs font-bold ${
-                      isToday ? "text-emerald-400" : "text-slate-200"
+                      isToday ? "text-emerald-400" : "text-zinc-200"
                     }`}
                   >
                     {dayObj.getDate()}
@@ -340,8 +340,8 @@ export default function CoachCalendarPage() {
         </div>
 
         {/* Selected Day Operational Details */}
-        <aside className="min-w-0 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-5 lg:col-span-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <aside className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-4">
+          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
             <div>
               <p className="text-[11px] font-semibold uppercase text-cyan-400">
                 Detalle del Día
@@ -355,7 +355,7 @@ export default function CoachCalendarPage() {
             </div>
             <Link
               href="/coach/agenda"
-              className="rounded-lg bg-slate-800 px-2.5 py-1.5 text-[11px] font-bold text-cyan-300 hover:bg-slate-700"
+              className="rounded-lg bg-white/[0.06] px-2.5 py-1.5 text-[11px] font-bold text-cyan-300 hover:bg-white/[0.12]"
             >
               + Cita
             </Link>
@@ -397,7 +397,7 @@ export default function CoachCalendarPage() {
                 >
                   <p className="font-bold text-white">{apt.student_name}</p>
                   <p className="text-cyan-200">{apt.title}</p>
-                  <p className="mt-1 flex items-center gap-1 text-[11px] text-slate-300">
+                  <p className="mt-1 flex items-center gap-1 text-[11px] text-zinc-300">
                     <Clock className="h-3 w-3" />
                     {new Date(apt.scheduled_at).toLocaleTimeString("es-MX", {
                       timeStyle: "short",
@@ -410,7 +410,7 @@ export default function CoachCalendarPage() {
 
           {/* Routine Adherence */}
           <div className="space-y-2">
-            <p className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
+            <p className="flex items-center gap-1.5 text-xs font-bold text-zinc-200">
               <Dumbbell className="h-3.5 w-3.5 text-emerald-400" />
               Cumplimiento de Rutinas ({selectedDetails.assigned.length})
             </p>
@@ -420,11 +420,11 @@ export default function CoachCalendarPage() {
                 <Link
                   key={`${item.studentId}-${item.dayTitle}`}
                   href={`/coach/students/${item.studentId}`}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-xs transition hover:border-cyan-500/40"
+                  className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3 text-xs transition hover:border-cyan-500/40"
                 >
                   <div className="min-w-0">
                     <p className="font-bold text-white">{item.name}</p>
-                    <p className="truncate text-[11px] text-slate-400">
+                    <p className="truncate text-[11px] text-zinc-400">
                       {item.dayTitle}
                     </p>
                   </div>
@@ -439,7 +439,7 @@ export default function CoachCalendarPage() {
                       Faltó
                     </span>
                   ) : (
-                    <span className="shrink-0 rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
+                    <span className="shrink-0 rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-semibold text-zinc-300">
                       Programada
                     </span>
                   )}
@@ -447,7 +447,7 @@ export default function CoachCalendarPage() {
               );
             })}
             {selectedDetails.assigned.length === 0 && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-zinc-500">
                 Sin rutinas programadas para este día.
               </p>
             )}

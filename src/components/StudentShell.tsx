@@ -9,7 +9,6 @@ import {
   CalendarDays,
   CreditCard,
   Dumbbell,
-  Flame,
   HelpCircle,
   Home,
   LayoutDashboard,
@@ -52,27 +51,28 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
     exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <div className="min-h-screen w-full overflow-x-clip bg-[#0a0a0a] text-slate-100 lg:flex">
+    <div className="min-h-screen w-full overflow-x-clip bg-[#060607] text-zinc-100 lg:flex">
       <OnboardingTour role="student" />
+
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-slate-800/80 lg:bg-[#121212]">
-        <div className="flex h-16 items-center gap-3 border-b border-slate-800/80 px-5">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20">
-              <Flame className="h-5 w-5" />
-            </div>
-            <div>
-              <span className="block text-base font-bold tracking-tight text-white">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-white/[0.06] lg:bg-[#09090b]">
+        <div className="flex h-16 items-center border-b border-white/[0.06] px-5">
+          <Link href="/" className="flex items-center gap-2.5 transition hover:opacity-90">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-zinc-950">
+              <Dumbbell className="h-4 w-4 stroke-[2.25]" />
+            </span>
+            <div className="leading-tight">
+              <span className="block text-[15px] font-semibold tracking-tight text-white">
                 MiGym<span className="text-emerald-400">Brou</span>
               </span>
-              <span className="block text-[10px] font-semibold uppercase tracking-widest text-cyan-400">
+              <span className="block text-[10px] font-medium uppercase tracking-[0.14em] text-zinc-500">
                 App Alumno
               </span>
             </div>
           </Link>
         </div>
 
-        <nav aria-label="Menú principal Alumno" className="flex-1 space-y-1.5 px-3 py-5">
+        <nav aria-label="Menú principal Alumno" className="flex-1 space-y-1 px-3 py-5">
           {STUDENT_NAV.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href, item.exact);
@@ -81,94 +81,116 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
                   active
-                    ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
-                    : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
+                    ? "bg-white/[0.08] text-white"
+                    : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
                 }`}
               >
-                <Icon className="h-5 w-5" />
+                <Icon
+                  className={`h-[18px] w-[18px] ${
+                    active ? "text-emerald-400" : "text-zinc-500"
+                  }`}
+                />
                 <span>{item.label}</span>
               </Link>
             );
           })}
 
-          <div className="space-y-1.5 pt-4">
-            <p className="px-3.5 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-              Agenda, Plan y Coaches
+          <div className="space-y-1 pt-5">
+            <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
+              Agenda y Cuenta
             </p>
             <Link
               href="/student/calendar"
               aria-current={isActive("/student/calendar") ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
                 isActive("/student/calendar")
-                  ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
+                  ? "bg-white/[0.08] text-white"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
               }`}
             >
-              <CalendarDays className="h-5 w-5" />
+              <CalendarDays
+                className={`h-[18px] w-[18px] ${
+                  isActive("/student/calendar") ? "text-emerald-400" : "text-zinc-500"
+                }`}
+              />
               <span>Calendario</span>
-            </Link>
-            <Link
-              href="/student/subscription"
-              aria-current={isActive("/student/subscription") ? "page" : undefined}
-              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
-                isActive("/student/subscription")
-                  ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
-              }`}
-            >
-              <CreditCard className="h-5 w-5" />
-              <span>Mi Plan</span>
-            </Link>
-            <Link
-              href="/student/coaches"
-              aria-current={isActive("/student/coaches") ? "page" : undefined}
-              className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
-                isActive("/student/coaches")
-                  ? "bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-500/30"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
-              }`}
-            >
-              <span className="flex items-center gap-3">
-                <Search className="h-5 w-5" />
-                Buscar Coach
-              </span>
             </Link>
             <Link
               href="/student/appointments"
               aria-current={isActive("/student/appointments") ? "page" : undefined}
-              className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+              className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
                 isActive("/student/appointments")
-                  ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
+                  ? "bg-white/[0.08] text-white"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
               }`}
             >
               <span className="flex items-center gap-3">
-                <CalendarCheck className="h-5 w-5" />
+                <CalendarCheck
+                  className={`h-[18px] w-[18px] ${
+                    isActive("/student/appointments") ? "text-emerald-400" : "text-zinc-500"
+                  }`}
+                />
                 Mis Citas
               </span>
               {upcomingCount > 0 && (
-                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500/20 px-1.5 text-[10px] font-bold text-emerald-300">
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-white/10 px-1.5 text-[10px] font-semibold tabular-nums text-zinc-200">
                   {upcomingCount}
                 </span>
               )}
             </Link>
             <Link
+              href="/student/subscription"
+              aria-current={isActive("/student/subscription") ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
+                isActive("/student/subscription")
+                  ? "bg-white/[0.08] text-white"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
+              }`}
+            >
+              <CreditCard
+                className={`h-[18px] w-[18px] ${
+                  isActive("/student/subscription") ? "text-emerald-400" : "text-zinc-500"
+                }`}
+              />
+              <span>Mi Plan</span>
+            </Link>
+            <Link
+              href="/student/coaches"
+              aria-current={isActive("/student/coaches") ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
+                isActive("/student/coaches")
+                  ? "bg-white/[0.08] text-white"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
+              }`}
+            >
+              <Search
+                className={`h-[18px] w-[18px] ${
+                  isActive("/student/coaches") ? "text-emerald-400" : "text-zinc-500"
+                }`}
+              />
+              <span>Buscar Coach</span>
+            </Link>
+            <Link
               href="/student/notifications"
               aria-current={isActive("/student/notifications") ? "page" : undefined}
-              className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+              className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
                 isActive("/student/notifications")
-                  ? "bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-500/30"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
+                  ? "bg-white/[0.08] text-white"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
               }`}
             >
               <span className="flex items-center gap-3">
-                <Bell className="h-5 w-5" />
+                <Bell
+                  className={`h-[18px] w-[18px] ${
+                    isActive("/student/notifications") ? "text-emerald-400" : "text-zinc-500"
+                  }`}
+                />
                 Notificaciones
               </span>
               {unreadCount > 0 && (
-                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan-500 px-1.5 text-[11px] font-bold text-slate-950">
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-zinc-950">
                   {unreadCount}
                 </span>
               )}
@@ -176,19 +198,19 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
           </div>
         </nav>
 
-        <div className="space-y-3 border-t border-slate-800/80 p-4">
+        <div className="space-y-3 border-t border-white/[0.06] p-4">
           {isDemoMode && (
             <Link
               href="/coach"
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-500/20"
+              className="flex h-9 w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 text-xs font-medium text-zinc-300 transition hover:border-white/25 hover:text-white"
             >
-              <LayoutDashboard className="h-4 w-4" />
-              Ir al Panel Coach (Demo)
+              <LayoutDashboard className="h-3.5 w-3.5 text-emerald-400" />
+              Ir al Panel Coach
             </Link>
           )}
           <Link
             href="/student/profile"
-            className="flex items-center gap-3 rounded-xl bg-slate-900/80 p-2.5 transition hover:bg-slate-900"
+            className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 transition hover:border-white/15 hover:bg-white/[0.05]"
           >
             <img
               src={
@@ -196,7 +218,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
                 "https://images.unsplash.com/photo-1548690312-e3b507d8c110?auto=format&fit=crop&w=128&q=80"
               }
               alt={studentProfile.full_name}
-              className="h-9 w-9 rounded-full object-cover ring-2 ring-emerald-500/40"
+              className="h-9 w-9 rounded-full object-cover ring-1 ring-white/15"
             />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1">
@@ -208,8 +230,8 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
                   compact
                 />
               </div>
-              <p className="truncate text-[11px] text-slate-400">
-                Verificación y Metas
+              <p className="truncate text-[11px] text-zinc-500">
+                Metas y Perfil
               </p>
             </div>
           </Link>
@@ -218,21 +240,18 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <div className="flex min-h-screen w-full min-w-0 flex-1 flex-col lg:pl-64">
-        <header className="sticky top-0 z-30 flex min-h-[56px] w-full items-center justify-between border-b border-slate-800/80 bg-[#0a0a0a]/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-          <Link
-            href="/student"
-            className="flex items-center gap-2 lg:hidden"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
-              <Flame className="h-4 w-4" />
-            </div>
-            <span className="text-sm font-bold text-white">
+        <header className="sticky top-0 z-30 flex min-h-[56px] w-full items-center justify-between border-b border-white/[0.06] bg-[#060607]/85 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+          <Link href="/student" className="flex items-center gap-2 lg:hidden">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-zinc-950">
+              <Dumbbell className="h-4 w-4 stroke-[2.25]" />
+            </span>
+            <span className="text-[15px] font-semibold tracking-tight text-white">
               MiGym<span className="text-emerald-400">Brou</span>
             </span>
           </Link>
 
           <div className="hidden lg:block">
-            <p className="flex items-center gap-1.5 text-xs text-slate-400">
+            <p className="flex items-center gap-1.5 text-xs text-zinc-500">
               <span>Hola,</span>
               <span className="font-semibold text-white">
                 {studentProfile.full_name}
@@ -241,10 +260,14 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
                 verified={studentProfile.is_verified_identity}
                 compact
               />
-              <span>—</span>
-              <span className="text-emerald-400">
-                {studentProfile.fitness_goal}
-              </span>
+              {studentProfile.fitness_goal && (
+                <>
+                  <span>·</span>
+                  <span className="text-emerald-400">
+                    {studentProfile.fitness_goal}
+                  </span>
+                </>
+              )}
             </p>
           </div>
 
@@ -252,7 +275,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
             {isDemoMode && (
               <Link
                 href="/coach"
-                className="inline-flex min-h-[36px] items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-[11px] font-semibold text-cyan-300 lg:hidden"
+                className="inline-flex h-8 items-center whitespace-nowrap rounded-full border border-white/10 bg-white/[0.04] px-2.5 text-[11px] font-medium text-zinc-300 lg:hidden"
               >
                 Coach
               </Link>
@@ -262,7 +285,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
               type="button"
               onClick={() => resetOnboarding("student")}
               aria-label="Abrir tutorial guiado"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-[#121212] text-slate-400 transition hover:border-emerald-500/40 hover:text-emerald-300"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:text-white"
             >
               <HelpCircle className="h-4 w-4" />
             </button>
@@ -270,11 +293,11 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
             <Link
               href="/student/notifications"
               aria-label="Notificaciones"
-              className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-[#121212] text-slate-300 transition hover:border-cyan-500/40 hover:text-white"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-300 transition hover:border-white/25 hover:text-white"
             >
               <Bell className="h-4 w-4" />
               {unreadCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-slate-950">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-bold text-zinc-950">
                   {unreadCount}
                 </span>
               )}
@@ -283,7 +306,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
             <Link
               href="/student/profile"
               aria-label="Mi Perfil y Metas"
-              className="rounded-full ring-2 ring-emerald-500/40 transition hover:ring-cyan-400"
+              className="rounded-full ring-1 ring-white/20 transition hover:ring-white/40"
             >
               <img
                 src={
@@ -297,14 +320,14 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="mx-auto w-full min-w-0 max-w-4xl flex-1 px-4 py-5 pb-safe-nav lg:px-8 lg:py-8 lg:pb-10">
+        <main className="mx-auto w-full min-w-0 max-w-4xl flex-1 px-4 py-6 pb-safe-nav lg:px-8 lg:py-8 lg:pb-12">
           {children}
         </main>
 
         {/* Mobile Fixed Bottom Navigation Bar */}
         <nav
           aria-label="Navegación Alumno"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800/90 bg-[#121212]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.08] bg-[#09090b]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
         >
           <div className="mx-auto grid max-w-lg grid-cols-5 px-1 py-1.5">
             {STUDENT_NAV.map((item) => {
@@ -315,16 +338,16 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-[48px] flex-col items-center justify-center gap-0.5 rounded-xl py-1 text-[10px] font-semibold transition ${
-                    active ? "text-emerald-400" : "text-slate-400 hover:text-slate-200"
+                  className={`flex min-h-[48px] flex-col items-center justify-center gap-0.5 rounded-xl py-1 text-[10px] font-medium transition ${
+                    active ? "text-white" : "text-zinc-500 hover:text-zinc-200"
                   }`}
                 >
-                  <div
-                    className={`rounded-lg p-1 transition ${
-                      active ? "bg-emerald-500/15" : ""
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
+                  <div className="p-1">
+                    <Icon
+                      className={`h-5 w-5 ${
+                        active ? "text-emerald-400" : "text-zinc-500"
+                      }`}
+                    />
                   </div>
                   <span className="truncate">{item.label}</span>
                 </Link>

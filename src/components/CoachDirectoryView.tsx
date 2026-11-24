@@ -124,7 +124,7 @@ export function CoachDirectoryView({
             <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
               Encuentra a tu Coach Certificado
             </h1>
-            <p className="text-sm leading-relaxed text-slate-300">
+            <p className="text-sm leading-relaxed text-zinc-300">
               Explora entrenadores reales verificados, revisa sus diplomas y
               certificaciones directamente en archivo antes de elegir, y envía
               tu solicitud en segundos.
@@ -145,20 +145,20 @@ export function CoachDirectoryView({
         {/* Search & Filters */}
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar por nombre, especialidad, ciudad o diploma (ej. ISAK, Nutrición, Fuerza)..."
-              className="w-full rounded-xl border border-slate-700/90 bg-slate-950/90 py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-cyan-500"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-cyan-500"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="Limpiar búsqueda"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-400 hover:bg-white/[0.06] hover:text-white"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -172,7 +172,7 @@ export function CoachDirectoryView({
               className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs font-bold transition ${
                 onlyVerified
                   ? "border border-sky-400/50 bg-sky-500/20 text-sky-200"
-                  : "border border-slate-700 bg-slate-950 text-slate-300 hover:border-sky-500/40"
+                  : "border border-white/15 bg-[#060607] text-zinc-300 hover:border-sky-500/40"
               }`}
             >
               <BadgeCheck className="h-3.5 w-3.5 text-sky-400" />
@@ -184,7 +184,7 @@ export function CoachDirectoryView({
               className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs font-bold transition ${
                 onlyWithDiplomas
                   ? "border border-emerald-400/50 bg-emerald-500/20 text-emerald-200"
-                  : "border border-slate-700 bg-slate-950 text-slate-300 hover:border-emerald-500/40"
+                  : "border border-white/15 bg-[#060607] text-zinc-300 hover:border-emerald-500/40"
               }`}
             >
               <Award className="h-3.5 w-3.5 text-emerald-400" />
@@ -195,7 +195,7 @@ export function CoachDirectoryView({
       </div>
 
       {/* Results Count */}
-      <div className="flex items-center justify-between text-xs text-slate-400">
+      <div className="flex items-center justify-between text-xs text-zinc-400">
         <span>
           Mostrando{" "}
           <strong className="text-white">{filteredCoaches.length}</strong>{" "}
@@ -208,12 +208,12 @@ export function CoachDirectoryView({
 
       {/* Coaches Grid */}
       {filteredCoaches.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-800 bg-slate-900/50 p-10 text-center">
+        <div className="rounded-3xl border border-dashed border-white/[0.08] bg-[#0e0f12] p-10 text-center">
           <Search className="mx-auto h-8 w-8 text-slate-600" />
           <p className="mt-3 text-sm font-bold text-white">
             No encontramos coaches con esos filtros
           </p>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-zinc-400">
             Prueba quitando algún filtro o buscando por otra especialidad.
           </p>
         </div>
@@ -228,7 +228,7 @@ export function CoachDirectoryView({
             return (
               <article
                 key={coach.id}
-                className="overflow-hidden rounded-3xl border border-slate-800/90 bg-slate-900/75 p-5 transition hover:border-cyan-500/40 sm:p-6"
+                className="overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0e0f12]/75 p-5 transition hover:border-cyan-500/40 sm:p-6"
               >
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                   {/* Coach Identity & Bio */}
@@ -245,7 +245,7 @@ export function CoachDirectoryView({
                       {coach.is_verified_identity && (
                         <span
                           title="Persona Real Verificada"
-                          className="absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-sky-500 text-slate-950 ring-2 ring-[#0b1120]"
+                          className="absolute -bottom-1.5 -right-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-sky-500 text-zinc-950 ring-2 ring-[#0b1120]"
                         >
                           <BadgeCheck className="h-4 w-4" />
                         </span>
@@ -271,12 +271,12 @@ export function CoachDirectoryView({
                       </p>
 
                       {coach.bio && (
-                        <p className="text-xs leading-relaxed text-slate-300">
+                        <p className="text-xs leading-relaxed text-zinc-300">
                           {coach.bio}
                         </p>
                       )}
 
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-1 text-[11px] text-slate-400">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-1 text-[11px] text-zinc-400">
                         {coach.city && (
                           <span className="inline-flex items-center gap-1">
                             <MapPin className="h-3.5 w-3.5 text-emerald-400" />
@@ -304,15 +304,15 @@ export function CoachDirectoryView({
                   </div>
 
                   {/* CTA & Starting Price */}
-                  <div className="flex shrink-0 flex-row items-center justify-between gap-3 border-t border-slate-800 pt-4 lg:w-56 lg:flex-col lg:items-stretch lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
+                  <div className="flex shrink-0 flex-row items-center justify-between gap-3 border-t border-white/[0.08] pt-4 lg:w-56 lg:flex-col lg:items-stretch lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
                     <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
                         Planes desde
                       </p>
                       <p className="text-2xl font-black text-emerald-400">
                         {minPrice ? `$${minPrice.toLocaleString("es-MX")}` : "A medida"}
                         {minPrice && (
-                          <span className="text-xs font-medium text-slate-400">
+                          <span className="text-xs font-medium text-zinc-400">
                             /mes
                           </span>
                         )}
@@ -322,7 +322,7 @@ export function CoachDirectoryView({
                     <button
                       type="button"
                       onClick={() => openInquiryModal(coach)}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:brightness-110"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-4 py-3 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition "
                     >
                       <Send className="h-3.5 w-3.5" />
                       Solicitar Coach
@@ -331,7 +331,7 @@ export function CoachDirectoryView({
                 </div>
 
                 {/* Diplomas & Certifications Files Showcase */}
-                <div className="mt-5 border-t border-slate-800/90 pt-4">
+                <div className="mt-5 border-t border-white/[0.08] pt-4">
                   <div className="mb-3 flex items-center justify-between">
                     <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
                       <Award className="h-4 w-4" />
@@ -341,7 +341,7 @@ export function CoachDirectoryView({
                   </div>
 
                   {coach.certifications.length === 0 ? (
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-zinc-500">
                       Este coach aún no ha subido archivos de diplomas.
                     </p>
                   ) : (
@@ -356,7 +356,7 @@ export function CoachDirectoryView({
                               coachName: coach.full_name,
                             })
                           }
-                          className="group flex flex-col justify-between gap-2 rounded-2xl border border-slate-800 bg-slate-950/85 p-3.5 text-left transition hover:border-emerald-500/50 hover:bg-slate-950"
+                          className="group flex flex-col justify-between gap-2 rounded-2xl border border-white/[0.08] bg-[#060607]/85 p-3.5 text-left transition hover:border-emerald-500/50 hover:bg-[#060607]"
                         >
                           <div className="space-y-1">
                             <div className="flex items-center justify-between gap-2">
@@ -373,13 +373,13 @@ export function CoachDirectoryView({
                             <p className="line-clamp-2 text-xs font-bold text-white">
                               {cert.title}
                             </p>
-                            <p className="flex items-center gap-1 truncate text-[11px] text-slate-400">
-                              <Building2 className="h-3 w-3 shrink-0 text-slate-500" />
+                            <p className="flex items-center gap-1 truncate text-[11px] text-zinc-400">
+                              <Building2 className="h-3 w-3 shrink-0 text-zinc-500" />
                               <span className="truncate">{cert.institution}</span>
                             </p>
                           </div>
                           {cert.credential_id && (
-                            <p className="truncate font-mono text-[10px] text-slate-500">
+                            <p className="truncate font-mono text-[10px] text-zinc-500">
                               Folio: {cert.credential_id}
                             </p>
                           )}
@@ -410,7 +410,7 @@ export function CoachDirectoryView({
           onClick={() => setSelectedCoach(null)}
         >
           <div
-            className="w-full max-w-lg rounded-3xl border border-slate-700 bg-[#0b1120] p-6 shadow-2xl"
+            className="w-full max-w-lg rounded-3xl border border-white/15 bg-[#060607] p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
@@ -425,7 +425,7 @@ export function CoachDirectoryView({
               <button
                 type="button"
                 onClick={() => setSelectedCoach(null)}
-                className="rounded-xl border border-slate-800 bg-slate-900 p-2 text-slate-400 hover:text-white"
+                className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-2 text-zinc-400 hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -439,7 +439,7 @@ export function CoachDirectoryView({
                 <h3 className="text-lg font-bold text-white">
                   ¡Solicitud enviada al Coach!
                 </h3>
-                <p className="text-xs leading-relaxed text-slate-300">
+                <p className="text-xs leading-relaxed text-zinc-300">
                   {selectedCoach.full_name} recibió tu solicitud en su panel de
                   alumnos. Cuando la acepte, recibirás tu invitación para
                   comenzar tu plan.
@@ -447,7 +447,7 @@ export function CoachDirectoryView({
                 <button
                   type="button"
                   onClick={() => setSelectedCoach(null)}
-                  className="rounded-xl bg-emerald-500 px-5 py-2.5 text-xs font-bold text-slate-950"
+                  className="rounded-xl bg-emerald-500 px-5 py-2.5 text-xs font-bold text-zinc-950"
                 >
                   Entendido
                 </button>
@@ -464,7 +464,7 @@ export function CoachDirectoryView({
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
                       Tu nombre completo *
                     </label>
                     <input
@@ -473,11 +473,11 @@ export function CoachDirectoryView({
                       value={reqName}
                       onChange={(e) => setReqName(e.target.value)}
                       placeholder="Ej. Luis Martínez"
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
                       Tu correo electrónico *
                     </label>
                     <input
@@ -486,14 +486,14 @@ export function CoachDirectoryView({
                       value={reqEmail}
                       onChange={(e) => setReqEmail(e.target.value)}
                       placeholder="tu@correo.com"
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                     />
                   </div>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
                       Objetivo principal *
                     </label>
                     <input
@@ -502,17 +502,17 @@ export function CoachDirectoryView({
                       value={reqGoal}
                       onChange={(e) => setReqGoal(e.target.value)}
                       placeholder="Ej. Ganar masa muscular"
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
                       Plan de interés
                     </label>
                     <select
                       value={reqPlan}
                       onChange={(e) => setReqPlan(e.target.value)}
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                     >
                       {selectedCoach.plans.map((p) => (
                         <option key={p.id} value={p.name}>
@@ -529,7 +529,7 @@ export function CoachDirectoryView({
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-300">
+                  <label className="mb-1 block text-xs font-semibold text-zinc-300">
                     Mensaje para el Coach *
                   </label>
                   <textarea
@@ -538,7 +538,7 @@ export function CoachDirectoryView({
                     value={reqMessage}
                     onChange={(e) => setReqMessage(e.target.value)}
                     placeholder="Cuéntale tu experiencia, días disponibles y qué te gustaría lograr..."
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3 text-xs text-white outline-none focus:border-emerald-500"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] p-3 text-xs text-white outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -546,13 +546,13 @@ export function CoachDirectoryView({
                   <button
                     type="button"
                     onClick={() => setSelectedCoach(null)}
-                    className="rounded-xl border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+                    className="rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/[0.06]"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-xs font-bold text-slate-950"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2 text-xs font-bold text-zinc-950"
                   >
                     <Send className="h-3.5 w-3.5" />
                     Enviar Solicitud

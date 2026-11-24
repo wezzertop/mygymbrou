@@ -153,7 +153,7 @@ export function CoachCertificationsManager() {
   };
 
   return (
-    <section className="space-y-4 rounded-2xl border border-emerald-500/35 bg-slate-900/80 p-6">
+    <section className="space-y-4 rounded-2xl border border-emerald-500/35 bg-[#0e0f12] p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -162,7 +162,7 @@ export function CoachCertificationsManager() {
               Mis Diplomas y Certificaciones (Archivos Públicos)
             </h2>
           </div>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-zinc-400">
             Sube tus títulos, diplomas o certificados en PDF o imagen. Los alumnos
             que busquen coach podrán verlos y verificar tu formación profesional.
           </p>
@@ -173,7 +173,7 @@ export function CoachCertificationsManager() {
           <button
             type="button"
             onClick={() => setShowForm((v) => !v)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-3.5 py-2 text-xs font-bold text-slate-950 transition hover:brightness-110"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-zinc-200 px-3.5 py-2 text-xs font-bold text-zinc-950 transition "
           >
             {showForm ? (
               <>
@@ -200,7 +200,7 @@ export function CoachCertificationsManager() {
       {showForm && (
         <form
           onSubmit={handleAddCert}
-          className="space-y-4 rounded-2xl border border-slate-700/80 bg-slate-950/90 p-5"
+          className="space-y-4 rounded-2xl border border-white/15 bg-[#060607] p-5"
         >
           <p className="text-xs font-bold uppercase tracking-wider text-cyan-400">
             Nuevo Diploma o Certificado
@@ -214,7 +214,7 @@ export function CoachCertificationsManager() {
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Nombre del diploma / certificación *
               </label>
               <input
@@ -223,11 +223,11 @@ export function CoachCertificationsManager() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ej. Certificación Internacional NSCA-CPT"
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"
+                className="w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Institución / Federación emisora *
               </label>
               <input
@@ -236,14 +236,14 @@ export function CoachCertificationsManager() {
                 value={institution}
                 onChange={(e) => setInstitution(e.target.value)}
                 placeholder="Ej. NSCA, ISAK, Universidad..."
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"
+                className="w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"
               />
             </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Categoría
               </label>
               <select
@@ -251,7 +251,7 @@ export function CoachCertificationsManager() {
                 onChange={(e) =>
                   setCategory(e.target.value as CertificationCategory)
                 }
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-xs text-white"
               >
                 {CATEGORY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -261,7 +261,7 @@ export function CoachCertificationsManager() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Año de emisión
               </label>
               <input
@@ -270,11 +270,11 @@ export function CoachCertificationsManager() {
                 max={2035}
                 value={issueYear}
                 onChange={(e) => setIssueYear(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-xs text-white"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-zinc-300">
                 Folio / Cédula (opcional)
               </label>
               <input
@@ -282,7 +282,7 @@ export function CoachCertificationsManager() {
                 value={credentialId}
                 onChange={(e) => setCredentialId(e.target.value)}
                 placeholder="Ej. ISAK-L2-88412"
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-xs text-white"
               />
             </div>
           </div>
@@ -298,7 +298,7 @@ export function CoachCertificationsManager() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-700 bg-slate-900/70 px-4 py-5 text-center transition hover:border-emerald-500/60"
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/15 bg-[#0e0f12] px-4 py-5 text-center transition hover:border-emerald-500/60"
             >
               <FileUp className="h-6 w-6 text-emerald-400" />
               <p className="text-xs font-bold text-white">
@@ -306,7 +306,7 @@ export function CoachCertificationsManager() {
                   ? `${fileObj.name} (${formatFileSize(fileObj.size)})`
                   : "Seleccionar archivo del diploma (PDF, PNG, JPG)"}
               </p>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-zinc-400">
                 Tamaño máximo 10 MB · Visible en tu perfil público de Coach
               </p>
             </button>
@@ -316,14 +316,14 @@ export function CoachCertificationsManager() {
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="rounded-xl border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+              className="rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/[0.06]"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={uploading}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-zinc-950 transition hover:bg-emerald-400 disabled:opacity-50"
             >
               <Award className="h-4 w-4" />
               {uploading ? "Subiendo..." : "Publicar Diploma"}
@@ -334,12 +334,12 @@ export function CoachCertificationsManager() {
 
       {/* Existing Diplomas List */}
       {myCertifications.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/50 p-6 text-center">
+        <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#060607] p-6 text-center">
           <Award className="mx-auto h-8 w-8 text-slate-600" />
-          <p className="mt-2 text-sm font-bold text-slate-300">
+          <p className="mt-2 text-sm font-bold text-zinc-300">
             Aún no has subido diplomas o certificaciones
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-zinc-500">
             Agrega tus archivos PDF o imágenes para obtener el sello de Coach
             Certificado y destacar frente a alumnos buscando entrenador.
           </p>
@@ -349,7 +349,7 @@ export function CoachCertificationsManager() {
           {myCertifications.map((cert) => (
             <div
               key={cert.id}
-              className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-950/80 p-4 transition hover:border-emerald-500/40"
+              className="flex flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#060607] p-4 transition hover:border-emerald-500/40"
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
@@ -361,7 +361,7 @@ export function CoachCertificationsManager() {
                     type="button"
                     onClick={() => deleteCoachCertification(cert.id)}
                     aria-label="Eliminar diploma"
-                    className="rounded-lg p-1 text-slate-500 transition hover:bg-rose-500/15 hover:text-rose-400"
+                    className="rounded-lg p-1 text-zinc-500 transition hover:bg-rose-500/15 hover:text-rose-400"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -371,7 +371,7 @@ export function CoachCertificationsManager() {
                   {cert.title}
                 </h3>
 
-                <div className="space-y-1 text-[11px] text-slate-400">
+                <div className="space-y-1 text-[11px] text-zinc-400">
                   <p className="flex items-center gap-1.5">
                     <Building2 className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
                     <span className="truncate">{cert.institution}</span>
@@ -382,7 +382,7 @@ export function CoachCertificationsManager() {
                       {cert.issue_year}
                     </span>
                     {cert.credential_id && (
-                      <span className="inline-flex items-center gap-1 font-mono text-[10px] text-slate-300">
+                      <span className="inline-flex items-center gap-1 font-mono text-[10px] text-zinc-300">
                         <Hash className="h-3 w-3 text-amber-400" />
                         {cert.credential_id}
                       </span>
@@ -391,9 +391,9 @@ export function CoachCertificationsManager() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-2 border-t border-slate-800/80 pt-3">
-                <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-slate-500">
-                  <FileText className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+              <div className="flex items-center justify-between gap-2 border-t border-white/[0.08] pt-3">
+                <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-zinc-500">
+                  <FileText className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
                   <span className="truncate">{cert.file_name}</span>
                 </span>
                 <button

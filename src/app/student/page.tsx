@@ -3,13 +3,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
+  ArrowUpRight,
   CalendarCheck,
   Check,
   CheckCircle2,
   Droplets,
   Dumbbell,
-  Flame,
   Pause,
   Play,
   Plus,
@@ -41,14 +40,13 @@ export default function StudentDailyHomePage() {
     addAssessment,
   } = useApp();
 
-  // Toast feedback
   const [toast, setToast] = useState<string | null>(null);
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3200);
   };
 
-  // Accessible Rest Timer right on Home
+  // Accessible Rest Timer
   const [timerPreset, setTimerPreset] = useState(90);
   const [secondsLeft, setSecondsLeft] = useState(90);
   const [timerRunning, setTimerRunning] = useState(false);
@@ -77,10 +75,7 @@ export default function StudentDailyHomePage() {
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
-  // Water quick counter
   const [waterGlasses, setWaterGlasses] = useState(4);
-
-  // Quick weight log
   const [quickWeight, setQuickWeight] = useState("");
   const [showWeightForm, setShowWeightForm] = useState(false);
 
@@ -142,7 +137,6 @@ export default function StudentDailyHomePage() {
     Math.round((activeDiet?.water_liters || 2.5) * 4)
   );
 
-  // Next Appointment & Latest Weight
   const nextAppointment = useMemo(
     () =>
       appointments
@@ -170,7 +164,7 @@ export default function StudentDailyHomePage() {
       exercises_completed: Math.max(workoutCompletedCount, 1),
       total_exercises: workoutTotal,
     });
-    showToast("¡Sesión de entrenamiento registrada en tu calendario!");
+    showToast("Sesión registrada en tu calendario.");
   };
 
   const handleQuickWeightSubmit = (e: React.FormEvent) => {
@@ -202,17 +196,17 @@ export default function StudentDailyHomePage() {
   const firstName = studentProfile.full_name?.split(" ")[0] || "Atleta";
 
   return (
-    <div className="space-y-5">
-      {/* Greeting Header */}
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+    <div className="space-y-6">
+      {/* Editorial Header */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-            Tu Día de Entrenamiento
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
+            Resumen de hoy
           </p>
-          <h1 className="mt-0.5 text-2xl font-extrabold text-white sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
             Hola, {firstName}
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
             {studentProfile.fitness_goal || "Constancia diaria hacia tu meta"}
           </p>
         </div>
@@ -221,19 +215,21 @@ export default function StudentDailyHomePage() {
           <button
             type="button"
             onClick={() => setShowWeightForm((v) => !v)}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-slate-800 bg-[#121212] px-3.5 text-xs font-bold text-slate-200 transition hover:border-emerald-500/40"
+            className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/25 hover:text-white"
           >
-            <Scale className="h-4 w-4 text-emerald-400" />
-            {latestAssessment ? `${latestAssessment.weight_kg} kg` : "Registrar peso"}
+            <Scale className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="tabular-nums">
+              {latestAssessment ? `${latestAssessment.weight_kg} kg` : "Registrar peso"}
+            </span>
           </button>
           {relation && (
             <Link
               href="/student/subscription"
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 text-xs font-bold text-emerald-300"
+              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 text-xs font-medium text-emerald-300"
             >
-              {relation.subscription_plan_name}
+              <span>{relation.subscription_plan_name}</span>
               {daysLeft > 0 && (
-                <span className="text-slate-300">· {daysLeft}d</span>
+                <span className="tabular-nums text-zinc-400">· {daysLeft}d</span>
               )}
             </Link>
           )}
@@ -242,7 +238,7 @@ export default function StudentDailyHomePage() {
 
       {/* Toast */}
       {toast && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-xs font-semibold text-emerald-300">
+        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           {toast}
         </div>
@@ -252,10 +248,10 @@ export default function StudentDailyHomePage() {
       {showWeightForm && (
         <form
           onSubmit={handleQuickWeightSubmit}
-          className="flex flex-col gap-2.5 rounded-2xl border border-emerald-500/30 bg-[#121212] p-4 sm:flex-row sm:items-center"
+          className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#0e0f12] p-4 sm:flex-row sm:items-end"
         >
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1.5 block text-xs font-medium text-zinc-400">
               Registrar peso de hoy (kg)
             </label>
             <input
@@ -269,20 +265,20 @@ export default function StudentDailyHomePage() {
               placeholder={
                 latestAssessment ? String(latestAssessment.weight_kg) : "65.0"
               }
-              className="min-h-[44px] w-full rounded-xl border border-slate-700 bg-[#0a0a0a] px-3.5 text-white outline-none focus:border-emerald-500"
+              className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3.5 text-white outline-none focus:border-emerald-500/60"
             />
           </div>
-          <div className="flex gap-2 sm:pt-5">
+          <div className="flex gap-2">
             <button
               type="submit"
-              className="min-h-[44px] flex-1 rounded-xl bg-emerald-500 px-4 text-xs font-bold text-slate-950 sm:flex-none"
+              className="h-11 flex-1 rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:flex-none"
             >
               Guardar
             </button>
             <button
               type="button"
               onClick={() => setShowWeightForm(false)}
-              className="min-h-[44px] rounded-xl border border-slate-700 bg-slate-900 px-3 text-xs font-semibold text-slate-300"
+              className="h-11 rounded-full border border-white/10 px-4 text-xs font-medium text-zinc-400 hover:text-white"
             >
               Cancelar
             </button>
@@ -290,24 +286,24 @@ export default function StudentDailyHomePage() {
         </form>
       )}
 
-      {/* Next Appointment Banner */}
+      {/* Next Appointment Strip */}
       {nextAppointment && (
         <Link
           href="/student/appointments"
-          className="flex items-center justify-between gap-3 rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-[#121212] to-cyan-950/30 p-3.5 transition hover:border-cyan-400/50"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
         >
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400">
-              <CalendarCheck className="h-5 w-5" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
+              <CalendarCheck className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
-                Próxima Cita
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                Próxima cita
               </p>
-              <p className="truncate text-sm font-bold text-white">
+              <p className="truncate text-sm font-medium text-white">
                 {nextAppointment.title}
               </p>
-              <p className="truncate text-xs text-slate-400">
+              <p className="truncate text-xs text-zinc-400">
                 {new Date(nextAppointment.scheduled_at).toLocaleString("es-MX", {
                   dateStyle: "medium",
                   timeStyle: "short",
@@ -316,40 +312,40 @@ export default function StudentDailyHomePage() {
               </p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-cyan-400" />
+          <ArrowUpRight className="h-4 w-4 shrink-0 text-zinc-400" />
         </Link>
       )}
 
       {/* SECTION 1: MI ENTRENAMIENTO DE HOY */}
-      <section className="space-y-4 rounded-3xl border border-slate-800 bg-[#121212] p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
+      <section className="space-y-5 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
               <Dumbbell className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-extrabold text-white">
+              <h2 className="text-base font-semibold tracking-tight text-white">
                 Mi Entrenamiento de Hoy
               </h2>
-              <p className="text-xs text-slate-400">
-                {todayDay ? todayDay.title : "Sin rutina asignada aún"}
+              <p className="text-xs text-zinc-400">
+                {todayDay ? todayDay.title : "Sin rutina asignada"}
               </p>
             </div>
           </div>
           <Link
             href="/student/workouts"
-            className="inline-flex min-h-[38px] items-center gap-1 rounded-xl border border-slate-800 bg-[#0a0a0a] px-3 text-xs font-bold text-emerald-400 transition hover:border-emerald-500/40"
+            className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-medium text-zinc-400 transition hover:text-white"
           >
-            Ver completo
-            <ArrowRight className="h-3.5 w-3.5" />
+            Ver rutina
+            <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
-        {/* Inline Rest Timer (1-tap access in the gym) */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-[#0a0a0a] p-3">
-          <div className="flex items-center gap-2.5">
-            <Timer className="h-4 w-4 text-cyan-400" />
-            <span className="font-mono text-lg font-black text-white">
+        {/* Minimalist Sport Rest Timer */}
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#060607] px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Timer className="h-4 w-4 text-zinc-500" />
+            <span className="font-mono text-xl font-semibold tabular-nums text-white">
               {formatTime(secondsLeft)}
             </span>
             <div className="flex gap-1">
@@ -358,10 +354,10 @@ export default function StudentDailyHomePage() {
                   key={sec}
                   type="button"
                   onClick={() => startTimer(sec)}
-                  className={`min-h-[34px] rounded-lg px-2 text-[11px] font-bold transition ${
+                  className={`h-8 rounded-full px-2.5 text-[11px] font-medium transition ${
                     timerPreset === sec && timerRunning
-                      ? "bg-cyan-500 text-slate-950"
-                      : "bg-slate-900 text-slate-300 hover:bg-slate-800"
+                      ? "bg-white text-zinc-950"
+                      : "border border-white/10 text-zinc-400 hover:border-white/25 hover:text-white"
                   }`}
                 >
                   {sec}s
@@ -374,7 +370,7 @@ export default function StudentDailyHomePage() {
               type="button"
               onClick={() => setTimerRunning((r) => !r)}
               aria-label={timerRunning ? "Pausar temporizador" : "Iniciar temporizador"}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-slate-950"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-zinc-950 transition hover:bg-zinc-200"
             >
               {timerRunning ? (
                 <Pause className="h-4 w-4" />
@@ -389,44 +385,40 @@ export default function StudentDailyHomePage() {
                 setSecondsLeft(timerPreset);
               }}
               aria-label="Reiniciar temporizador"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 text-slate-300"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-zinc-400 transition hover:text-white"
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
 
         {todayDay ? (
           <>
-            {/* Progress bar */}
             <div>
-              <div className="mb-1.5 flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-400">
-                  Avance de hoy: {workoutCompletedCount}/{workoutTotal} ejercicios
+              <div className="mb-2 flex items-center justify-between text-xs">
+                <span className="text-zinc-400">
+                  Progreso · {workoutCompletedCount}/{workoutTotal} ejercicios
                 </span>
-                <span className="font-bold text-emerald-400">{workoutPct}%</span>
+                <span className="font-semibold tabular-nums text-emerald-400">
+                  {workoutPct}%
+                </span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-all duration-300"
+                  className="h-full rounded-full bg-emerald-400 transition-all duration-300"
                   style={{ width: `${workoutPct}%` }}
                 />
               </div>
             </div>
 
-            {/* Interactive Exercise Checklist + Quick Load Input */}
-            <div className="space-y-2.5">
+            <div className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
               {todayDay.exercises.map((ex) => {
                 const done = Boolean(completedExercises[ex.id]);
                 const loadValue = exerciseLoads[ex.id] || "";
                 return (
                   <div
                     key={ex.id}
-                    className={`flex flex-col gap-2.5 rounded-2xl border p-3.5 transition sm:flex-row sm:items-center sm:justify-between ${
-                      done
-                        ? "border-emerald-500/40 bg-emerald-500/10"
-                        : "border-slate-800 bg-[#0a0a0a]"
-                    }`}
+                    className="flex flex-col gap-2.5 py-3.5 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <button
                       type="button"
@@ -434,24 +426,24 @@ export default function StudentDailyHomePage() {
                       className="flex min-h-[44px] flex-1 items-center gap-3 text-left"
                     >
                       <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border transition ${
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${
                           done
-                            ? "border-emerald-400 bg-emerald-500 text-slate-950"
-                            : "border-slate-700 bg-slate-900 text-transparent"
+                            ? "border-emerald-400 bg-emerald-400 text-zinc-950"
+                            : "border-white/20 bg-transparent text-transparent"
                         }`}
                       >
-                        <Check className="h-4 w-4" />
+                        <Check className="h-3.5 w-3.5 stroke-[2.5]" />
                       </span>
                       <div className="min-w-0">
                         <p
-                          className={`text-sm font-bold ${
-                            done ? "text-emerald-300 line-through" : "text-white"
+                          className={`text-sm font-medium ${
+                            done ? "text-zinc-500 line-through" : "text-white"
                           }`}
                         >
                           {ex.name}
                         </p>
-                        <p className="text-xs text-slate-400">
-                          {ex.sets} series × {ex.reps} · Descanso {ex.rest_seconds}s
+                        <p className="text-xs text-zinc-500">
+                          {ex.sets} × {ex.reps} · {ex.rest_seconds}s descanso
                           {ex.target_weight_or_rpe
                             ? ` · ${ex.target_weight_or_rpe}`
                             : ""}
@@ -459,19 +451,19 @@ export default function StudentDailyHomePage() {
                       </div>
                     </button>
 
-                    <div className="flex items-center gap-2 pl-10 sm:pl-0">
+                    <div className="flex items-center gap-2 pl-9 sm:pl-0">
                       <input
                         type="text"
                         value={loadValue}
                         onChange={(e) => setExerciseLoad(ex.id, e.target.value)}
-                        placeholder="Carga (ej. 40kg)"
+                        placeholder="Carga (kg)"
                         aria-label={`Carga usada en ${ex.name}`}
-                        className="min-h-[40px] w-32 rounded-xl border border-slate-700 bg-slate-950 px-2.5 text-xs text-white outline-none focus:border-cyan-500"
+                        className="min-h-[38px] w-28 rounded-xl border border-white/10 bg-[#060607] px-3 text-xs text-white outline-none focus:border-emerald-500/60"
                       />
                       <button
                         type="button"
                         onClick={() => startTimer(ex.rest_seconds || 90)}
-                        className="min-h-[40px] shrink-0 rounded-xl border border-slate-700 bg-slate-900 px-2.5 text-[11px] font-bold text-cyan-300 hover:border-cyan-500/50"
+                        className="h-[38px] shrink-0 rounded-xl border border-white/10 px-3 text-[11px] font-medium text-zinc-300 transition hover:border-white/25 hover:text-white"
                       >
                         {ex.rest_seconds || 90}s
                       </button>
@@ -484,106 +476,101 @@ export default function StudentDailyHomePage() {
             <button
               type="button"
               onClick={handleCompleteWorkout}
-              className={`inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl text-sm font-bold transition ${
+              className={`inline-flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold transition ${
                 sessionLoggedToday
-                  ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
-                  : "bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:brightness-110"
+                  ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                  : "bg-white text-zinc-950 hover:bg-zinc-200"
               }`}
             >
               <Trophy className="h-4 w-4" />
               {sessionLoggedToday
-                ? "Entrenamiento de hoy completado ✓"
-                : "Guardar sesión de hoy como completada"}
+                ? "Entrenamiento de hoy completado"
+                : "Guardar sesión de hoy"}
             </button>
           </>
         ) : (
-          <div className="rounded-2xl border border-dashed border-slate-800 py-6 text-center text-xs text-slate-400">
-            Tu Coach aún no asigna tu rutina activa. Revisa pronto o visita{" "}
-            <Link href="/student/coaches" className="font-bold text-cyan-400 underline">
+          <div className="py-8 text-center text-xs text-zinc-500">
+            Tu Coach aún no asigna tu rutina activa.{" "}
+            <Link href="/student/coaches" className="font-medium text-white underline">
               Buscar Coach
             </Link>
-            .
           </div>
         )}
       </section>
 
       {/* SECTION 2: MIS COMIDAS DE HOY */}
-      <section className="space-y-4 rounded-3xl border border-slate-800 bg-[#121212] p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400">
+      <section className="space-y-5 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
               <Utensils className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-extrabold text-white">
+              <h2 className="text-base font-semibold tracking-tight text-white">
                 Mis Comidas de Hoy
               </h2>
-              <p className="text-xs text-slate-400">
-                {activeDiet
-                  ? `${consumedCalories} / ${activeDiet.daily_calories} kcal · ${consumedProtein}g / ${activeDiet.protein_g}g proteína`
-                  : "Sin plan nutricional activo"}
+              <p className="text-xs text-zinc-400">
+                {activeDiet ? activeDiet.title : "Sin plan nutricional activo"}
               </p>
             </div>
           </div>
           <Link
             href="/student/diet"
-            className="inline-flex min-h-[38px] items-center gap-1 rounded-xl border border-slate-800 bg-[#0a0a0a] px-3 text-xs font-bold text-cyan-400 transition hover:border-cyan-500/40"
+            className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-medium text-zinc-400 transition hover:text-white"
           >
             Ver dieta
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
         {activeDiet ? (
           <>
-            {/* Quick Macros & Hydration Strip */}
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-800 bg-[#0a0a0a] p-3">
-                <p className="flex items-center gap-1 text-[11px] font-semibold text-slate-400">
-                  <Flame className="h-3.5 w-3.5 text-amber-400" />
+            {/* Clean Macros & Hydration Strip */}
+            <div className="grid grid-cols-3 divide-x divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#060607]">
+              <div className="p-3.5">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
                   Calorías
                 </p>
-                <p className="mt-1 text-base font-black text-white">
-                  {consumedCalories}{" "}
-                  <span className="text-xs font-medium text-slate-500">
-                    / {activeDiet.daily_calories}
+                <p className="mt-1 text-base font-semibold tabular-nums text-white">
+                  {consumedCalories}
+                  <span className="text-xs font-normal text-zinc-500">
+                    /{activeDiet.daily_calories}
                   </span>
                 </p>
               </div>
-              <div className="rounded-2xl border border-slate-800 bg-[#0a0a0a] p-3">
-                <p className="text-[11px] font-semibold text-slate-400">
+              <div className="p-3.5">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
                   Proteína
                 </p>
-                <p className="mt-1 text-base font-black text-emerald-400">
-                  {consumedProtein}g{" "}
-                  <span className="text-xs font-medium text-slate-500">
-                    / {activeDiet.protein_g}g
+                <p className="mt-1 text-base font-semibold tabular-nums text-emerald-400">
+                  {consumedProtein}g
+                  <span className="text-xs font-normal text-zinc-500">
+                    /{activeDiet.protein_g}g
                   </span>
                 </p>
               </div>
-              <div className="col-span-2 flex items-center justify-between rounded-2xl border border-slate-800 bg-[#0a0a0a] p-3 sm:col-span-1">
+              <div className="flex items-center justify-between p-3.5">
                 <div>
-                  <p className="flex items-center gap-1 text-[11px] font-semibold text-slate-400">
-                    <Droplets className="h-3.5 w-3.5 text-cyan-400" />
-                    Agua ({activeDiet.water_liters}L)
+                  <p className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+                    <Droplets className="h-3 w-3 text-emerald-400" />
+                    Agua
                   </p>
-                  <p className="mt-0.5 text-sm font-black text-cyan-300">
-                    {waterGlasses}/{targetWaterGlasses} vasos
+                  <p className="mt-1 text-base font-semibold tabular-nums text-white">
+                    {waterGlasses}/{targetWaterGlasses}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setWaterGlasses((w) => w + 1)}
                   aria-label="Sumar un vaso de agua"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-300 transition hover:bg-cyan-500 hover:text-slate-950"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white transition hover:bg-white hover:text-zinc-950"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
 
-            {/* Interactive Meals Checklist */}
-            <div className="space-y-2">
+            <div className="divide-y divide-white/[0.06] border-t border-white/[0.06]">
               {activeDiet.meals.map((meal) => {
                 const done = Boolean(completedMeals[meal.id]);
                 return (
@@ -591,42 +578,38 @@ export default function StudentDailyHomePage() {
                     key={meal.id}
                     type="button"
                     onClick={() => toggleMealComplete(meal.id)}
-                    className={`flex min-h-[56px] w-full items-center justify-between gap-3 rounded-2xl border p-3.5 text-left transition ${
-                      done
-                        ? "border-emerald-500/40 bg-emerald-500/10"
-                        : "border-slate-800 bg-[#0a0a0a] hover:border-slate-700"
-                    }`}
+                    className="flex min-h-[56px] w-full items-center justify-between gap-3 py-3.5 text-left transition"
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <span
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border transition ${
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition ${
                           done
-                            ? "border-emerald-400 bg-emerald-500 text-slate-950"
-                            : "border-slate-700 bg-slate-900 text-transparent"
+                            ? "border-emerald-400 bg-emerald-400 text-zinc-950"
+                            : "border-white/20 bg-transparent text-transparent"
                         }`}
                       >
-                        <Check className="h-4 w-4" />
+                        <Check className="h-3.5 w-3.5 stroke-[2.5]" />
                       </span>
                       <div className="min-w-0">
                         <p
-                          className={`text-sm font-bold ${
-                            done ? "text-emerald-300 line-through" : "text-white"
+                          className={`text-sm font-medium ${
+                            done ? "text-zinc-500 line-through" : "text-white"
                           }`}
                         >
-                          {meal.meal_time}{" "}
+                          {meal.meal_time}
                           {meal.suggested_hour && (
-                            <span className="text-xs font-medium text-slate-400">
-                              · {meal.suggested_hour}
+                            <span className="ml-1.5 text-xs font-normal text-zinc-500">
+                              {meal.suggested_hour}
                             </span>
                           )}
                         </p>
-                        <p className="truncate text-xs text-slate-400">
+                        <p className="truncate text-xs text-zinc-500">
                           {meal.foods_description}
                         </p>
                       </div>
                     </div>
                     {meal.calories && (
-                      <span className="shrink-0 rounded-lg bg-slate-900 px-2 py-1 text-[11px] font-bold text-slate-300">
+                      <span className="shrink-0 text-xs font-medium tabular-nums text-zinc-400">
                         {meal.calories} kcal
                       </span>
                     )}
@@ -636,7 +619,7 @@ export default function StudentDailyHomePage() {
             </div>
           </>
         ) : (
-          <div className="rounded-2xl border border-dashed border-slate-800 py-6 text-center text-xs text-slate-400">
+          <div className="py-8 text-center text-xs text-zinc-500">
             Tu Coach publicará tu plan nutricional personalizado muy pronto.
           </div>
         )}

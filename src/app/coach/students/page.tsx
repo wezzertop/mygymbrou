@@ -198,7 +198,7 @@ function CoachStudentsContent() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-extrabold text-white">Mis Alumnos</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-zinc-400">
             Invita alumnos por correo y accede a su expediente 360°.
           </p>
         </div>
@@ -209,7 +209,7 @@ function CoachStudentsContent() {
             setInviteError(null);
             setModalOpen(true);
           }}
-          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 active:scale-[0.98]"
+          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98]"
         >
           <UserPlus className="h-4 w-4" />
           Invitar Alumno por Correo
@@ -217,7 +217,7 @@ function CoachStudentsContent() {
       </div>
 
       {/* Live Plan Quota & Roster Counter Bar */}
-      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-800 bg-[#121212] p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold text-cyan-300">
@@ -227,7 +227,7 @@ function CoachStudentsContent() {
               {activeCount} activos · {pendingCount} invitación(es) pendiente(s)
             </span>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-zinc-400">
             {quota.limit === null
               ? "Tu plan Estudio / Gym incluye cupo ilimitado de alumnos."
               : `Cupo utilizado: ${occupiedSlots} de ${quota.limit} alumnos (${quota.remaining} disponibles).`}
@@ -236,14 +236,14 @@ function CoachStudentsContent() {
         <div className="flex items-center gap-3">
           {quota.limit !== null && (
             <div className="w-32 sm:w-40">
-              <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
                 <div
                   className={`h-full rounded-full transition-all ${
                     !quota.allowed
                       ? "bg-rose-500"
                       : occupiedSlots / quota.limit >= 0.8
                       ? "bg-amber-400"
-                      : "bg-gradient-to-r from-emerald-400 to-cyan-400"
+                      : "bg-white hover:bg-zinc-200"
                   }`}
                   style={{
                     width: `${Math.min(
@@ -257,7 +257,7 @@ function CoachStudentsContent() {
           )}
           <Link
             href="/coach/plans?tab=saas"
-            className="shrink-0 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] font-bold text-cyan-300 transition hover:border-cyan-500/50"
+            className="shrink-0 rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-[11px] font-bold text-cyan-300 transition hover:border-cyan-500/50"
           >
             {quota.allowed ? "Ver mi plan" : "Ampliar cupo"}
           </Link>
@@ -289,7 +289,7 @@ function CoachStudentsContent() {
             {pendingInquiries.map((inq) => (
               <div
                 key={inq.id}
-                className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-950/80 p-4 sm:flex-row sm:items-center"
+                className="flex flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#060607] p-4 sm:flex-row sm:items-center"
               >
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -303,11 +303,11 @@ function CoachStudentsContent() {
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-zinc-400">
                     {inq.student_email} · Meta:{" "}
-                    <span className="text-slate-200">{inq.goal}</span>
+                    <span className="text-zinc-200">{inq.goal}</span>
                   </p>
-                  <p className="text-xs italic text-slate-300">
+                  <p className="text-xs italic text-zinc-300">
                     &ldquo;{inq.message}&rdquo;
                   </p>
                 </div>
@@ -316,7 +316,7 @@ function CoachStudentsContent() {
                   <button
                     type="button"
                     onClick={() => respondToCoachInquiry(inq.id, "accepted")}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-slate-950 transition hover:bg-emerald-400"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-zinc-950 transition hover:bg-emerald-400"
                   >
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     Aceptar Alumno
@@ -324,7 +324,7 @@ function CoachStudentsContent() {
                   <button
                     type="button"
                     onClick={() => respondToCoachInquiry(inq.id, "declined")}
-                    className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-400 transition hover:text-white"
+                    className="rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-xs font-semibold text-zinc-400 transition hover:text-white"
                   >
                     Descartar
                   </button>
@@ -338,20 +338,20 @@ function CoachStudentsContent() {
       {/* Search & Filter */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar alumno por nombre o correo..."
-            className="w-full rounded-xl border border-slate-800 bg-slate-900/90 py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-cyan-500"
+            className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-cyan-500"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
               aria-label="Limpiar búsqueda"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-400 hover:bg-white/[0.06] hover:text-white"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -375,7 +375,7 @@ function CoachStudentsContent() {
               className={`shrink-0 rounded-xl px-3.5 py-2 text-xs font-semibold transition ${
                 filter === tab.key
                   ? "bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-500/40"
-                  : "border border-slate-800 bg-slate-900 text-slate-400 hover:text-white"
+                  : "border border-white/[0.08] bg-[#0e0f12] text-zinc-400 hover:text-white"
               }`}
             >
               {tab.label}
@@ -391,7 +391,7 @@ function CoachStudentsContent() {
           return (
             <div
               key={st.id}
-              className="flex min-w-0 flex-col justify-between gap-4 rounded-2xl border border-slate-800/90 bg-slate-900/70 p-4 transition hover:border-cyan-500/30"
+              className="flex min-w-0 flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-cyan-500/30"
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -402,7 +402,7 @@ function CoachStudentsContent() {
                       className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-slate-700"
                     />
                   ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-800 text-sm font-bold text-cyan-400">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-sm font-bold text-cyan-400">
                       {st.invited_name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
@@ -416,7 +416,7 @@ function CoachStudentsContent() {
                         compact
                       />
                     </div>
-                    <p className="truncate text-xs text-slate-400">{st.invited_email}</p>
+                    <p className="truncate text-xs text-zinc-400">{st.invited_email}</p>
                     <p className="mt-0.5 truncate text-[11px] text-cyan-400">
                       {st.fitness_goal || "Objetivo general"}
                     </p>
@@ -448,12 +448,12 @@ function CoachStudentsContent() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-xs">
+              <div className="flex items-center justify-between border-t border-white/[0.08] pt-3 text-xs">
                 <div>
-                  <p className="font-semibold text-slate-200">
+                  <p className="font-semibold text-zinc-200">
                     {st.subscription_plan_name}
                   </p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-zinc-400">
                     ${st.subscription_price}/mes · Corte: {st.next_billing_date}
                   </p>
                 </div>
@@ -461,7 +461,7 @@ function CoachStudentsContent() {
                 {st.student_id ? (
                   <Link
                     href={`/coach/students/${st.student_id}`}
-                    className="rounded-xl bg-slate-800 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500 hover:text-slate-950"
+                    className="rounded-xl bg-white/[0.06] px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500 hover:text-zinc-950"
                   >
                     Expediente 360°
                   </Link>
@@ -482,13 +482,13 @@ function CoachStudentsContent() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 p-8 text-center">
+        <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
           <p className="text-sm font-bold text-white">
             {students.length === 0
               ? "Aún no tienes alumnos registrados"
               : "No encontramos alumnos con ese filtro"}
           </p>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-zinc-400">
             {students.length === 0
               ? "Envía una invitación por correo para vincular a tu primer alumno."
               : "Prueba ajustando la búsqueda o seleccionando otra pestaña."}
@@ -501,7 +501,7 @@ function CoachStudentsContent() {
                   setQuery("");
                   setFilter("all");
                 }}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-slate-700"
+                className="rounded-xl border border-white/15 bg-white/[0.06] px-4 py-2 text-xs font-bold text-white transition hover:bg-white/[0.12]"
               >
                 Limpiar filtros
               </button>
@@ -512,7 +512,7 @@ function CoachStudentsContent() {
                   setInviteResult(null);
                   setModalOpen(true);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2.5 text-xs font-bold text-zinc-950"
               >
                 <UserPlus className="h-4 w-4" />
                 Invitar Primer Alumno
@@ -530,7 +530,7 @@ function CoachStudentsContent() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-md rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
           >
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-lg font-bold text-white">
@@ -540,7 +540,7 @@ function CoachStudentsContent() {
                 type="button"
                 onClick={() => setModalOpen(false)}
                 aria-label="Cerrar modal"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -561,19 +561,19 @@ function CoachStudentsContent() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-semibold text-slate-400">
+                  <label className="text-[11px] font-semibold text-zinc-400">
                     Enlace de activación ({inviteResult.mode === "supabase" ? "Supabase" : "Demo local"}):
                   </label>
                   <div className="flex items-center gap-2">
                     <input
                       readOnly
                       value={inviteResult.link}
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-cyan-300"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-cyan-300"
                     />
                     <button
                       type="button"
                       onClick={() => handleCopy(inviteResult.link)}
-                      className="rounded-xl border border-slate-700 bg-slate-800 p-2 text-slate-200 hover:bg-slate-700"
+                      className="rounded-xl border border-white/15 bg-white/[0.06] p-2 text-zinc-200 hover:bg-white/[0.12]"
                     >
                       {copied ? (
                         <Check className="h-4 w-4 text-emerald-400" />
@@ -587,14 +587,14 @@ function CoachStudentsContent() {
                 <div className="flex gap-2 pt-2">
                   <Link
                     href={inviteResult.link}
-                    className="flex-1 rounded-xl bg-emerald-500 py-2.5 text-center text-xs font-bold text-slate-950"
+                    className="flex-1 rounded-xl bg-emerald-500 py-2.5 text-center text-xs font-bold text-zinc-950"
                   >
                     Probar Activación Ahora
                   </Link>
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
-                    className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-white"
+                    className="rounded-xl border border-white/15 bg-white/[0.06] px-4 py-2.5 text-xs font-semibold text-white"
                   >
                     Cerrar
                   </button>
@@ -614,7 +614,7 @@ function CoachStudentsContent() {
                   </div>
                 )}
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-300">
+                  <label className="mb-1 block text-xs font-semibold text-zinc-300">
                     Nombre completo del alumno *
                   </label>
                   <input
@@ -623,34 +623,34 @@ function CoachStudentsContent() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ej. Andrea López"
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white outline-none focus:border-cyan-500"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-300">
+                  <label className="mb-1 block text-xs font-semibold text-zinc-300">
                     Correo electrónico *
                   </label>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="andrea@correo.com"
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 py-2.5 pl-9 pr-3.5 text-sm text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-2.5 pl-9 pr-3.5 text-sm text-white outline-none focus:border-cyan-500"
                     />
                   </div>
                 </div>
                 {subscriptionPlans.length > 0 && (
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
                       Paquete configurado
                     </label>
                     <select
                       value={selectedPlanId}
                       onChange={(e) => handlePlanPresetChange(e.target.value)}
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
                     >
                       {subscriptionPlans.map((p) => (
                         <option key={p.id} value={p.id}>
@@ -663,18 +663,18 @@ function CoachStudentsContent() {
                 )}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
                       Plan de Suscripción
                     </label>
                     <input
                       type="text"
                       value={planName}
                       onChange={(e) => setPlanName(e.target.value)}
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
                       Costo mensual ($)
                     </label>
                     <input
@@ -682,12 +682,12 @@ function CoachStudentsContent() {
                       min={0}
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
-                      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-300">
+                  <label className="mb-1 block text-xs font-semibold text-zinc-300">
                     Objetivo inicial
                   </label>
                   <input
@@ -695,13 +695,13 @@ function CoachStudentsContent() {
                     value={goal}
                     onChange={(e) => setGoal(e.target.value)}
                     placeholder="Hipertrofia, Definición, Recomposición..."
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white outline-none focus:border-cyan-500"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-cyan-500"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={sending}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3 text-sm font-bold text-slate-950"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 py-3 text-sm font-bold text-zinc-950"
                 >
                   <Send className="h-4 w-4" />
                   {sending ? "Enviando invitación..." : "Enviar Invitación"}
@@ -719,7 +719,7 @@ export default function CoachStudentsPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-10 text-center text-sm text-slate-400">
+        <div className="py-10 text-center text-sm text-zinc-400">
           Cargando alumnos...
         </div>
       }

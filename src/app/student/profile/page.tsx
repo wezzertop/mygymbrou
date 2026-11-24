@@ -122,7 +122,7 @@ export default function StudentProfilePage() {
         <h1 className="text-2xl font-extrabold text-white">
           Mis Metas y Perfil
         </h1>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-zinc-400">
           Tus objetivos y limitaciones se sincronizan automáticamente con tu Coach
           para adaptar tus rutinas y nutrición.
         </p>
@@ -141,7 +141,7 @@ export default function StudentProfilePage() {
       {/* Synchronized Fitness Goals Form */}
       <form
         onSubmit={handleSaveGoals}
-        className="space-y-4 rounded-2xl border border-emerald-500/35 bg-slate-900/80 p-6"
+        className="space-y-4 rounded-2xl border border-emerald-500/35 bg-[#0e0f12] p-6"
       >
         <div className="flex items-center gap-2">
           <Target className="h-5 w-5 text-emerald-400" />
@@ -151,13 +151,13 @@ export default function StudentProfilePage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+          <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
             Objetivo principal
           </label>
           <select
             value={primaryGoal}
             onChange={(e) => setPrimaryGoal(e.target.value)}
-            className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
           >
             {PRIMARY_GOALS.map((g) => (
               <option key={g} value={g}>
@@ -168,7 +168,7 @@ export default function StudentProfilePage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+          <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
             Zonas prioritarias
           </label>
           <div className="flex flex-wrap gap-2">
@@ -181,8 +181,8 @@ export default function StudentProfilePage() {
                   onClick={() => toggleZone(zone)}
                   className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
                     active
-                      ? "bg-emerald-500 text-slate-950"
-                      : "border border-slate-700 bg-slate-950 text-slate-300 hover:border-emerald-500/50"
+                      ? "bg-emerald-500 text-zinc-950"
+                      : "border border-white/15 bg-[#060607] text-zinc-300 hover:border-emerald-500/50"
                   }`}
                 >
                   {zone}
@@ -194,7 +194,7 @@ export default function StudentProfilePage() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Peso objetivo (kg, opcional)
             </label>
             <input
@@ -203,17 +203,17 @@ export default function StudentProfilePage() {
               value={targetWeight}
               onChange={(e) => setTargetWeight(e.target.value)}
               placeholder="Ej. 60.0"
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Días disponibles / semana
             </label>
             <select
               value={daysPerWeek}
               onChange={(e) => setDaysPerWeek(Number(e.target.value))}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
             >
               {[2, 3, 4, 5, 6, 7].map((d) => (
                 <option key={d} value={d}>
@@ -225,7 +225,7 @@ export default function StudentProfilePage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-300">
+          <label className="mb-1 block text-xs font-semibold text-zinc-300">
             Lesiones o limitaciones físicas a considerar
           </label>
           <textarea
@@ -233,13 +233,13 @@ export default function StudentProfilePage() {
             value={limitations}
             onChange={(e) => setLimitations(e.target.value)}
             placeholder="Ej. Molestia en rodilla izquierda con saltos, dolor lumbar..."
-            className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3 text-xs text-white outline-none focus:border-emerald-500"
+            className="w-full rounded-xl border border-white/15 bg-[#060607] p-3 text-xs text-white outline-none focus:border-emerald-500"
           />
         </div>
 
         <button
           type="submit"
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 py-3 text-xs font-bold text-slate-950"
+          className="inline-flex items-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-5 py-3 text-xs font-bold text-zinc-950"
         >
           <Save className="h-4 w-4" />
           Guardar y Sincronizar Metas
@@ -249,7 +249,7 @@ export default function StudentProfilePage() {
       {/* Personal Data Form */}
       <form
         onSubmit={handleSaveProfile}
-        className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-6"
+        className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6"
       >
         <div className="flex items-center gap-4 pb-2">
           <img
@@ -268,80 +268,80 @@ export default function StudentProfilePage() {
                 compact
               />
             </div>
-            <p className="text-xs text-slate-400">{studentProfile.email}</p>
+            <p className="text-xs text-zinc-400">{studentProfile.email}</p>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Nombre completo
             </label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Género (Guía Anatómica)
             </label>
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value as Gender)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
             >
               <option value="female">Mujer</option>
               <option value="male">Hombre</option>
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Teléfono
             </label>
             <input
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white"
             />
           </div>
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-300">
+          <label className="mb-1 block text-xs font-semibold text-zinc-300">
             URL de Foto de Perfil
           </label>
           <div className="relative">
-            <Camera className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <Camera className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
             <input
               type="url"
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 py-2.5 pl-10 pr-3.5 text-xs text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] py-2.5 pl-10 pr-3.5 text-xs text-white"
             />
           </div>
         </div>
 
         <button
           type="submit"
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-5 py-2.5 text-xs font-bold text-white hover:bg-slate-700"
+          className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.06] px-5 py-2.5 text-xs font-bold text-white hover:bg-white/[0.12]"
         >
           <Save className="h-4 w-4" />
           Actualizar Datos Personales
         </button>
       </form>
 
-      <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-xs text-slate-400">
-        <p className="flex items-center gap-2 font-semibold text-slate-200">
+      <div className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 text-xs text-zinc-400">
+        <p className="flex items-center gap-2 font-semibold text-zinc-200">
           <ShieldCheck className="h-4 w-4 text-emerald-400" />
           Términos y Condiciones Aceptados
         </p>
         <p>
           Aceptado el:{" "}
-          <span className="font-mono text-slate-300">
+          <span className="font-mono text-zinc-300">
             {new Date(studentProfile.terms_accepted_at).toLocaleString("es-MX")}
           </span>
         </p>

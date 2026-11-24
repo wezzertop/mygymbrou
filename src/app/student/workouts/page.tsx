@@ -53,7 +53,7 @@ function StudentWorkoutsContent() {
           <h1 className="mt-3 text-2xl font-extrabold text-white">
             Desbloquea Rutinas Guiadas con Videos y Animaciones
           </h1>
-          <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-slate-300">
+          <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-zinc-300">
             El módulo de Rutinas Visuales, temporizador de descanso y registro de
             cargas pertenece al <strong>Plan Medio, Plan Oro y Plan Premium</strong>{" "}
             de tu coach.
@@ -61,7 +61,7 @@ function StudentWorkoutsContent() {
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/student/subscription"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-3.5 text-xs font-bold text-slate-950"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-6 py-3.5 text-xs font-bold text-zinc-950"
             >
               <Sparkles className="h-4 w-4" />
               Ver Planes y Solicitar Actualización
@@ -115,11 +115,11 @@ function StudentWorkoutsContent() {
 
   if (!activeWorkout) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 text-center">
+      <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center">
         <p className="text-base font-bold text-white">
           Aún no tienes una rutina asignada
         </p>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-zinc-400">
           Tu coach publicará tu plan de entrenamiento pronto.
         </p>
       </div>
@@ -166,7 +166,7 @@ function StudentWorkoutsContent() {
           {activeWorkout.title}
         </h1>
         {activeWorkout.description && (
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-zinc-400">
             {activeWorkout.description}
           </p>
         )}
@@ -181,8 +181,8 @@ function StudentWorkoutsContent() {
             onClick={() => setSelectedDayIdx(idx)}
             className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-bold transition ${
               idx === selectedDayIdx
-                ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20"
-                : "border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700"
+                ? "bg-white hover:bg-zinc-200 text-zinc-950 shadow-lg shadow-none"
+                : "border border-white/[0.08] bg-[#0e0f12] text-zinc-300 hover:border-white/15"
             }`}
           >
             Día {day.day_number} · {day.focus_area || "Entreno"}
@@ -191,14 +191,14 @@ function StudentWorkoutsContent() {
       </div>
 
       {/* Integrated Rest Timer Bar */}
-      <div className="sticky top-14 z-20 rounded-2xl border border-cyan-500/30 bg-slate-950/95 p-3.5 shadow-xl backdrop-blur-md">
+      <div className="sticky top-14 z-20 rounded-2xl border border-cyan-500/30 bg-[#060607]/95 p-3.5 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400">
               <Timer className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
                 Temporizador de Descanso
               </p>
               <p
@@ -225,7 +225,7 @@ function StudentWorkoutsContent() {
                 className={`min-h-[36px] rounded-lg border px-2.5 py-1.5 text-[11px] font-bold transition active:scale-95 ${
                   selectedPreset === preset
                     ? "border-cyan-500 bg-cyan-500/20 text-cyan-300"
-                    : "border-slate-700 bg-slate-900 text-slate-200 hover:border-cyan-500/60"
+                    : "border-white/15 bg-[#0e0f12] text-zinc-200 hover:border-cyan-500/60"
                 }`}
               >
                 {preset}s
@@ -235,7 +235,7 @@ function StudentWorkoutsContent() {
               type="button"
               onClick={() => setTimerRunning((r) => !r)}
               aria-label={timerRunning ? "Pausar temporizador" : "Iniciar temporizador"}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500 text-slate-950 transition hover:bg-cyan-400 active:scale-95"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500 text-zinc-950 transition hover:bg-cyan-400 active:scale-95"
             >
               {timerRunning ? (
                 <Pause className="h-4 w-4" />
@@ -250,7 +250,7 @@ function StudentWorkoutsContent() {
                 setSecondsLeft(selectedPreset);
               }}
               aria-label="Reiniciar temporizador"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 text-slate-300 transition hover:border-slate-500 hover:text-white active:scale-95"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-[#0e0f12] text-zinc-300 transition hover:border-slate-500 hover:text-white active:scale-95"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
@@ -259,13 +259,13 @@ function StudentWorkoutsContent() {
       </div>
 
       {/* Day Header & Progress */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+      <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4">
         <div className="flex items-center justify-between gap-2">
           <div>
             <h2 className="text-base font-bold text-white">
               {currentDay.title}
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-zinc-400">
               Duración estimada: {currentDay.estimated_minutes || 55} min
             </p>
           </div>
@@ -273,9 +273,9 @@ function StudentWorkoutsContent() {
             {completedCount}/{currentDay.exercises.length} ({progressPct}%)
           </span>
         </div>
-        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-800">
+        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-300"
+            className="h-full rounded-full bg-white hover:bg-zinc-200 transition-all duration-300"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -300,7 +300,7 @@ function StudentWorkoutsContent() {
               className={`overflow-hidden rounded-2xl border p-4 transition ${
                 done
                   ? "border-emerald-500/40 bg-emerald-950/20"
-                  : "border-slate-800/90 bg-slate-900/75"
+                  : "border-white/[0.08] bg-[#0e0f12]/75"
               }`}
             >
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
@@ -328,7 +328,7 @@ function StudentWorkoutsContent() {
                       </span>
                       <h3
                         className={`text-base font-bold ${
-                          done ? "text-slate-400 line-through" : "text-white"
+                          done ? "text-zinc-400 line-through" : "text-white"
                         }`}
                       >
                         {ex.name}
@@ -341,8 +341,8 @@ function StudentWorkoutsContent() {
                       aria-label={`Marcar ${ex.name} completado`}
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-2 transition active:scale-95 ${
                         done
-                          ? "border-emerald-400 bg-emerald-500 text-slate-950"
-                          : "border-slate-600 bg-slate-950 text-transparent hover:border-cyan-400"
+                          ? "border-emerald-400 bg-emerald-500 text-zinc-950"
+                          : "border-slate-600 bg-[#060607] text-transparent hover:border-cyan-400"
                       }`}
                     >
                       <Check className="h-6 w-6 stroke-[3]" />
@@ -351,7 +351,7 @@ function StudentWorkoutsContent() {
 
                   {/* Sets / Reps / Rest */}
                   <div className="flex flex-wrap gap-2 text-xs">
-                    <span className="rounded-lg bg-slate-800 px-2.5 py-1 font-bold text-white">
+                    <span className="rounded-lg bg-white/[0.06] px-2.5 py-1 font-bold text-white">
                       {ex.sets} series × {ex.reps}
                     </span>
                     {ex.target_weight_or_rpe && (
@@ -362,7 +362,7 @@ function StudentWorkoutsContent() {
                     <button
                       type="button"
                       onClick={() => startRest(ex.rest_seconds)}
-                      className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1 font-semibold text-emerald-300 hover:border-emerald-500"
+                      className="inline-flex items-center gap-1 rounded-lg border border-white/15 bg-[#060607] px-2.5 py-1 font-semibold text-emerald-300 hover:border-emerald-500"
                     >
                       <Clock className="h-3.5 w-3.5" />
                       Descanso {ex.rest_seconds}s
@@ -370,7 +370,7 @@ function StudentWorkoutsContent() {
                   </div>
 
                   {ex.coach_notes && (
-                    <p className="rounded-xl bg-slate-950/70 p-2.5 text-xs text-slate-300">
+                    <p className="rounded-xl bg-[#060607] p-2.5 text-xs text-zinc-300">
                       <span className="font-semibold text-cyan-400">
                         Nota del Coach:{" "}
                       </span>
@@ -401,7 +401,7 @@ function StudentWorkoutsContent() {
                         )}
                       </button>
                       {showInstr && (
-                        <p className="mt-2 rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-xs leading-relaxed text-slate-300">
+                        <p className="mt-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3 text-xs leading-relaxed text-zinc-300">
                           {ex.instructions}
                         </p>
                       )}
@@ -421,7 +421,7 @@ function StudentWorkoutsContent() {
         className={`flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-extrabold shadow-xl transition active:scale-[0.99] ${
           alreadyLoggedToday
             ? "border border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
-            : "bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-emerald-500/25 hover:brightness-110"
+            : "bg-white hover:bg-zinc-200 text-zinc-950 shadow-emerald-500/25 "
         }`}
       >
         <CheckCircle2 className="h-5 w-5" />
@@ -440,7 +440,7 @@ export default function StudentWorkoutsPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-10 text-center text-sm text-slate-400">
+        <div className="py-10 text-center text-sm text-zinc-400">
           Cargando rutina visual...
         </div>
       }

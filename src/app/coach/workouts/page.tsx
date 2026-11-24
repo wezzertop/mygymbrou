@@ -305,7 +305,7 @@ export default function CoachWorkoutsPage() {
           <h1 className="text-2xl font-extrabold text-white">
             Rutinas con Secuencia Anatómica
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-zinc-400">
             Previsualiza secuencias de 3–4 fotogramas en Dark UI por género
             (Mujer/Hombre) y arma rutinas en segundos.
           </p>
@@ -313,14 +313,14 @@ export default function CoachWorkoutsPage() {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Gender Preview Switcher */}
-          <div className="flex flex-1 rounded-xl border border-slate-800 bg-slate-950 p-1 text-xs font-bold sm:flex-none">
+          <div className="flex flex-1 rounded-xl border border-white/[0.08] bg-[#060607] p-1 text-xs font-bold sm:flex-none">
             <button
               type="button"
               onClick={() => setPreviewGender("female")}
               className={`flex-1 rounded-lg px-3 py-1.5 transition sm:flex-none ${
                 previewGender === "female"
                   ? "bg-rose-500/20 text-rose-300"
-                  : "text-slate-400 hover:text-white"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Vista Mujer
@@ -331,7 +331,7 @@ export default function CoachWorkoutsPage() {
               className={`flex-1 rounded-lg px-3 py-1.5 transition sm:flex-none ${
                 previewGender === "male"
                   ? "bg-cyan-500/20 text-cyan-300"
-                  : "text-slate-400 hover:text-white"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Vista Hombre
@@ -374,20 +374,20 @@ export default function CoachWorkoutsPage() {
         {/* LEFT: Visual Anatomical Exercise Catalog */}
         <section className="min-w-0 space-y-4 lg:col-span-7">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar ejercicio, músculo o equipo..."
-              className="w-full rounded-xl border border-slate-800 bg-slate-900 py-2.5 pl-9 pr-9 text-xs text-white outline-none transition focus:border-cyan-500"
+              className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-9 pr-9 text-xs text-white outline-none transition focus:border-cyan-500"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch("")}
                 aria-label="Limpiar búsqueda"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-400 hover:bg-white/[0.06] hover:text-white"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -403,8 +403,8 @@ export default function CoachWorkoutsPage() {
                 onClick={() => setGroupFilter(g)}
                 className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
                   groupFilter === g
-                    ? "bg-cyan-500 text-slate-950"
-                    : "border border-slate-800 bg-slate-900 text-slate-400 hover:text-white"
+                    ? "bg-cyan-500 text-zinc-950"
+                    : "border border-white/[0.08] bg-[#0e0f12] text-zinc-400 hover:text-white"
                 }`}
               >
                 {g}
@@ -413,7 +413,7 @@ export default function CoachWorkoutsPage() {
           </div>
 
           {/* Catalog Count & Live API Indicator */}
-          <div className="flex items-center justify-between text-[11px] text-slate-400">
+          <div className="flex items-center justify-between text-[11px] text-zinc-400">
             <span className="inline-flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
               Catálogo en vivo:{" "}
@@ -433,7 +433,7 @@ export default function CoachWorkoutsPage() {
             {filteredCatalog.map((item) => (
               <div
                 key={item.id}
-                className="flex min-w-0 flex-col justify-between gap-3 rounded-2xl border border-slate-800/90 bg-slate-900/70 p-3.5 transition hover:border-cyan-500/40"
+                className="flex min-w-0 flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3.5 transition hover:border-cyan-500/40"
               >
                 <div className="flex min-w-0 gap-3">
                   <ExerciseVisualDemo
@@ -455,7 +455,7 @@ export default function CoachWorkoutsPage() {
                     <h3 className="mt-1 text-xs font-bold text-white">
                       {item.name}
                     </h3>
-                    <p className="mt-0.5 text-[11px] text-slate-400">
+                    <p className="mt-0.5 text-[11px] text-zinc-400">
                       {item.equipment}
                     </p>
                     {item.primary_muscles && item.primary_muscles.length > 0 && (
@@ -468,7 +468,7 @@ export default function CoachWorkoutsPage() {
                 <button
                   type="button"
                   onClick={() => handleAddFromCatalog(item)}
-                  className="inline-flex min-h-[38px] w-full items-center justify-center gap-1.5 rounded-xl bg-slate-800 py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500 hover:text-slate-950 active:scale-[0.98]"
+                  className="inline-flex min-h-[38px] w-full items-center justify-center gap-1.5 rounded-xl bg-white/[0.06] py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500 hover:text-zinc-950 active:scale-[0.98]"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Agregar a la Rutina
@@ -478,11 +478,11 @@ export default function CoachWorkoutsPage() {
           </div>
 
           {filteredCatalog.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 p-8 text-center">
+            <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
               <p className="text-sm font-bold text-white">
                 No encontramos ejercicios con esa búsqueda
               </p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-zinc-400">
                 Prueba otro músculo o sube tu propia secuencia de fotogramas.
               </p>
               <button
@@ -491,7 +491,7 @@ export default function CoachWorkoutsPage() {
                   setSearch("");
                   setGroupFilter("Todos");
                 }}
-                className="mt-4 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-slate-700"
+                className="mt-4 rounded-xl border border-white/15 bg-white/[0.06] px-4 py-2 text-xs font-bold text-white transition hover:bg-white/[0.12]"
               >
                 Ver todo el catálogo
               </button>
@@ -503,7 +503,7 @@ export default function CoachWorkoutsPage() {
         <form
           id="routine-builder"
           onSubmit={handlePublishRoutine}
-          className="h-fit min-w-0 scroll-mt-20 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-5 lg:sticky lg:top-6 lg:col-span-5"
+          className="h-fit min-w-0 scroll-mt-20 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:sticky lg:top-6 lg:col-span-5"
         >
           <div className="flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-base font-bold text-white">
@@ -516,13 +516,13 @@ export default function CoachWorkoutsPage() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Alumno destino (adapta figura Mujer/Hombre automáticamente)
             </label>
             <select
               value={targetStudentId}
               onChange={(e) => handleSelectStudent(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs font-semibold text-white"
             >
               {activeStudents.map((s) => (
                 <option key={s.id} value={s.student_id || ""}>
@@ -535,7 +535,7 @@ export default function CoachWorkoutsPage() {
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-[11px] text-slate-400">
+              <label className="mb-1 block text-[11px] text-zinc-400">
                 Nombre de rutina
               </label>
               <input
@@ -543,11 +543,11 @@ export default function CoachWorkoutsPage() {
                 required
                 value={routineTitle}
                 onChange={(e) => setRoutineTitle(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
               />
             </div>
             <div>
-              <label className="mb-1 block text-[11px] text-slate-400">
+              <label className="mb-1 block text-[11px] text-zinc-400">
                 Sesión / Día
               </label>
               <input
@@ -555,14 +555,14 @@ export default function CoachWorkoutsPage() {
                 required
                 value={dayTitle}
                 onChange={(e) => setDayTitle(e.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
               />
             </div>
           </div>
 
           {/* Weekday Picker */}
           <div>
-            <label className="mb-1.5 block text-[11px] font-semibold text-slate-300">
+            <label className="mb-1.5 block text-[11px] font-semibold text-zinc-300">
               Días asignados en calendario
             </label>
             <div className="grid grid-cols-7 gap-1">
@@ -575,8 +575,8 @@ export default function CoachWorkoutsPage() {
                     onClick={() => toggleWeekday(wd.num)}
                     className={`rounded-lg py-1.5 text-[11px] font-bold transition ${
                       active
-                        ? "bg-cyan-500 text-slate-950"
-                        : "border border-slate-800 bg-slate-950 text-slate-400 hover:text-white"
+                        ? "bg-cyan-500 text-zinc-950"
+                        : "border border-white/[0.08] bg-[#060607] text-zinc-400 hover:text-white"
                     }`}
                   >
                     {wd.label}
@@ -591,7 +591,7 @@ export default function CoachWorkoutsPage() {
             {draftExercises.map((ex, idx) => (
               <div
                 key={ex.id}
-                className="space-y-2 rounded-xl border border-slate-800 bg-slate-950/90 p-3"
+                className="space-y-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3"
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-bold text-white">
@@ -604,14 +604,14 @@ export default function CoachWorkoutsPage() {
                         prev.filter((i) => i.id !== ex.id)
                       )
                     }
-                    className="text-slate-500 hover:text-rose-400"
+                    className="text-zinc-500 hover:text-rose-400"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-1.5">
                   <div>
-                    <label className="text-[9px] text-slate-500">Series</label>
+                    <label className="text-[9px] text-zinc-500">Series</label>
                     <input
                       type="number"
                       value={ex.sets}
@@ -620,22 +620,22 @@ export default function CoachWorkoutsPage() {
                           sets: Number(e.target.value) || 3,
                         })
                       }
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-white"
+                      className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-2 py-1 text-xs text-white"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] text-slate-500">Reps</label>
+                    <label className="text-[9px] text-zinc-500">Reps</label>
                     <input
                       type="text"
                       value={ex.reps}
                       onChange={(e) =>
                         updateDraftExercise(ex.id, { reps: e.target.value })
                       }
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-white"
+                      className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-2 py-1 text-xs text-white"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] text-slate-500">Desc(s)</label>
+                    <label className="text-[9px] text-zinc-500">Desc(s)</label>
                     <input
                       type="number"
                       value={ex.rest_seconds}
@@ -644,11 +644,11 @@ export default function CoachWorkoutsPage() {
                           rest_seconds: Number(e.target.value) || 60,
                         })
                       }
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-white"
+                      className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-2 py-1 text-xs text-white"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] text-slate-500">Peso/RPE</label>
+                    <label className="text-[9px] text-zinc-500">Peso/RPE</label>
                     <input
                       type="text"
                       value={ex.target_weight_or_rpe || ""}
@@ -657,14 +657,14 @@ export default function CoachWorkoutsPage() {
                           target_weight_or_rpe: e.target.value,
                         })
                       }
-                      className="w-full rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-white"
+                      className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-2 py-1 text-xs text-white"
                     />
                   </div>
                 </div>
               </div>
             ))}
             {draftExercises.length === 0 && (
-              <div className="rounded-xl border border-dashed border-slate-800 p-5 text-center text-xs text-slate-500">
+              <div className="rounded-xl border border-dashed border-white/[0.08] p-5 text-center text-xs text-zinc-500">
                 Toca &ldquo;Agregar a la Rutina&rdquo; en cualquier ejercicio
                 del catálogo anatómico.
               </div>
@@ -674,7 +674,7 @@ export default function CoachWorkoutsPage() {
           <button
             type="submit"
             disabled={draftExercises.length === 0 || activeStudents.length === 0}
-            className="min-h-[44px] w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 active:scale-[0.98] disabled:opacity-40"
+            className="min-h-[44px] w-full rounded-xl bg-white hover:bg-zinc-200 py-3 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98] disabled:opacity-40"
           >
             {activeStudents.length === 0
               ? "Activa un alumno primero para publicar"
@@ -691,14 +691,14 @@ export default function CoachWorkoutsPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
           >
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-base font-bold text-white">
                   Configurar Secuencia de 3–4 Fotogramas
                 </h2>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-zinc-400">
                   Sube URLs de Supabase Storage o imágenes Dark UI por fase.
                 </p>
               </div>
@@ -706,7 +706,7 @@ export default function CoachWorkoutsPage() {
                 type="button"
                 onClick={() => setCustomModalOpen(false)}
                 aria-label="Cerrar modal"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -714,7 +714,7 @@ export default function CoachWorkoutsPage() {
 
             <form onSubmit={handleCreateCustomExercise} className="space-y-3.5">
               <div>
-                <label className="mb-1 block text-xs text-slate-300">
+                <label className="mb-1 block text-xs text-zinc-300">
                   Nombre del ejercicio *
                 </label>
                 <input
@@ -723,13 +723,13 @@ export default function CoachWorkoutsPage() {
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   placeholder="Ej. Sentadilla Hack Profunda"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-sm text-white"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-300">
+                  <label className="mb-1 block text-[11px] text-zinc-300">
                     Grupo muscular
                   </label>
                   <select
@@ -737,7 +737,7 @@ export default function CoachWorkoutsPage() {
                     onChange={(e) =>
                       setCustomGroup(e.target.value as MuscleGroup)
                     }
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-2.5 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-2.5 py-2 text-xs text-white"
                   >
                     {MUSCLE_GROUPS.filter((g) => g !== "Todos").map((g) => (
                       <option key={g} value={g}>
@@ -747,7 +747,7 @@ export default function CoachWorkoutsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-300">
+                  <label className="mb-1 block text-[11px] text-zinc-300">
                     Variante género
                   </label>
                   <select
@@ -755,14 +755,14 @@ export default function CoachWorkoutsPage() {
                     onChange={(e) =>
                       setCustomGenderVariant(e.target.value as Gender)
                     }
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-2.5 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-2.5 py-2 text-xs text-white"
                   >
                     <option value="female">Mujer</option>
                     <option value="male">Hombre</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-300">
+                  <label className="mb-1 block text-[11px] text-zinc-300">
                     Velocidad (ms)
                   </label>
                   <input
@@ -772,37 +772,37 @@ export default function CoachWorkoutsPage() {
                     step={50}
                     value={customInterval}
                     onChange={(e) => setCustomInterval(e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-2.5 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-2.5 py-2 text-xs text-white"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-300">
+                  <label className="mb-1 block text-[11px] text-zinc-300">
                     Músculos principales
                   </label>
                   <input
                     type="text"
                     value={customPrimaryMuscles}
                     onChange={(e) => setCustomPrimaryMuscles(e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[11px] text-slate-300">
+                  <label className="mb-1 block text-[11px] text-zinc-300">
                     Músculos secundarios
                   </label>
                   <input
                     type="text"
                     value={customSecondaryMuscles}
                     onChange={(e) => setCustomSecondaryMuscles(e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2 rounded-2xl border border-slate-800 bg-slate-950/70 p-3">
+              <div className="space-y-2 rounded-2xl border border-white/[0.08] bg-[#060607] p-3">
                 <p className="text-[11px] font-bold text-cyan-400">
                   Secuencia de Fotogramas (URLs de Supabase Storage o local)
                 </p>
@@ -811,33 +811,33 @@ export default function CoachWorkoutsPage() {
                   value={frame1Url}
                   onChange={(e) => setFrame1Url(e.target.value)}
                   placeholder="Fase 1 (Inicio) — https://..."
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-3 py-1.5 text-xs text-white"
                 />
                 <input
                   type="text"
                   value={frame2Url}
                   onChange={(e) => setFrame2Url(e.target.value)}
                   placeholder="Fase 2 (Ejecución) — https://..."
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-3 py-1.5 text-xs text-white"
                 />
                 <input
                   type="text"
                   value={frame3Url}
                   onChange={(e) => setFrame3Url(e.target.value)}
                   placeholder="Fase 3 (Contracción máxima) — https://..."
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-3 py-1.5 text-xs text-white"
                 />
                 <input
                   type="text"
                   value={frame4Url}
                   onChange={(e) => setFrame4Url(e.target.value)}
                   placeholder="Fase 4 (Retorno - opcional) — https://..."
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-3 py-1.5 text-xs text-white"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-xs text-slate-300">
+                <label className="mb-1 block text-xs text-zinc-300">
                   Equipo e instrucciones técnicas
                 </label>
                 <textarea
@@ -845,13 +845,13 @@ export default function CoachWorkoutsPage() {
                   value={customInstructions}
                   onChange={(e) => setCustomInstructions(e.target.value)}
                   placeholder="Pasos breves de ejecución correcta..."
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 p-2.5 text-xs text-white"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] p-2.5 text-xs text-white"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3 text-xs font-bold text-slate-950"
+                className="w-full rounded-xl bg-white hover:bg-zinc-200 py-3 text-xs font-bold text-zinc-950"
               >
                 Guardar Secuencia en Biblioteca
               </button>

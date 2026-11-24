@@ -75,14 +75,14 @@ function CoachAgendaContent() {
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-extrabold text-white">Agenda de Citas</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-zinc-400">
             Programa evaluaciones presenciales u online. Cada cita notifica
             automáticamente al alumno.
           </p>
         </div>
         <Link
           href="/coach/calendar"
-          className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2 text-xs font-bold text-slate-200 transition hover:border-cyan-500/50 hover:text-white"
+          className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-[#0e0f12] px-3.5 py-2 text-xs font-bold text-zinc-200 transition hover:border-cyan-500/50 hover:text-white"
         >
           <CalendarDays className="h-4 w-4 text-cyan-400" />
           Ver en Calendario
@@ -100,7 +100,7 @@ function CoachAgendaContent() {
         {/* New Appointment Form */}
         <form
           onSubmit={handleSchedule}
-          className="min-w-0 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-5 lg:col-span-5"
+          className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
         >
           <h2 className="flex items-center gap-2 text-base font-bold text-white">
             <CalendarPlus className="h-4 w-4 text-cyan-400" />
@@ -108,13 +108,13 @@ function CoachAgendaContent() {
           </h2>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Alumno
             </label>
             <select
               value={studentId}
               onChange={(e) => setStudentId(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
             >
               {activeStudents.map((s) => (
                 <option key={s.id} value={s.student_id || ""}>
@@ -125,7 +125,7 @@ function CoachAgendaContent() {
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Motivo de la cita *
             </label>
             <input
@@ -134,12 +134,12 @@ function CoachAgendaContent() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ej. Toma de medidas y ajuste de dieta"
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Fecha y hora *
             </label>
             <input
@@ -147,12 +147,12 @@ function CoachAgendaContent() {
               required
               value={dateTime}
               onChange={(e) => setDateTime(e.target.value)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Ubicación o Enlace Online *
             </label>
             <input
@@ -161,12 +161,12 @@ function CoachAgendaContent() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Consultorio o link de Google Meet / Zoom"
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-300">
+            <label className="mb-1 block text-xs font-semibold text-zinc-300">
               Indicaciones previas
             </label>
             <textarea
@@ -174,14 +174,14 @@ function CoachAgendaContent() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Ej. Ropa deportiva ligera y 2h de ayuno."
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 p-3 text-xs text-white"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] p-3 text-xs text-white"
             />
           </div>
 
           <button
             type="submit"
             disabled={activeStudents.length === 0}
-            className="min-h-[42px] w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 active:scale-[0.98] disabled:opacity-40"
+            className="min-h-[42px] w-full rounded-xl bg-white hover:bg-zinc-200 py-3 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98] disabled:opacity-40"
           >
             {activeStudents.length === 0
               ? "Activa un alumno primero para agendar"
@@ -192,11 +192,11 @@ function CoachAgendaContent() {
         {/* Appointments List */}
         <div className="min-w-0 space-y-3 lg:col-span-7">
           {sorted.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 p-8 text-center">
+            <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
               <p className="text-sm font-bold text-white">
                 Sin citas registradas todavía
               </p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-zinc-400">
                 Usa el formulario para programar tu primera valoración o check-in.
               </p>
             </div>
@@ -204,7 +204,7 @@ function CoachAgendaContent() {
           {sorted.map((apt) => (
             <div
               key={apt.id}
-              className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"
+              className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="space-y-1">
@@ -229,19 +229,19 @@ function CoachAgendaContent() {
                     </span>
                   </div>
                   <h3 className="text-base font-bold text-white">{apt.title}</h3>
-                  <p className="flex items-center gap-1.5 text-xs text-slate-400">
+                  <p className="flex items-center gap-1.5 text-xs text-zinc-400">
                     <Clock className="h-3.5 w-3.5 text-cyan-400" />
                     {new Date(apt.scheduled_at).toLocaleString("es-MX", {
                       dateStyle: "full",
                       timeStyle: "short",
                     })}
                   </p>
-                  <p className="flex items-center gap-1.5 text-xs text-slate-400">
+                  <p className="flex items-center gap-1.5 text-xs text-zinc-400">
                     <MapPin className="h-3.5 w-3.5 text-emerald-400" />
                     {apt.location_or_link}
                   </p>
                   {apt.notes && (
-                    <p className="pt-1 text-xs text-slate-300">{apt.notes}</p>
+                    <p className="pt-1 text-xs text-zinc-300">{apt.notes}</p>
                   )}
                 </div>
 
@@ -278,7 +278,7 @@ export default function CoachAgendaPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-10 text-center text-sm text-slate-400">
+        <div className="py-10 text-center text-sm text-zinc-400">
           Cargando agenda...
         </div>
       }

@@ -43,7 +43,7 @@ export default function StudentNotificationsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold text-white">Notificaciones</h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-zinc-400">
             Avisos de tu coach sobre rutinas, dietas, evaluaciones y citas.
           </p>
         </div>
@@ -70,14 +70,14 @@ export default function StudentNotificationsPage() {
               onClick={() => markNotificationRead(n.id)}
               className={`flex w-full items-start gap-3.5 rounded-2xl border p-4 text-left transition ${
                 n.is_read
-                  ? "border-slate-800/70 bg-slate-900/50 opacity-80"
-                  : "border-cyan-500/40 bg-slate-900 shadow-lg shadow-cyan-950/20"
+                  ? "border-white/[0.08] bg-[#0e0f12] opacity-80"
+                  : "border-cyan-500/40 bg-[#0e0f12] shadow-lg shadow-cyan-950/20"
               }`}
             >
               <div
                 className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
                   n.is_read
-                    ? "bg-slate-800 text-slate-400"
+                    ? "bg-white/[0.06] text-zinc-400"
                     : "bg-cyan-500/15 text-cyan-400"
                 }`}
               >
@@ -90,10 +90,10 @@ export default function StudentNotificationsPage() {
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-cyan-400" />
                   )}
                 </div>
-                <p className="text-xs leading-relaxed text-slate-300">
+                <p className="text-xs leading-relaxed text-zinc-300">
                   {n.message}
                 </p>
-                <p className="text-[10px] text-slate-500">
+                <p className="text-[10px] text-zinc-500">
                   {new Date(n.created_at).toLocaleString("es-MX", {
                     dateStyle: "medium",
                     timeStyle: "short",
@@ -105,7 +105,7 @@ export default function StudentNotificationsPage() {
         })}
 
         {myNotifs.length === 0 && (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center text-sm text-slate-400">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center text-sm text-zinc-400">
             No tienes notificaciones por ahora.
           </div>
         )}

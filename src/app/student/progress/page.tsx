@@ -172,7 +172,7 @@ export default function StudentProgressPage() {
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-extrabold text-white">Mis Avances</h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-zinc-400">
             Seguimiento antropométrico y análisis directo de tu coach.
           </p>
         </div>
@@ -182,21 +182,21 @@ export default function StudentProgressPage() {
           <button
             type="button"
             onClick={() => setCheckInOpen(true)}
-            className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:brightness-110 active:scale-[0.98]"
+            className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
             Registrar Progreso
           </button>
 
           {/* Toggle Mes anterior vs Inicio */}
-          <div className="flex rounded-xl border border-slate-800 bg-slate-950 p-1 text-[11px] font-bold">
+          <div className="flex rounded-xl border border-white/[0.08] bg-[#060607] p-1 text-[11px] font-bold">
             <button
               type="button"
               onClick={() => setCompareMode("previous")}
               className={`rounded-lg px-3 py-1.5 transition ${
                 compareMode === "previous"
-                  ? "bg-emerald-500 text-slate-950"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-emerald-500 text-zinc-950"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Mes anterior
@@ -206,8 +206,8 @@ export default function StudentProgressPage() {
               onClick={() => setCompareMode("initial")}
               className={`rounded-lg px-3 py-1.5 transition ${
                 compareMode === "initial"
-                  ? "bg-emerald-500 text-slate-950"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-emerald-500 text-zinc-950"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Antes vs. Hoy
@@ -238,14 +238,14 @@ export default function StudentProgressPage() {
               {daysLeft > 0 ? `${daysLeft} días restantes` : "Por renovar"}
             </span>
           </div>
-          <div className="flex flex-wrap gap-1.5 text-[10px] font-semibold text-slate-300">
+          <div className="flex flex-wrap gap-1.5 text-[10px] font-semibold text-zinc-300">
             {activePlan?.includes_nutrition && (
-              <span className="rounded bg-slate-800 px-2 py-0.5">Nutrición</span>
+              <span className="rounded bg-white/[0.06] px-2 py-0.5">Nutrición</span>
             )}
             {activePlan?.includes_workouts && (
-              <span className="rounded bg-slate-800 px-2 py-0.5">Rutinas</span>
+              <span className="rounded bg-white/[0.06] px-2 py-0.5">Rutinas</span>
             )}
-            <span className="inline-flex items-center gap-1 text-slate-400">
+            <span className="inline-flex items-center gap-1 text-zinc-400">
               <Calendar className="h-3 w-3 text-cyan-400" />
               Vence: {expiresAt}
             </span>
@@ -261,7 +261,7 @@ export default function StudentProgressPage() {
               <Target className="h-3.5 w-3.5" />
               Mi Meta Actual
             </span>
-            <span className="text-[10px] font-semibold text-slate-400">
+            <span className="text-[10px] font-semibold text-zinc-400">
               Editar →
             </span>
           </div>
@@ -270,7 +270,7 @@ export default function StudentProgressPage() {
             {myGoal?.target_weight_kg ? ` · Meta: ${myGoal.target_weight_kg} kg` : ""}
           </p>
           {myGoal && myGoal.priority_zones.length > 0 && (
-            <p className="truncate text-[11px] text-slate-400">
+            <p className="truncate text-[11px] text-zinc-400">
               Foco: {myGoal.priority_zones.join(", ")} ({myGoal.days_per_week}d/sem)
             </p>
           )}
@@ -295,7 +295,7 @@ export default function StudentProgressPage() {
                   <Sparkles className="h-3.5 w-3.5" />
                   Último Análisis del Coach
                 </p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-zinc-400">
                   {coachProfile.full_name} · {latest.assessment_date}
                 </p>
               </div>
@@ -306,7 +306,7 @@ export default function StudentProgressPage() {
               </span>
             )}
           </div>
-          <p className="mt-3.5 text-sm leading-relaxed text-slate-100">
+          <p className="mt-3.5 text-sm leading-relaxed text-zinc-100">
             &ldquo;{latest.coach_analysis_notes}&rdquo;
           </p>
         </section>
@@ -319,7 +319,7 @@ export default function StudentProgressPage() {
             Comparativa de Medidas Corporales
           </h2>
           {baseline && (
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] text-zinc-400">
               vs. {baseline.assessment_date}
             </span>
           )}
@@ -339,14 +339,14 @@ export default function StudentProgressPage() {
             return (
               <div
                 key={m.label}
-                className="rounded-2xl border border-slate-800/90 bg-slate-900/75 p-3.5"
+                className="rounded-2xl border border-white/[0.08] bg-[#0e0f12]/75 p-3.5"
               >
-                <p className="text-[11px] font-medium text-slate-400">
+                <p className="text-[11px] font-medium text-zinc-400">
                   {m.label}
                 </p>
                 <p className="mt-1 text-xl font-black text-white">
                   {m.val ?? "—"}{" "}
-                  <span className="text-xs font-medium text-slate-400">
+                  <span className="text-xs font-medium text-zinc-400">
                     {m.val !== undefined ? m.unit : ""}
                   </span>
                 </p>
@@ -364,7 +364,7 @@ export default function StudentProgressPage() {
                     {diff > 0 ? `+${diff}` : diff} {m.unit}
                   </p>
                 ) : (
-                  <p className="mt-1 text-[11px] text-slate-500">Estable</p>
+                  <p className="mt-1 text-[11px] text-zinc-500">Estable</p>
                 )}
               </div>
             );
@@ -383,7 +383,7 @@ export default function StudentProgressPage() {
             {allPhotos.map((photo, idx) => (
               <div
                 key={`${photo.url}-${idx}`}
-                className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900"
+                className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12]"
               >
                 <img
                   src={photo.url}
@@ -392,7 +392,7 @@ export default function StudentProgressPage() {
                 />
                 <div className="flex items-center justify-between px-3 py-2 text-[11px]">
                   <span className="font-semibold text-white">{photo.label}</span>
-                  <span className="text-slate-400">{photo.date}</span>
+                  <span className="text-zinc-400">{photo.date}</span>
                 </div>
               </div>
             ))}
@@ -411,7 +411,7 @@ export default function StudentProgressPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-md rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
           >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-bold text-white">
@@ -421,14 +421,14 @@ export default function StudentProgressPage() {
                 type="button"
                 onClick={() => setCheckInOpen(false)}
                 aria-label="Cerrar modal"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             <form onSubmit={handleQuickCheckIn} className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
+                <label className="mb-1 block text-xs font-semibold text-zinc-300">
                   Peso actual en ayunas (kg) *
                 </label>
                 <input
@@ -438,27 +438,27 @@ export default function StudentProgressPage() {
                   value={weightInput}
                   onChange={(e) => setWeightInput(e.target.value)}
                   placeholder={latest ? String(latest.weight_kg) : "62.0"}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-3 text-sm text-white outline-none focus:border-emerald-500"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-3 text-sm text-white outline-none focus:border-emerald-500"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-300">
+                <label className="mb-1 block text-xs font-semibold text-zinc-300">
                   URL de foto de progreso (opcional)
                 </label>
                 <div className="relative">
-                  <Camera className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                  <Camera className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                   <input
                     type="url"
                     value={photoUrl}
                     onChange={(e) => setPhotoUrl(e.target.value)}
                     placeholder="https://... (URL de tu foto de progreso)"
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3 pl-10 pr-3.5 text-xs text-white outline-none focus:border-emerald-500"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-3.5 text-xs text-white outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
               <button
                 type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-3.5 text-sm font-bold text-slate-950"
+                className="w-full rounded-xl bg-white hover:bg-zinc-200 py-3.5 text-sm font-bold text-zinc-950"
               >
                 Guardar Check-in Semanal
               </button>

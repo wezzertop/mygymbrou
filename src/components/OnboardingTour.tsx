@@ -201,11 +201,11 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
       }
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
     >
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-800 bg-[#121212] shadow-2xl shadow-black/80">
+      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#0e0f12] shadow-2xl shadow-black/90">
         {/* Progress bar */}
-        <div className="h-1.5 w-full bg-slate-900">
+        <div className="h-1 w-full bg-white/[0.06]">
           <div
-            className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-all duration-300"
+            className="h-full bg-emerald-400 transition-all duration-300"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -213,15 +213,15 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
         <div className="p-5 sm:p-6">
           {/* Top header */}
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-[11px] font-bold text-cyan-300">
-              <Sparkles className="h-3 w-3" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-zinc-300">
+              <Sparkles className="h-3 w-3 text-emerald-400" />
               Guía Rápida ({stepIdx + 1}/{steps.length})
             </span>
             <button
               type="button"
               onClick={handleFinish}
               aria-label="Omitir tutorial"
-              className="inline-flex min-h-[36px] items-center gap-1 rounded-lg px-2 text-xs font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-white"
+              className="inline-flex min-h-[36px] items-center gap-1 rounded-full px-2.5 text-xs font-medium text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
             >
               Omitir
               <X className="h-4 w-4" />
@@ -230,31 +230,25 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
 
           {/* Visual Hero Icon + Content */}
           <div className="mt-5 space-y-3">
-            <div
-              className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-                current.accent === "cyan"
-                  ? "bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/30"
-                  : "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30"
-              }`}
-            >
-              <Icon className="h-7 w-7" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-emerald-400">
+              <Icon className="h-6 w-6" />
             </div>
 
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
                 {current.subtitle}
               </p>
-              <h2 className="mt-1 text-xl font-extrabold text-white">
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-white">
                 {current.title}
               </h2>
             </div>
 
-            <p className="text-sm leading-relaxed text-slate-300">
+            <p className="text-sm leading-relaxed text-zinc-400">
               {current.description}
             </p>
 
-            <div className="rounded-2xl border border-slate-800 bg-[#0a0a0a] p-3.5 text-xs text-slate-300">
-              <span className="font-bold text-emerald-400">Tip práctico: </span>
+            <div className="rounded-2xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs text-zinc-300">
+              <span className="font-semibold text-emerald-400">Tip: </span>
               {current.tip}
             </div>
           </div>
@@ -267,10 +261,10 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
                 type="button"
                 aria-label={`Ir al paso ${idx + 1}`}
                 onClick={() => setStepIdx(idx)}
-                className={`h-2 rounded-full transition-all ${
+                className={`h-1.5 rounded-full transition-all ${
                   idx === stepIdx
-                    ? "w-6 bg-gradient-to-r from-emerald-400 to-cyan-400"
-                    : "w-2 bg-slate-700 hover:bg-slate-600"
+                    ? "w-6 bg-white"
+                    : "w-1.5 bg-zinc-700 hover:bg-zinc-500"
                 }`}
               />
             ))}
@@ -282,7 +276,7 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
               <button
                 type="button"
                 onClick={() => setStepIdx((i) => Math.max(0, i - 1))}
-                className="inline-flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-4 text-xs font-bold text-slate-200 transition hover:bg-slate-800"
+                className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full border border-white/15 bg-white/[0.03] px-4 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.08]"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Anterior
@@ -291,9 +285,9 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
               <button
                 type="button"
                 onClick={handleFinish}
-                className="inline-flex min-h-[46px] items-center justify-center rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-xs font-semibold text-slate-400 transition hover:text-white"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-white/10 px-4 text-xs font-medium text-zinc-400 transition hover:text-white"
               >
-                Omitir tutorial
+                Omitir
               </button>
             )}
 
@@ -301,10 +295,10 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
               <button
                 type="button"
                 onClick={handleFinish}
-                className="inline-flex min-h-[46px] flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:brightness-110"
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                ¡Listo, empezar ahora!
+                Empezar ahora
               </button>
             ) : (
               <button
@@ -312,7 +306,7 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
                 onClick={() =>
                   setStepIdx((i) => Math.min(steps.length - 1, i + 1))
                 }
-                className="inline-flex min-h-[46px] flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
               >
                 Siguiente
                 <ArrowRight className="h-4 w-4" />
@@ -320,13 +314,13 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
             )}
           </div>
 
-          <div className="mt-3 text-center">
+          <div className="mt-3.5 text-center">
             <Link
               href={current.href}
               onClick={handleFinish}
-              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline"
+              className="text-xs font-medium text-zinc-400 transition hover:text-white"
             >
-              {current.ctaLabel} directamente →
+              {current.ctaLabel} →
             </Link>
           </div>
         </div>

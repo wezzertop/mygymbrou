@@ -91,7 +91,7 @@ export default function StudentSubscriptionPage() {
         <h1 className="text-2xl font-extrabold text-white">
           Mi Plan con {coachProfile.full_name}
         </h1>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-zinc-400">
           Consulta tus módulos activos, días restantes y opciones para subir de
           nivel.
         </p>
@@ -110,7 +110,7 @@ export default function StudentSubscriptionPage() {
               className="h-14 w-14 rounded-2xl object-cover ring-2 ring-emerald-500/40"
             />
             <div>
-              <p className="text-xs text-slate-400">Plan Activo Actual</p>
+              <p className="text-xs text-zinc-400">Plan Activo Actual</p>
               <h2 className="text-xl font-black text-white">
                 {relation?.subscription_plan_name || "Plan Oro"}
               </h2>
@@ -153,20 +153,20 @@ export default function StudentSubscriptionPage() {
               </span>
             )}
             {currentPlan.includes_assessments && (
-              <span className="inline-flex items-center gap-1 rounded-xl bg-slate-800 px-3 py-1.5 text-slate-200">
+              <span className="inline-flex items-center gap-1 rounded-xl bg-white/[0.06] px-3 py-1.5 text-zinc-200">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
                 Antropometría
               </span>
             )}
-            <span className="inline-flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-950 px-3 py-1.5 text-slate-200">
+            <span className="inline-flex items-center gap-1 rounded-xl border border-white/15 bg-[#060607] px-3 py-1.5 text-zinc-200">
               {COACHING_TEXT[currentPlan.coaching_mode]}
             </span>
           </div>
         )}
 
-        <div className="mt-5 grid gap-4 border-y border-slate-800 py-4 sm:grid-cols-3">
+        <div className="mt-5 grid gap-4 border-y border-white/[0.08] py-4 sm:grid-cols-3">
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-slate-400">
+            <p className="text-[11px] uppercase tracking-wider text-zinc-400">
               Inversión
             </p>
             <p className="mt-0.5 text-2xl font-black text-emerald-400">
@@ -174,7 +174,7 @@ export default function StudentSubscriptionPage() {
             </p>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-slate-400">
+            <p className="text-[11px] uppercase tracking-wider text-zinc-400">
               Vencimiento Exacto
             </p>
             <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-white">
@@ -193,7 +193,7 @@ export default function StudentSubscriptionPage() {
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-2 text-xs text-slate-400">
+        <div className="mt-4 flex items-center gap-2 text-xs text-zinc-400">
           <ShieldCheck className="h-4 w-4 text-emerald-400" />
           Renovación y upgrades gestionados directamente con tu Coach (listo para
           Stripe / Mercado Pago).
@@ -201,14 +201,14 @@ export default function StudentSubscriptionPage() {
       </section>
 
       {/* Coach Diplomas & Certifications Showcase */}
-      <section className="space-y-3 rounded-3xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6">
+      <section className="space-y-3 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="flex items-center gap-2 text-base font-extrabold text-white">
               <Award className="h-4 w-4 text-emerald-400" />
               Diplomas y Certificaciones de {coachProfile.full_name}
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-zinc-400">
               Inspecciona los archivos oficiales que acreditan la preparación de
               tu Coach.
             </p>
@@ -224,7 +224,7 @@ export default function StudentSubscriptionPage() {
         </div>
 
         {activeCoachCerts.length === 0 ? (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-zinc-500">
             Tu coach aún no ha publicado archivos de diplomas.
           </p>
         ) : (
@@ -234,7 +234,7 @@ export default function StudentSubscriptionPage() {
                 key={cert.id}
                 type="button"
                 onClick={() => setViewingCert(cert)}
-                className="group flex flex-col justify-between gap-2 rounded-2xl border border-slate-800 bg-slate-950/85 p-4 text-left transition hover:border-emerald-500/50"
+                className="group flex flex-col justify-between gap-2 rounded-2xl border border-white/[0.08] bg-[#060607]/85 p-4 text-left transition hover:border-emerald-500/50"
               >
                 <div className="space-y-1">
                   <div className="flex items-center justify-between gap-2">
@@ -249,13 +249,13 @@ export default function StudentSubscriptionPage() {
                     </span>
                   </div>
                   <p className="text-xs font-bold text-white">{cert.title}</p>
-                  <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                    <Building2 className="h-3 w-3 shrink-0 text-slate-500" />
+                  <p className="flex items-center gap-1 text-[11px] text-zinc-400">
+                    <Building2 className="h-3 w-3 shrink-0 text-zinc-500" />
                     <span className="truncate">{cert.institution}</span>
                   </p>
                 </div>
                 {cert.credential_id && (
-                  <p className="font-mono text-[10px] text-slate-500">
+                  <p className="font-mono text-[10px] text-zinc-500">
                     Folio: {cert.credential_id}
                   </p>
                 )}
@@ -278,7 +278,7 @@ export default function StudentSubscriptionPage() {
             <Sparkles className="h-4 w-4 text-cyan-400" />
             Planes Disponibles de {coachProfile.full_name}
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-zinc-400">
             ¿Quieres agregar rutinas guiadas o sesiones presenciales? Solicita un
             upgrade o renueva en un clic.
           </p>
@@ -293,7 +293,7 @@ export default function StudentSubscriptionPage() {
                 className={`flex flex-col justify-between gap-4 rounded-2xl border p-5 transition ${
                   isCurrent
                     ? "border-emerald-500/50 bg-emerald-950/20"
-                    : "border-slate-800 bg-slate-900/75 hover:border-cyan-500/40"
+                    : "border-white/[0.08] bg-[#0e0f12]/75 hover:border-cyan-500/40"
                 }`}
               >
                 <div className="space-y-2">
@@ -306,7 +306,7 @@ export default function StudentSubscriptionPage() {
                         Tu Plan Actual
                       </span>
                     ) : (
-                      <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-[10px] font-semibold text-slate-300">
+                      <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-semibold text-zinc-300">
                         {plan.duration_days} días
                       </span>
                     )}
@@ -314,17 +314,17 @@ export default function StudentSubscriptionPage() {
 
                   <p className="text-2xl font-black text-white">
                     ${plan.price.toLocaleString("es-MX")}
-                    <span className="text-xs font-normal text-slate-400">
+                    <span className="text-xs font-normal text-zinc-400">
                       {" "}
                       / {plan.duration_days} días
                     </span>
                   </p>
 
-                  <p className="text-xs leading-relaxed text-slate-400">
+                  <p className="text-xs leading-relaxed text-zinc-400">
                     {plan.description}
                   </p>
 
-                  <ul className="space-y-1.5 pt-2 text-xs text-slate-300">
+                  <ul className="space-y-1.5 pt-2 text-xs text-zinc-300">
                     <li className="flex items-center gap-2">
                       <CheckCircle2
                         className={`h-3.5 w-3.5 ${
@@ -335,7 +335,7 @@ export default function StudentSubscriptionPage() {
                       />
                       <span
                         className={
-                          plan.includes_nutrition ? "" : "text-slate-500 line-through"
+                          plan.includes_nutrition ? "" : "text-zinc-500 line-through"
                         }
                       >
                         Plan Nutricional y Macros
@@ -351,7 +351,7 @@ export default function StudentSubscriptionPage() {
                       />
                       <span
                         className={
-                          plan.includes_workouts ? "" : "text-slate-500 line-through"
+                          plan.includes_workouts ? "" : "text-zinc-500 line-through"
                         }
                       >
                         Rutinas Guiadas con Videos/Animaciones
@@ -370,7 +370,7 @@ export default function StudentSubscriptionPage() {
                   className={`inline-flex w-full items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold transition ${
                     isCurrent
                       ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
-                      : "bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 hover:brightness-110"
+                      : "bg-white hover:bg-zinc-200 text-zinc-950 "
                   }`}
                 >
                   <CreditCard className="h-4 w-4" />
@@ -392,7 +392,7 @@ export default function StudentSubscriptionPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-md rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
           >
             {requestSent ? (
               <div className="space-y-4 py-4 text-center">
@@ -400,7 +400,7 @@ export default function StudentSubscriptionPage() {
                 <h2 className="text-lg font-bold text-white">
                   ¡Solicitud enviada a tu Coach!
                 </h2>
-                <p className="text-xs leading-relaxed text-slate-300">
+                <p className="text-xs leading-relaxed text-zinc-300">
                   Notificamos a <strong>{coachProfile.full_name}</strong> tu
                   interés en <strong>{selectedUpgrade.name}</strong> ($
                   {selectedUpgrade.price} / {selectedUpgrade.duration_days}{" "}
@@ -409,7 +409,7 @@ export default function StudentSubscriptionPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedUpgrade(null)}
-                  className="min-h-[42px] w-full rounded-xl bg-emerald-500 py-3 text-xs font-bold text-slate-950 transition hover:bg-emerald-400"
+                  className="min-h-[42px] w-full rounded-xl bg-emerald-500 py-3 text-xs font-bold text-zinc-950 transition hover:bg-emerald-400"
                 >
                   Listo
                 </button>
@@ -424,23 +424,23 @@ export default function StudentSubscriptionPage() {
                     type="button"
                     onClick={() => setSelectedUpgrade(null)}
                     aria-label="Cerrar modal"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-800 hover:text-white"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
                   >
                     <X className="h-5 w-5" />
                   </button>
                 </div>
-                <p className="text-xs leading-relaxed text-slate-300">
+                <p className="text-xs leading-relaxed text-zinc-300">
                   {selectedUpgrade.description}
                 </p>
-                <div className="rounded-xl border border-slate-800 bg-slate-950 p-3.5 text-xs">
+                <div className="rounded-xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs">
                   <p className="flex justify-between">
-                    <span className="text-slate-400">Precio:</span>
+                    <span className="text-zinc-400">Precio:</span>
                     <span className="font-bold text-emerald-400">
                       ${selectedUpgrade.price}
                     </span>
                   </p>
                   <p className="mt-1 flex justify-between">
-                    <span className="text-slate-400">Duración:</span>
+                    <span className="text-zinc-400">Duración:</span>
                     <span className="font-bold text-white">
                       {selectedUpgrade.duration_days} días
                     </span>
@@ -449,14 +449,14 @@ export default function StudentSubscriptionPage() {
                 <button
                   type="button"
                   onClick={confirmUpgradeRequest}
-                  className="w-full rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-3.5 text-xs font-bold text-slate-950"
+                  className="w-full rounded-xl bg-white hover:bg-zinc-200 py-3.5 text-xs font-bold text-zinc-950"
                 >
                   Enviar Solicitud / Renovar
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedUpgrade(null)}
-                  className="w-full rounded-xl border border-slate-800 py-2.5 text-xs text-slate-400 hover:text-white"
+                  className="w-full rounded-xl border border-white/[0.08] py-2.5 text-xs text-zinc-400 hover:text-white"
                 >
                   Cancelar
                 </button>

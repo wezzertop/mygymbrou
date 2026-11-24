@@ -128,7 +128,7 @@ export function IdentityVerificationCard({
               Verificación de Persona Real
             </h2>
           </div>
-          <p className="text-xs leading-relaxed text-slate-400">
+          <p className="text-xs leading-relaxed text-zinc-400">
             {role === "coach"
               ? "Confirma tu identidad real para mostrar la insignia azul verificada en el directorio de coaches y dar máxima confianza a tus futuros alumnos."
               : "Verifica que eres una persona real para mostrar tu marca de verificación a tu Coach y al solicitar entrenamiento con nuevos coaches."}
@@ -156,7 +156,7 @@ export function IdentityVerificationCard({
         <div className="flex flex-col gap-3 rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1.5">
             <VerifiedPersonBadge verified label="Persona Real Verificada" />
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-zinc-300">
               Tu identidad fue validada
               {profile.verified_at
                 ? ` el ${new Date(profile.verified_at).toLocaleDateString("es-MX", {
@@ -197,13 +197,13 @@ export function IdentityVerificationCard({
           )}
 
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">
+            <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
               Tipo de documento para verificar identidad
             </label>
             <select
               value={docType}
               onChange={(e) => setDocType(e.target.value as IdentityDocumentType)}
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-xs text-white outline-none focus:border-sky-500"
+              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-xs text-white outline-none focus:border-sky-500"
             >
               {Object.entries(DOC_TYPE_LABELS).map(([k, v]) => (
                 <option key={k} value={k}>
@@ -224,7 +224,7 @@ export function IdentityVerificationCard({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-700 bg-slate-950/70 px-4 py-6 text-center transition hover:border-sky-500/60 hover:bg-slate-900"
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/15 bg-[#060607] px-4 py-6 text-center transition hover:border-sky-500/60 hover:bg-[#0e0f12]"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
                 <Upload className="h-5 w-5" />
@@ -234,15 +234,15 @@ export function IdentityVerificationCard({
                   ? selectedFile.name
                   : "Subir foto de ID oficial o selfie con identificación"}
               </p>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-zinc-400">
                 JPG, PNG, WEBP o PDF (máx. 8 MB) · Archivo privado y protegido
               </p>
             </button>
           </div>
 
           {previewUrl && !previewUrl.startsWith("data:application/pdf") && (
-            <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-950 p-2">
-              <div className="mb-1.5 flex items-center gap-1.5 px-1 text-[11px] font-semibold text-slate-300">
+            <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#060607] p-2">
+              <div className="mb-1.5 flex items-center gap-1.5 px-1 text-[11px] font-semibold text-zinc-300">
                 <FileCheck2 className="h-3.5 w-3.5 text-sky-400" />
                 Vista previa del documento cargado
               </div>
@@ -259,7 +259,7 @@ export function IdentityVerificationCard({
               type="button"
               disabled={submitting}
               onClick={() => handleSubmit(false)}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:brightness-110 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 px-4 py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-sky-500/20 transition  disabled:opacity-50"
             >
               <ShieldCheck className="h-4 w-4" />
               {submitting ? "Enviando..." : "Enviar Verificación de Identidad"}

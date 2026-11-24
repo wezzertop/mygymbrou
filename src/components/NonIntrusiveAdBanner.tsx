@@ -27,7 +27,7 @@ export function NonIntrusiveAdBanner({
   return (
     <aside
       aria-label="Contenido patrocinado"
-      className={`relative rounded-2xl border border-slate-800/90 bg-gradient-to-r from-slate-900/95 via-slate-900/90 to-cyan-950/30 p-4 transition hover:border-cyan-500/30 ${className}`}
+      className={`relative rounded-2xl border border-white/[0.08] bg-gradient-to-r from-slate-900/95 via-slate-900/90 to-cyan-950/30 p-4 transition hover:border-cyan-500/30 ${className}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
@@ -36,15 +36,15 @@ export function NonIntrusiveAdBanner({
           </div>
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
                 {ad.badge_text}
               </span>
               <span className="text-xs font-medium text-cyan-400">
                 {ad.sponsor_name}
               </span>
             </div>
-            <p className="text-sm font-semibold text-slate-100">{ad.title}</p>
-            <p className="text-xs leading-relaxed text-slate-400">
+            <p className="text-sm font-semibold text-zinc-100">{ad.title}</p>
+            <p className="text-xs leading-relaxed text-zinc-400">
               {ad.description}
             </p>
             <div className="pt-1">
@@ -65,7 +65,7 @@ export function NonIntrusiveAdBanner({
           type="button"
           onClick={() => setDismissed(true)}
           aria-label="Ocultar anuncio"
-          className="rounded-lg p-1 text-slate-500 transition hover:bg-slate-800 hover:text-slate-300"
+          className="rounded-lg p-1 text-zinc-500 transition hover:bg-white/[0.06] hover:text-zinc-300"
         >
           <X className="h-4 w-4" />
         </button>
