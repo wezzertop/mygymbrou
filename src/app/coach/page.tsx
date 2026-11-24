@@ -172,14 +172,14 @@ export default function CoachDashboardPage() {
 
       {/* Toast Feedback */}
       {toast && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           {toast}
         </div>
       )}
 
       {/* Architectural KPI Strip (Stripe / Linear style) */}
-      <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12] lg:grid-cols-4 lg:divide-y-0">
+      <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12] lg:grid-cols-4 lg:divide-y-0">
         <Link
           href="/coach/students"
           className="p-4 transition hover:bg-white/[0.02] sm:p-5"
@@ -283,7 +283,7 @@ export default function CoachDashboardPage() {
       {/* Main Two-Column Content */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Roster Status with Clean Filters */}
-        <section className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-7">
+        <section className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-7">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold tracking-tight text-white">
               Estado de Cartera
@@ -312,9 +312,9 @@ export default function CoachDashboardPage() {
                 key={f.key}
                 type="button"
                 onClick={() => setRosterFilter(f.key)}
-                className={`h-8 shrink-0 whitespace-nowrap rounded-full px-3.5 text-xs font-medium transition ${
+                className={`h-8 shrink-0 whitespace-nowrap rounded-lg px-3.5 text-xs font-medium transition ${
                   rosterFilter === f.key
-                    ? "bg-white text-zinc-950"
+                    ? "bg-emerald-500 text-zinc-950 font-semibold"
                     : "border border-white/10 bg-transparent text-zinc-400 hover:border-white/25 hover:text-white"
                 }`}
               >
@@ -415,7 +415,7 @@ export default function CoachDashboardPage() {
         </section>
 
         {/* Upcoming Appointments */}
-        <section className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-5">
+        <section className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-5">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold tracking-tight text-white">
               Agenda Próxima
@@ -486,7 +486,7 @@ export default function CoachDashboardPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0e0f12] p-5 shadow-2xl sm:p-6"
+            className="w-full max-w-md rounded-xl border border-white/10 bg-[#0e0f12] p-5 shadow-2xl sm:p-6"
           >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold tracking-tight text-white">

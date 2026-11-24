@@ -149,7 +149,7 @@ export default function StudentCalendarPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/student/appointments"
-            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-cyan-500/20"
+            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500/20"
           >
             <CalendarDays className="h-3.5 w-3.5" />
             Mis Citas
@@ -203,7 +203,7 @@ export default function StudentCalendarPage() {
       </div>
 
       {/* Calendar */}
-      <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3 sm:p-4">
+      <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-3 sm:p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-bold capitalize text-white">
             {currentMonth.toLocaleDateString("es-MX", {
@@ -264,7 +264,7 @@ export default function StudentCalendarPage() {
                   isSelected
                     ? "border-emerald-400 bg-emerald-500/15"
                     : isToday
-                    ? "border-cyan-500/60 bg-[#0e0f12]"
+                    ? "border-emerald-500/60 bg-[#0e0f12]"
                     : "border-white/[0.08] bg-[#060607] hover:border-white/15"
                 } ${!isCurrentMonth && viewMode === "month" ? "opacity-35" : ""}`}
               >
@@ -299,7 +299,7 @@ export default function StudentCalendarPage() {
       </div>
 
       {/* Selected Day Interactive Panel */}
-      <section className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+      <section className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
         <h3 className="text-base font-bold capitalize text-white">
           {new Date(`${selectedDate}T12:00:00`).toLocaleDateString("es-MX", {
             weekday: "long",
@@ -366,7 +366,7 @@ export default function StudentCalendarPage() {
         {selInfo.dayApts.map((apt) => (
           <div
             key={apt.id}
-            className="rounded-xl border border-white/[0.08] bg-cyan-500/10 p-4 text-xs"
+            className="rounded-xl border border-white/[0.08] bg-emerald-500/10 p-4 text-xs"
           >
             <p className="flex items-center gap-1.5 font-bold text-emerald-300">
               <CalendarDays className="h-4 w-4" />

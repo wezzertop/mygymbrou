@@ -124,7 +124,7 @@ export default function StudentProfilePage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       {/* Compact Profile Identity Header */}
-      <div className="flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5">
+      <div className="flex items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5">
         <img
           src={
             studentProfile.avatar_url ||
@@ -153,7 +153,7 @@ export default function StudentProfilePage() {
       </div>
 
       {savedMsg && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           {savedMsg}
         </div>
@@ -193,7 +193,7 @@ export default function StudentProfilePage() {
       {tab === "datos" && (
         <form
           onSubmit={handleSaveProfile}
-          className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6"
+          className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6"
         >
           <div>
             <h2 className="text-base font-semibold text-white">
@@ -279,7 +279,7 @@ export default function StudentProfilePage() {
       {tab === "metas" && (
         <form
           onSubmit={handleSaveGoals}
-          className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6"
+          className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6"
         >
           <div>
             <h2 className="text-base font-semibold text-white">
@@ -394,7 +394,7 @@ export default function StudentProfilePage() {
 
       {/* TAB 4: CUENTA Y AYUDA */}
       {tab === "cuenta" && (
-        <div className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
+        <div className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
           <div>
             <h2 className="text-base font-semibold text-white">
               Cuenta y Ayuda

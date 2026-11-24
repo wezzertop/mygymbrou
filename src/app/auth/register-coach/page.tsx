@@ -137,10 +137,10 @@ function RegisterCoachContent() {
           </Link>
         </div>
 
-        <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
+        <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
           {submitted ? (
             <div className="space-y-5 py-4 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
               <h1 className="text-2xl font-extrabold text-white">
@@ -180,7 +180,7 @@ function RegisterCoachContent() {
           ) : (
             <>
               <div className="mb-6">
-                <span className="rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
+                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
                   Registro Profesional
                 </span>
                 <h1 className="mt-3 text-2xl font-extrabold text-white">
@@ -212,7 +212,7 @@ function RegisterCoachContent() {
                           key={plan.id}
                           type="button"
                           onClick={() => setSelectedPlanId(plan.id)}
-                          className={`relative flex flex-col items-start rounded-2xl border p-3 text-left transition ${
+                          className={`relative flex flex-col items-start rounded-xl border p-3 text-left transition ${
                             active
                               ? "border-emerald-500/70 bg-emerald-500/10"
                               : "border-white/10 bg-[#060607] hover:border-white/25"
@@ -259,7 +259,7 @@ function RegisterCoachContent() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Ej. Carlos Mendoza"
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -276,7 +276,7 @@ function RegisterCoachContent() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="coach@tumarca.com"
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -294,7 +294,7 @@ function RegisterCoachContent() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-11 text-sm text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-11 text-sm text-white outline-none focus:border-emerald-500"
                     />
                     <button
                       type="button"
@@ -324,7 +324,7 @@ function RegisterCoachContent() {
                         value={brandName}
                         onChange={(e) => setBrandName(e.target.value)}
                         placeholder="Ej. Apex Performance"
-                        className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-cyan-500"
+                        className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-emerald-500"
                       />
                     </div>
                   </div>
@@ -337,7 +337,7 @@ function RegisterCoachContent() {
                       value={specialty}
                       onChange={(e) => setSpecialty(e.target.value)}
                       placeholder="Ej. Hipertrofia y Nutrición"
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-3 text-sm text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-3 text-sm text-white outline-none focus:border-emerald-500"
                     />
                   </div>
                 </div>

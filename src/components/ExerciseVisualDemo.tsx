@@ -91,7 +91,7 @@ export function ExerciseVisualDemo({
   if (mediaType === "video" && mediaUrl && activeFrames.length === 0) {
     return (
       <div
-        className={`relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b1117] ${
+        className={`relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b1117] ${
           compact ? "h-20 w-24 shrink-0 sm:h-24 sm:w-32" : "aspect-[16/10] w-full"
         }`}
       >
@@ -118,7 +118,7 @@ export function ExerciseVisualDemo({
       <>
         <div
           onClick={() => setModalOpen(true)}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b1117] ${
+          className={`group relative cursor-pointer overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b1117] ${
             compact ? "h-20 w-24 shrink-0 sm:h-24 sm:w-32" : "aspect-[16/10] w-full"
           }`}
         >
@@ -218,7 +218,7 @@ export function ExerciseVisualDemo({
   // Clean Full Card Player for Student Workouts (NO text, NO bars, NO prev/pause/next overlays)
   return (
     <div className="space-y-2">
-      <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b1117]">
+      <div className="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b1117]">
         <div
           onClick={() => hasFrames && setModalOpen(true)}
           className="relative flex aspect-[16/10] w-full cursor-pointer items-center justify-center bg-[#0b1117] p-2"
@@ -323,7 +323,7 @@ function CleanExerciseModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0b1117] shadow-2xl"
+        className="w-full max-w-xl overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b1117] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] px-5 py-3.5">
@@ -348,7 +348,7 @@ function CleanExerciseModal({
                 onClick={() => setActiveGender("male")}
                 className={`rounded-md px-2.5 py-1 transition ${
                   activeGender === "male"
-                    ? "bg-cyan-500/20 text-cyan-300"
+                    ? "bg-emerald-500/20 text-cyan-300"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >

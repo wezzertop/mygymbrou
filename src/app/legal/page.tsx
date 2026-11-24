@@ -41,7 +41,7 @@ export default function LegalPage() {
         {/* Términos y Condiciones */}
         <section
           id="terminos"
-          className="space-y-5 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8"
+          className="space-y-5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8"
         >
           <div className="flex items-center gap-2.5">
             <FileText className="h-5 w-5 text-emerald-400" />
@@ -97,7 +97,7 @@ export default function LegalPage() {
         {/* Política de Privacidad */}
         <section
           id="privacidad"
-          className="space-y-5 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8"
+          className="space-y-5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8"
         >
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="h-5 w-5 text-emerald-400" />

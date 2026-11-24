@@ -59,7 +59,7 @@ export function ReportIssueButton({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0e0f12] p-5 shadow-2xl sm:p-6"
+            className="w-full max-w-md rounded-xl border border-white/10 bg-[#0e0f12] p-5 shadow-2xl sm:p-6"
           >
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-base font-semibold text-white">

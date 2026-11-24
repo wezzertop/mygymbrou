@@ -179,8 +179,8 @@ function SpeiCheckoutContent() {
       </div>
 
       {submitted ? (
-        <div className="space-y-5 rounded-3xl border border-emerald-500/30 bg-[#0e0f12] p-7 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
+        <div className="space-y-5 rounded-xl border border-emerald-500/30 bg-[#0e0f12] p-7 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
             <CheckCircle2 className="h-7 w-7" />
           </div>
           <div className="space-y-1.5">
@@ -218,7 +218,7 @@ function SpeiCheckoutContent() {
         <div className="grid gap-6 lg:grid-cols-12">
           {/* LEFT: Plan Picker + Bank SPEI Info */}
           <div className="space-y-5 lg:col-span-5">
-            <div className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+            <div className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
               <p className="text-xs font-semibold text-zinc-300">
                 1. Plan seleccionado
               </p>
@@ -256,7 +256,7 @@ function SpeiCheckoutContent() {
             </div>
 
             {/* SPEI Bank Details Card */}
-            <div className="space-y-3.5 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+            <div className="space-y-3.5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
               <div className="flex items-center gap-2">
                 <Landmark className="h-4 w-4 text-emerald-400" />
                 <p className="text-xs font-semibold text-white">
@@ -320,7 +320,7 @@ function SpeiCheckoutContent() {
           {/* RIGHT: Upload Receipt Form */}
           <form
             onSubmit={handleSubmit}
-            className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6 lg:col-span-7"
+            className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6 lg:col-span-7"
           >
             <div>
               <h2 className="text-base font-semibold text-white">
@@ -397,7 +397,7 @@ function SpeiCheckoutContent() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-[#060607] px-4 py-6 text-center transition hover:border-emerald-500/50 hover:bg-white/[0.02]"
+                className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-[#060607] px-4 py-6 text-center transition hover:border-emerald-500/50 hover:bg-white/[0.02]"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
                   <Upload className="h-4 w-4" />

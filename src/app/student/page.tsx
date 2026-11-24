@@ -233,7 +233,7 @@ export default function StudentDailyHomePage() {
 
       {/* Toast */}
       {toast && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           {toast}
         </div>
@@ -243,7 +243,7 @@ export default function StudentDailyHomePage() {
       {showWeightForm && (
         <form
           onSubmit={handleQuickWeightSubmit}
-          className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-[#0e0f12] p-4 sm:flex-row sm:items-end"
+          className="flex flex-col gap-3 rounded-xl border border-white/10 bg-[#0e0f12] p-4 sm:flex-row sm:items-end"
         >
           <div className="flex-1">
             <label className="mb-1.5 block text-xs font-medium text-zinc-400">
@@ -266,14 +266,14 @@ export default function StudentDailyHomePage() {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="h-11 flex-1 rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:flex-none"
+              className="h-11 flex-1 rounded-lg bg-emerald-500 px-5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-400 sm:flex-none"
             >
               Guardar
             </button>
             <button
               type="button"
               onClick={() => setShowWeightForm(false)}
-              className="h-11 rounded-full border border-white/10 px-4 text-xs font-medium text-zinc-400 hover:text-white"
+              className="h-11 rounded-lg border border-white/10 px-4 text-xs font-medium text-zinc-400 hover:text-white"
             >
               Cancelar
             </button>
@@ -285,7 +285,7 @@ export default function StudentDailyHomePage() {
       {nextAppointment && (
         <Link
           href="/student/appointments"
-          className="flex items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
+          className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
         >
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
@@ -312,7 +312,7 @@ export default function StudentDailyHomePage() {
       )}
 
       {/* SECTION 1: MI ENTRENAMIENTO DE HOY */}
-      <section className="space-y-5 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
+      <section className="space-y-5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
@@ -337,7 +337,7 @@ export default function StudentDailyHomePage() {
         </div>
 
         {/* Minimalist Sport Rest Timer */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#060607] px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#060607] px-4 py-3">
           <div className="flex items-center gap-3">
             <Timer className="h-4 w-4 text-zinc-500" />
             <span className="font-mono text-xl font-semibold tabular-nums text-white">
@@ -349,10 +349,10 @@ export default function StudentDailyHomePage() {
                   key={sec}
                   type="button"
                   onClick={() => startTimer(sec)}
-                  className={`h-8 rounded-full px-2.5 text-[11px] font-medium transition ${
+                  className={`h-8 rounded-lg px-2.5 text-[11px] font-medium transition ${
                     timerPreset === sec && timerRunning
-                      ? "bg-white text-zinc-950"
-                      : "border border-white/10 text-zinc-400 hover:border-white/25 hover:text-white"
+                      ? "bg-emerald-500 text-zinc-950 font-semibold"
+                      : "border border-white/10 text-zinc-400 hover:border-emerald-500/40 hover:text-white"
                   }`}
                 >
                   {sec}s
@@ -365,7 +365,7 @@ export default function StudentDailyHomePage() {
               type="button"
               onClick={() => setTimerRunning((r) => !r)}
               aria-label={timerRunning ? "Pausar temporizador" : "Iniciar temporizador"}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-zinc-950 transition hover:bg-zinc-200"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-zinc-950 transition hover:bg-emerald-400"
             >
               {timerRunning ? (
                 <Pause className="h-4 w-4" />
@@ -497,7 +497,7 @@ export default function StudentDailyHomePage() {
       <FreeTierAdSlot viewerRole="student" />
 
       {/* SECTION 2: MIS COMIDAS DE HOY */}
-      <section className="space-y-5 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
+      <section className="space-y-5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
@@ -524,7 +524,7 @@ export default function StudentDailyHomePage() {
         {activeDiet ? (
           <>
             {/* Clean Macros & Hydration Strip */}
-            <div className="grid grid-cols-3 divide-x divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#060607]">
+            <div className="grid grid-cols-3 divide-x divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.08] bg-[#060607]">
               <div className="p-3.5">
                 <p className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
                   Calorías

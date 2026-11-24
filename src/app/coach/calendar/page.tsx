@@ -170,7 +170,7 @@ export default function CoachCalendarPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/coach/agenda"
-            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-cyan-500/20"
+            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500/20"
           >
             <Calendar className="h-3.5 w-3.5" />
             Agenda de Citas
@@ -195,7 +195,7 @@ export default function CoachCalendarPage() {
               onClick={() => setViewMode("month")}
               className={`rounded-lg px-3 py-1 ${
                 viewMode === "month"
-                  ? "bg-white text-zinc-950 text-zinc-950"
+                  ? "bg-white text-zinc-950"
                   : "text-zinc-400"
               }`}
             >
@@ -206,7 +206,7 @@ export default function CoachCalendarPage() {
               onClick={() => setViewMode("week")}
               className={`rounded-lg px-3 py-1 ${
                 viewMode === "week"
-                  ? "bg-white text-zinc-950 text-zinc-950"
+                  ? "bg-white text-zinc-950"
                   : "text-zinc-400"
               }`}
             >
@@ -238,7 +238,7 @@ export default function CoachCalendarPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Calendar Grid */}
-        <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3 sm:p-4 lg:col-span-8">
+        <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-3 sm:p-4 lg:col-span-8">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-bold capitalize text-white">
               {currentMonth.toLocaleDateString("es-MX", {
@@ -251,14 +251,14 @@ export default function CoachCalendarPage() {
                 type="button"
                 onClick={handlePrevPeriod}
                 aria-label={viewMode === "week" ? "Semana anterior" : "Mes anterior"}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#060607] text-zinc-300 transition hover:border-cyan-500 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#060607] text-zinc-300 transition hover:border-emerald-500 hover:text-white"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 type="button"
                 onClick={handleJumpToday}
-                className="h-8 rounded-lg border border-white/[0.08] bg-[#060607] px-2.5 text-[11px] font-bold text-emerald-300 transition hover:border-cyan-500 hover:bg-[#0e0f12]"
+                className="h-8 rounded-lg border border-white/[0.08] bg-[#060607] px-2.5 text-[11px] font-bold text-emerald-300 transition hover:border-emerald-500 hover:bg-[#0e0f12]"
               >
                 Hoy
               </button>
@@ -266,7 +266,7 @@ export default function CoachCalendarPage() {
                 type="button"
                 onClick={handleNextPeriod}
                 aria-label={viewMode === "week" ? "Semana siguiente" : "Mes siguiente"}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#060607] text-zinc-300 transition hover:border-cyan-500 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#060607] text-zinc-300 transition hover:border-emerald-500 hover:text-white"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -305,7 +305,7 @@ export default function CoachCalendarPage() {
                   onClick={() => setSelectedDate(iso)}
                   className={`flex min-h-[48px] flex-col items-start justify-between rounded-xl border p-1.5 text-left transition sm:min-h-[64px] sm:p-2 ${
                     isSelected
-                      ? "border-cyan-400 bg-cyan-500/15"
+                      ? "border-cyan-400 bg-emerald-500/15"
                       : isToday
                       ? "border-emerald-500/50 bg-[#0e0f12]"
                       : "border-white/[0.08] bg-[#060607] hover:border-white/15"
@@ -340,7 +340,7 @@ export default function CoachCalendarPage() {
         </div>
 
         {/* Selected Day Operational Details */}
-        <aside className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-4">
+        <aside className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-4">
           <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
             <div>
               <p className="text-[11px] font-semibold uppercase text-emerald-400">
@@ -393,7 +393,7 @@ export default function CoachCalendarPage() {
               {selectedDetails.dayApts.map((apt) => (
                 <div
                   key={apt.id}
-                  className="rounded-xl border border-white/[0.08] bg-cyan-500/10 p-3 text-xs"
+                  className="rounded-xl border border-white/[0.08] bg-emerald-500/10 p-3 text-xs"
                 >
                   <p className="font-bold text-white">{apt.student_name}</p>
                   <p className="text-cyan-200">{apt.title}</p>

@@ -211,13 +211,13 @@ function CoachPlansContent() {
       )}
 
       {/* Tabs */}
-      <div className="grid grid-cols-3 gap-1.5 rounded-2xl border border-white/[0.08] bg-[#060607] p-1.5 sm:max-w-xl">
+      <div className="grid grid-cols-3 gap-1.5 rounded-xl border border-white/[0.08] bg-[#060607] p-1.5 sm:max-w-xl">
         <button
           type="button"
           onClick={() => setTab("subscriptions")}
           className={`flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition ${
             tab === "subscriptions"
-              ? "bg-white text-zinc-950 text-zinc-950"
+              ? "bg-white text-zinc-950"
               : "text-zinc-400 hover:text-white"
           }`}
         >
@@ -252,9 +252,9 @@ function CoachPlansContent() {
 
       {tab === "saas" ? (
         <div className="space-y-6">
-          <div className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:flex-row sm:items-center">
+          <div className="flex flex-col justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:flex-row sm:items-center">
             <div className="space-y-1">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
                 <Crown className="h-3.5 w-3.5" />
                 Plan actual: {currentSaasPlan.name} ({currentSaasPlan.priceLabel}{" "}
                 {currentSaasPlan.period})
@@ -297,7 +297,7 @@ function CoachPlansContent() {
               return (
                 <div
                   key={plan.id}
-                  className={`relative flex flex-col rounded-3xl border p-5 ${
+                  className={`relative flex flex-col rounded-xl border p-5 ${
                     isCurrent
                       ? "border-emerald-500 bg-[#0e0f12] ring-1 ring-emerald-500/40"
                       : plan.featured
@@ -372,7 +372,7 @@ function CoachPlansContent() {
             })}
           </div>
 
-          <p className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3.5 text-center text-xs text-zinc-400">
+          <p className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-3.5 text-center text-xs text-zinc-400">
             {PRICING_FOOTNOTE_MXN}
           </p>
         </div>
@@ -381,7 +381,7 @@ function CoachPlansContent() {
           {/* Creator Form */}
           <form
             onSubmit={handleCreateSubPlan}
-            className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
+            className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
           >
             <h2 className="flex items-center gap-2 text-base font-bold text-white">
               <Plus className="h-4 w-4 text-emerald-400" />
@@ -508,12 +508,12 @@ function CoachPlansContent() {
             {subscriptionPlans.map((plan) => (
               <div
                 key={plan.id}
-                className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12]/75 p-5 transition hover:border-white/25"
+                className="flex flex-col justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0e0f12]/75 p-5 transition hover:border-white/25"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                      <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
                         {plan.duration_days} días
                       </span>
                       <h3 className="mt-1.5 text-lg font-extrabold text-white">
@@ -578,7 +578,7 @@ function CoachPlansContent() {
                     <span
                       className={`rounded-md px-2 py-0.5 ${
                         plan.includes_workouts
-                          ? "bg-cyan-500/15 text-emerald-300"
+                          ? "bg-emerald-500/15 text-emerald-300"
                           : "bg-white/[0.06] text-zinc-500 line-through"
                       }`}
                     >
@@ -618,7 +618,7 @@ function CoachPlansContent() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <form
             onSubmit={handleCreateDietTemplate}
-            className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
+            className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
           >
             <h2 className="flex items-center gap-2 text-base font-bold text-white">
               <Plus className="h-4 w-4 text-emerald-400" />
@@ -720,7 +720,7 @@ function CoachPlansContent() {
             {nutritionPlans.map((plan) => (
               <div
                 key={plan.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4"
               >
                 <div>
                   <h3 className="text-sm font-bold text-white">{plan.title}</h3>

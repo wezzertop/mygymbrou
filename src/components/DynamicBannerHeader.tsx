@@ -228,7 +228,7 @@ export function DynamicBannerHeader({
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12]">
+      <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12]">
         {/* 100% Unobstructed Mobile-First Cover Photo (Zero buttons over the image) */}
         <div className="h-32 w-full overflow-hidden bg-[#060607] sm:h-44">
           <img
@@ -307,7 +307,7 @@ export function DynamicBannerHeader({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0e0f12] shadow-2xl"
+            className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-white/10 bg-[#0e0f12] shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
               <div>
@@ -342,7 +342,7 @@ export function DynamicBannerHeader({
                   type="button"
                   disabled={uploadingCover}
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex min-h-[56px] w-full items-center justify-center gap-2.5 rounded-2xl border border-dashed border-white/15 bg-[#060607] px-4 py-3 text-xs font-medium text-white transition hover:border-emerald-500/50 hover:bg-white/[0.02] disabled:opacity-60"
+                  className="flex min-h-[56px] w-full items-center justify-center gap-2.5 rounded-xl border border-dashed border-white/15 bg-[#060607] px-4 py-3 text-xs font-medium text-white transition hover:border-emerald-500/50 hover:bg-white/[0.02] disabled:opacity-60"
                 >
                   <Upload className="h-4 w-4 text-emerald-400" />
                   {uploadingCover
@@ -389,7 +389,7 @@ export function DynamicBannerHeader({
                       key={preset.id}
                       type="button"
                       onClick={() => handleSelectPreset(preset.url)}
-                      className={`group overflow-hidden rounded-2xl border text-left transition ${
+                      className={`group overflow-hidden rounded-xl border text-left transition ${
                         selected
                           ? "border-emerald-400 ring-1 ring-emerald-400/50"
                           : "border-white/[0.08] hover:border-white/25"
@@ -449,13 +449,12 @@ export function DynamicBannerHeader({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0e0f12] shadow-2xl"
+            className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-white/10 bg-[#0e0f12] shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
               <div>
                 <h2 className="flex items-center gap-2 text-base font-semibold text-white">
-                  <Sparkles className="h-4 w-4 text-emerald-400" />
-                  Frase Motivacional
+Frase Motivacional
                 </h2>
                 <p className="text-[11px] text-zinc-400">
                   Escribe tu propia frase o elige entre {audienceQuotes.length}+ frases curadas.
@@ -555,7 +554,7 @@ export function DynamicBannerHeader({
                 </div>
 
                 {/* Quotes List */}
-                <div className="mt-3 max-h-64 divide-y divide-white/[0.06] overflow-y-auto rounded-2xl border border-white/[0.08] bg-[#060607]">
+                <div className="mt-3 max-h-64 divide-y divide-white/[0.06] overflow-y-auto rounded-xl border border-white/[0.08] bg-[#060607]">
                   {filteredQuotes.slice(0, 80).map((item) => {
                     const isSelected =
                       !profile.custom_motivational_quote &&

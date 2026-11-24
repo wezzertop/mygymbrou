@@ -114,7 +114,7 @@ function CoachAgendaContent() {
         {/* New Appointment Form */}
         <form
           onSubmit={handleSchedule}
-          className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
+          className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
         >
           <h2 className="flex items-center gap-2 text-base font-bold text-white">
             <CalendarPlus className="h-4 w-4 text-emerald-400" />
@@ -225,7 +225,7 @@ function CoachAgendaContent() {
         {/* Appointments List */}
         <div className="min-w-0 space-y-3 lg:col-span-7">
           {sorted.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
+            <div className="rounded-xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
               <p className="text-sm font-bold text-white">
                 Sin citas registradas todavía
               </p>
@@ -237,12 +237,12 @@ function CoachAgendaContent() {
           {sorted.map((apt) => (
             <div
               key={apt.id}
-              className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4"
+              className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
+                    <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
                       {apt.student_name}
                     </span>
                     <span

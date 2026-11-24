@@ -249,7 +249,7 @@ function ActivateAccountContent() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#060607] px-4 py-10">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-zinc-950 shadow-lg shadow-none">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-zinc-950 shadow-lg shadow-none">
             <Flame className="h-6 w-6" />
           </div>
           <h1 className="text-2xl font-extrabold text-white">
@@ -263,14 +263,14 @@ function ActivateAccountContent() {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
+        <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
           {loadingMeta ? (
             <div className="py-8 text-center text-sm text-zinc-400">
               Validando enlace de invitación...
             </div>
           ) : activated ? (
             <div className="space-y-4 py-4 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
               <h2 className="text-xl font-bold text-white">
@@ -291,7 +291,7 @@ function ActivateAccountContent() {
             </div>
           ) : needsEmailConfirm ? (
             <div className="space-y-4 py-4 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-400">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/15 text-cyan-400">
                 <Sparkles className="h-7 w-7" />
               </div>
               <h2 className="text-xl font-bold text-white">
@@ -312,7 +312,7 @@ function ActivateAccountContent() {
             </div>
           ) : isExistingLoggedInUser ? (
             <div className="space-y-5">
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-200">
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-200">
                 <p className="flex items-center gap-1.5 font-bold text-emerald-300">
                   <UserCheck className="h-4 w-4" />
                   Cuenta existente detectada
@@ -346,7 +346,7 @@ function ActivateAccountContent() {
             </div>
           ) : inviteMeta?.has_existing_account && !isDemoMode ? (
             <div className="space-y-5 text-center">
-              <div className="rounded-2xl border border-white/[0.08] bg-cyan-500/10 p-4 text-left text-xs text-zinc-300">
+              <div className="rounded-xl border border-white/[0.08] bg-emerald-500/10 p-4 text-left text-xs text-zinc-300">
                 <p className="flex items-center gap-1.5 font-bold text-cyan-300">
                   <UserCheck className="h-4 w-4" />
                   ¡Ya tienes una cuenta en MiGymBrou!

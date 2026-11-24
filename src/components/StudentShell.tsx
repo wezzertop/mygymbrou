@@ -23,6 +23,7 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { SanctionNoticeBanner } from "@/components/SanctionNoticeBanner";
 import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
 import { SmartNotificationsCenter } from "@/components/SmartNotificationsCenter";
+import { PwaInstallButton } from "@/components/PwaInstallPrompt";
 
 const STUDENT_NAV = [
   { href: "/student", label: "Inicio", icon: Home, exact: true },
@@ -292,6 +293,8 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
                 Coach
               </Link>
             )}
+
+            <PwaInstallButton variant="icon" />
 
             <button
               type="button"

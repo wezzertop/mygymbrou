@@ -263,7 +263,7 @@ export function SmartNotificationsCenter({
           <div
             role="dialog"
             aria-label="Notificaciones"
-            className="fixed inset-x-3 top-16 z-50 mx-auto max-h-[78vh] w-auto max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#0e0f12] shadow-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-96"
+            className="fixed inset-x-3 top-16 z-50 mx-auto max-h-[78vh] w-auto max-w-md overflow-hidden rounded-xl border border-white/10 bg-[#0e0f12] shadow-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-96"
           >
             <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3.5">
               <div>

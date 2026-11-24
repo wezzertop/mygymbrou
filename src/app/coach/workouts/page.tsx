@@ -333,13 +333,13 @@ export default function CoachWorkoutsPage() {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Gender Preview Switcher */}
-          <div className="flex flex-1 rounded-full border border-white/10 bg-[#060607] p-1 text-xs font-medium sm:flex-none">
+          <div className="flex flex-1 rounded-lg border border-white/10 bg-[#060607] p-1 text-xs font-medium sm:flex-none">
             <button
               type="button"
               onClick={() => setPreviewGender("female")}
-              className={`flex-1 rounded-full px-3.5 py-1.5 transition sm:flex-none ${
+              className={`flex-1 rounded-md px-3.5 py-1.5 transition sm:flex-none ${
                 previewGender === "female"
-                  ? "bg-white text-zinc-950 font-semibold"
+                  ? "bg-emerald-500 text-zinc-950 font-semibold"
                   : "text-zinc-400 hover:text-white"
               }`}
             >
@@ -348,9 +348,9 @@ export default function CoachWorkoutsPage() {
             <button
               type="button"
               onClick={() => setPreviewGender("male")}
-              className={`flex-1 rounded-full px-3.5 py-1.5 transition sm:flex-none ${
+              className={`flex-1 rounded-md px-3.5 py-1.5 transition sm:flex-none ${
                 previewGender === "male"
-                  ? "bg-white text-zinc-950 font-semibold"
+                  ? "bg-emerald-500 text-zinc-950 font-semibold"
                   : "text-zinc-400 hover:text-white"
               }`}
             >
@@ -361,7 +361,7 @@ export default function CoachWorkoutsPage() {
           <button
             type="button"
             onClick={() => setCustomModalOpen(true)}
-            className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/30 hover:text-white sm:flex-none"
+            className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-emerald-500/40 hover:text-white sm:flex-none"
           >
             <Upload className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
             <span className="truncate">Subir Secuencia</span>
@@ -370,7 +370,7 @@ export default function CoachWorkoutsPage() {
       </div>
 
       {toast && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           {toast}
         </div>
@@ -382,25 +382,23 @@ export default function CoachWorkoutsPage() {
           <button
             type="button"
             onClick={() => setViewTab("catalog")}
-            className={`inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-xs font-medium transition ${
+            className={`inline-flex h-10 items-center rounded-lg px-4 text-xs font-medium transition ${
               viewTab === "catalog"
-                ? "bg-white text-zinc-950"
+                ? "bg-emerald-500 text-zinc-950 font-semibold"
                 : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:text-white"
             }`}
           >
-            <Dumbbell className="h-3.5 w-3.5" />
             Catálogo ({filteredCatalog.length})
           </button>
           <button
             type="button"
             onClick={() => setViewTab("templates")}
-            className={`inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-xs font-medium transition ${
+            className={`inline-flex h-10 items-center rounded-lg px-4 text-xs font-medium transition ${
               viewTab === "templates"
-                ? "bg-white text-zinc-950"
+                ? "bg-emerald-500 text-zinc-950 font-semibold"
                 : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:text-white"
             }`}
           >
-            <Layers className="h-3.5 w-3.5" />
             Mis Rutinas ({workouts.length})
           </button>
         </div>
@@ -408,12 +406,12 @@ export default function CoachWorkoutsPage() {
         <button
           type="button"
           onClick={() => setBuilderModalOpen(true)}
-          className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
+          className="inline-flex h-10 items-center gap-2 rounded-lg bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
         >
           <Send className="h-3.5 w-3.5" />
           Asignar rutina
           {draftExercises.length > 0 && (
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-zinc-950">
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-md bg-emerald-500 px-1.5 text-[10px] font-bold text-zinc-950">
               {draftExercises.length}
             </span>
           )}
@@ -426,7 +424,7 @@ export default function CoachWorkoutsPage() {
           {workouts.map((w) => (
             <div
               key={w.id}
-              className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5"
+              className="flex flex-col justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5"
             >
               <div>
                 <div className="flex items-center justify-between gap-2">
@@ -499,7 +497,7 @@ export default function CoachWorkoutsPage() {
             </div>
           ))}
           {workouts.length === 0 && (
-            <div className="col-span-full rounded-2xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
+            <div className="col-span-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
               Aún no tienes rutinas guardadas. Selecciona ejercicios en el Catálogo para crear tu primera rutina.
             </div>
           )}
@@ -538,7 +536,7 @@ export default function CoachWorkoutsPage() {
           <form
             onSubmit={handlePublishRoutine}
             onClick={(e) => e.stopPropagation()}
-            className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0e0f12] shadow-2xl"
+            className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-white/10 bg-[#0e0f12] shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
               <div>
@@ -561,13 +559,13 @@ export default function CoachWorkoutsPage() {
 
             <div className="flex-1 space-y-4 overflow-y-auto p-5">
               {/* Toggle: Assign to Student vs Save as Template */}
-              <div className="grid grid-cols-2 gap-1.5 rounded-full border border-white/10 bg-[#060607] p-1">
+              <div className="grid grid-cols-2 gap-1.5 rounded-lg border border-white/10 bg-[#060607] p-1">
                 <button
                   type="button"
                   onClick={() => setSaveAsTemplate(false)}
-                  className={`h-9 rounded-full text-xs font-medium transition ${
+                  className={`h-9 rounded-md text-xs font-medium transition ${
                     !saveAsTemplate
-                      ? "bg-white text-zinc-950"
+                      ? "bg-emerald-500 text-zinc-950 font-semibold"
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
@@ -579,11 +577,11 @@ export default function CoachWorkoutsPage() {
                     if (!capabilities.canUseReusableTemplates) return;
                     setSaveAsTemplate(true);
                   }}
-                  className={`inline-flex h-9 items-center justify-center gap-1 rounded-full text-xs font-medium transition ${
+                  className={`inline-flex h-9 items-center justify-center gap-1 rounded-md text-xs font-medium transition ${
                     !capabilities.canUseReusableTemplates
                       ? "cursor-not-allowed text-zinc-600"
                       : saveAsTemplate
-                      ? "bg-white text-zinc-950"
+                      ? "bg-emerald-500 text-zinc-950 font-semibold"
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
@@ -806,9 +804,9 @@ export default function CoachWorkoutsPage() {
                 key={g}
                 type="button"
                 onClick={() => setGroupFilter(g)}
-                className={`h-8 shrink-0 rounded-full px-3.5 text-xs font-medium transition ${
+                className={`h-8 shrink-0 rounded-lg px-3 text-xs font-medium transition ${
                   groupFilter === g
-                    ? "bg-white text-zinc-950 font-semibold"
+                    ? "bg-emerald-500 text-zinc-950 font-semibold"
                     : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:border-white/25 hover:text-white"
                 }`}
               >
@@ -819,71 +817,85 @@ export default function CoachWorkoutsPage() {
 
           {/* Catalog Count & Live API Indicator */}
           <div className="flex items-center justify-between text-[11px] text-zinc-400">
-            <span className="inline-flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+            <span>
               Catálogo en vivo:{" "}
               <strong className="text-white">{filteredCatalog.length}</strong>{" "}
-              ejercicios animados en {groupFilter}
+              ejercicios en {groupFilter}
             </span>
             {loadingCatalog && (
               <span className="inline-flex items-center gap-1 text-emerald-400">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Cargando GIFs...
+                Cargando...
               </span>
             )}
           </div>
 
           {/* Exercise Grid */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {filteredCatalog.map((item) => (
-              <div
-                key={item.id}
-                className="flex min-w-0 flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3.5 transition hover:border-white/20"
-              >
-                <div className="flex min-w-0 gap-3">
-                  <ExerciseVisualDemo
-                    name={item.name}
-                    gender={previewGender}
-                    frames={item.frames}
-                    frameIntervalMs={item.frame_interval_ms}
-                    mediaUrl={item.media_url}
-                    mediaType={item.media_type}
-                    primaryMuscles={item.primary_muscles}
-                    secondaryMuscles={item.secondary_muscles}
-                    instructions={item.instructions}
-                    compact
-                  />
-                  <div className="min-w-0 flex-1">
-                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-emerald-400">
-                      {item.muscle_group}
-                    </span>
-                    <h3 className="mt-1.5 text-xs font-semibold text-white">
-                      {item.name}
-                    </h3>
-                    <p className="mt-0.5 text-[11px] text-zinc-400">
-                      {item.equipment}
-                    </p>
-                    {item.primary_muscles && item.primary_muscles.length > 0 && (
-                      <p className="mt-1 truncate text-[10px] font-medium text-zinc-400">
-                        ● {item.primary_muscles.join(" · ")}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleAddFromCatalog(item)}
-                  className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] text-xs font-medium text-white transition hover:bg-white hover:text-zinc-950 active:scale-[0.98]"
+            {filteredCatalog.map((item) => {
+              const addedCount = draftExercises.filter(
+                (d) => d.exercise_library_id === item.id
+              ).length;
+              return (
+                <div
+                  key={item.id}
+                  className={`flex min-w-0 flex-col justify-between gap-3 rounded-xl border bg-[#0e0f12] p-3.5 transition ${
+                    addedCount > 0
+                      ? "border-emerald-500/40"
+                      : "border-white/[0.08] hover:border-white/20"
+                  }`}
                 >
-                  <Plus className="h-3.5 w-3.5" />
-                  Agregar a la Rutina
-                </button>
-              </div>
-            ))}
+                  <div className="flex min-w-0 gap-3">
+                    <ExerciseVisualDemo
+                      name={item.name}
+                      gender={previewGender}
+                      frames={item.frames}
+                      frameIntervalMs={item.frame_interval_ms}
+                      mediaUrl={item.media_url}
+                      mediaType={item.media_type}
+                      primaryMuscles={item.primary_muscles}
+                      secondaryMuscles={item.secondary_muscles}
+                      instructions={item.instructions}
+                      compact
+                    />
+                    <div className="min-w-0 flex-1">
+                      <span className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                        {item.muscle_group}
+                      </span>
+                      <h3 className="mt-1.5 text-xs font-semibold text-white">
+                        {item.name}
+                      </h3>
+                      <p className="mt-0.5 text-[11px] text-zinc-400">
+                        {item.equipment}
+                      </p>
+                      {item.primary_muscles && item.primary_muscles.length > 0 && (
+                        <p className="mt-1 truncate text-[10px] font-medium text-zinc-400">
+                          {item.primary_muscles.join(" · ")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddFromCatalog(item)}
+                    className={`inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border text-xs font-medium transition active:scale-[0.98] ${
+                      addedCount > 0
+                        ? "border-emerald-500/40 bg-emerald-500 text-zinc-950 font-semibold hover:bg-emerald-400"
+                        : "border-white/10 bg-white/[0.04] text-zinc-200 hover:border-emerald-500/50 hover:bg-emerald-500 hover:text-zinc-950"
+                    }`}
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    {addedCount > 0
+                      ? `Agregado (${addedCount}) · Añadir otro`
+                      : "Agregar a la Rutina"}
+                  </button>
+                </div>
+              );
+            })}
           </div>
 
           {filteredCatalog.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
+            <div className="rounded-xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
               <p className="text-sm font-bold text-white">
                 No encontramos ejercicios con esa búsqueda
               </p>
@@ -908,14 +920,13 @@ export default function CoachWorkoutsPage() {
         <form
           id="routine-builder"
           onSubmit={handlePublishRoutine}
-          className="hidden h-fit min-w-0 scroll-mt-20 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:sticky lg:top-6 lg:col-span-5 lg:block"
+          className="hidden h-fit min-w-0 scroll-mt-20 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:sticky lg:top-6 lg:col-span-5 lg:block"
         >
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-base font-bold text-white">
-              <Dumbbell className="h-4 w-4 text-emerald-400" />
+            <h2 className="text-base font-bold text-white">
               Armar y Asignar Rutina
             </h2>
-            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
+            <span className="rounded-md bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
               {draftExercises.length} ejerc.
             </span>
           </div>
@@ -980,7 +991,7 @@ export default function CoachWorkoutsPage() {
                     onClick={() => toggleWeekday(wd.num)}
                     className={`rounded-lg py-1.5 text-[11px] font-bold transition ${
                       active
-                        ? "bg-white text-zinc-950 text-zinc-950"
+                        ? "bg-emerald-500 text-zinc-950"
                         : "border border-white/[0.08] bg-[#060607] text-zinc-400 hover:text-white"
                     }`}
                   >
@@ -1097,7 +1108,7 @@ export default function CoachWorkoutsPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
           >
             <div className="mb-4 flex items-center justify-between">
               <div>
@@ -1208,7 +1219,7 @@ export default function CoachWorkoutsPage() {
                 </div>
               </div>
 
-              <div className="space-y-2 rounded-2xl border border-white/[0.08] bg-[#060607] p-3">
+              <div className="space-y-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3">
                 <p className="text-[11px] font-bold text-emerald-400">
                   Secuencia de Fotogramas (URLs de Supabase Storage o local)
                 </p>

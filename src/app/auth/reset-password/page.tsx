@@ -47,10 +47,10 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#060607] px-4 py-10">
-      <div className="w-full max-w-md rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
+      <div className="w-full max-w-md rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
         {done ? (
           <div className="space-y-4 py-4 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
               <CheckCircle2 className="h-6 w-6" />
             </div>
             <h1 className="text-xl font-bold text-white">
@@ -94,7 +94,7 @@ export default function ResetPasswordPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Mínimo 8 caracteres"
-                    className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-cyan-500"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   placeholder="Repite tu nueva contraseña"
-                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-3 text-sm text-white outline-none focus:border-cyan-500"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-3 text-sm text-white outline-none focus:border-emerald-500"
                 />
               </div>
               <button

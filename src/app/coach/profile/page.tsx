@@ -82,7 +82,7 @@ export default function CoachProfilePage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       {/* Compact Coach Identity Header */}
-      <div className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center sm:p-5">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center sm:p-5">
         <div className="flex items-center gap-4">
           <img
             src={
@@ -119,7 +119,7 @@ export default function CoachProfilePage() {
       </div>
 
       {saved && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           Perfil público actualizado correctamente.
         </div>
@@ -163,7 +163,7 @@ export default function CoachProfilePage() {
       {tab === "perfil" && (
         <form
           onSubmit={handleSave}
-          className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6"
+          className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6"
         >
           <div>
             <h2 className="text-base font-semibold text-white">
@@ -300,7 +300,7 @@ export default function CoachProfilePage() {
 
       {/* TAB 4: CUENTA Y AYUDA */}
       {tab === "cuenta" && (
-        <div className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
+        <div className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
           <div>
             <h2 className="text-base font-semibold text-white">
               Cuenta y Ayuda

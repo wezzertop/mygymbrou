@@ -43,8 +43,8 @@ export default function StudentDietPage() {
   if (activePlan && !activePlan.includes_nutrition) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-emerald-500/30 bg-[#0e0f12] p-7 text-center shadow-2xl">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
+        <div className="rounded-xl border border-emerald-500/30 bg-[#0e0f12] p-7 text-center shadow-2xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
             <Lock className="h-7 w-7" />
           </div>
           <span className="mt-4 inline-block rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-bold text-amber-300">
@@ -62,8 +62,7 @@ export default function StudentDietPage() {
               href="/student/subscription"
               className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-6 py-3 text-xs font-bold text-zinc-950 transition "
             >
-              <Sparkles className="h-4 w-4" />
-              Ver Planes Disponibles
+Ver Planes Disponibles
             </Link>
           </div>
         </div>
@@ -73,7 +72,7 @@ export default function StudentDietPage() {
 
   if (!plan) {
     return (
-      <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center">
+      <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center">
         <p className="text-base font-bold text-white">
           Aún no tienes un plan nutricional activo
         </p>
@@ -118,10 +117,10 @@ export default function StudentDietPage() {
       />
 
       {/* Macros & Calories Summary Card */}
-      <section className="rounded-3xl border border-white/[0.08] bg-gradient-to-br from-slate-900 to-slate-950 p-5">
+      <section className="rounded-xl border border-white/[0.08] bg-gradient-to-br from-slate-900 to-slate-950 p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
               <Flame className="h-6 w-6" />
             </div>
             <div>
@@ -135,7 +134,7 @@ export default function StudentDietPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 px-4 py-2.5">
+          <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-2.5">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Droplets className="h-4 w-4 text-sky-400" />
@@ -181,7 +180,7 @@ export default function StudentDietPage() {
 
         {/* Dynamic Macro Bars */}
         <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
-          <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-2.5 sm:p-3">
+          <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-2.5 sm:p-3">
             <p className="truncate text-[10px] text-zinc-400 sm:text-[11px]">Proteínas</p>
             <p className="mt-0.5 truncate text-base font-black text-emerald-400 sm:text-lg">
               {consumedProtein}
@@ -196,7 +195,7 @@ export default function StudentDietPage() {
               />
             </div>
           </div>
-          <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-2.5 sm:p-3">
+          <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-2.5 sm:p-3">
             <p className="truncate text-[10px] text-zinc-400 sm:text-[11px]">Carbos</p>
             <p className="mt-0.5 truncate text-base font-black text-emerald-400 sm:text-lg">
               {consumedCarbs}
@@ -211,7 +210,7 @@ export default function StudentDietPage() {
               />
             </div>
           </div>
-          <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-2.5 sm:p-3">
+          <div className="min-w-0 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-2.5 sm:p-3">
             <p className="truncate text-[10px] text-zinc-400 sm:text-[11px]">Grasas</p>
             <p className="mt-0.5 truncate text-base font-black text-amber-400 sm:text-lg">
               {consumedFats}
@@ -245,7 +244,7 @@ export default function StudentDietPage() {
           return (
             <div
               key={meal.id}
-              className={`rounded-2xl border transition ${
+              className={`rounded-xl border transition ${
                 done
                   ? "border-emerald-500/40 bg-emerald-950/20"
                   : "border-white/[0.08] bg-[#0e0f12]/75"
@@ -297,7 +296,7 @@ export default function StudentDietPage() {
                     {meal.foods_description}
                   </p>
                   {meal.exchange_options && (
-                    <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-zinc-300">
+                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-zinc-300">
                       <p className="mb-1 flex items-center gap-1.5 font-semibold text-emerald-300">
                         <Repeat2 className="h-3.5 w-3.5" />
                         Opciones de Intercambio

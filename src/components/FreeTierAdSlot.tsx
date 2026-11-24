@@ -62,7 +62,7 @@ export function FreeTierAdSlot({
   return (
     <aside
       aria-label="Espacio publicitario Plan Free"
-      className={`flex flex-col items-center justify-center rounded-2xl border border-white/[0.06] bg-[#0e0f12] px-3 py-2.5 ${className}`}
+      className={`flex flex-col items-center justify-center rounded-xl border border-white/[0.06] bg-[#0e0f12] px-3 py-2.5 ${className}`}
     >
       <div className="mb-1.5 flex w-full max-w-[320px] items-center justify-between text-[10px] text-zinc-500">
         <span className="uppercase tracking-wider">Publicidad · Plan Free</span>

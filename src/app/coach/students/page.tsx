@@ -221,10 +221,10 @@ function CoachStudentsContent() {
       </div>
 
       {/* Live Plan Quota & Roster Counter Bar */}
-      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
+            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
               {currentSaasPlan.name}
             </span>
             <span className="text-xs font-semibold text-white">
@@ -276,7 +276,7 @@ function CoachStudentsContent() {
 
       {/* Incoming Coaching Inquiries from Directory */}
       {pendingInquiries.length > 0 && (
-        <section className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+        <section className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Inbox className="h-4 w-4 text-emerald-400" />
@@ -293,7 +293,7 @@ function CoachStudentsContent() {
             {pendingInquiries.map((inq) => (
               <div
                 key={inq.id}
-                className="flex flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#060607] p-4 sm:flex-row sm:items-center"
+                className="flex flex-col justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#060607] p-4 sm:flex-row sm:items-center"
               >
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -302,7 +302,7 @@ function CoachStudentsContent() {
                     </p>
                     <VerifiedPersonBadge verified={inq.student_is_verified} />
                     {inq.preferred_plan_name && (
-                      <span className="rounded-full border border-white/[0.08] bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                      <span className="rounded-full border border-white/[0.08] bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
                         {inq.preferred_plan_name}
                       </span>
                     )}
@@ -379,9 +379,9 @@ function CoachStudentsContent() {
               key={tab.key}
               type="button"
               onClick={() => setFilter(tab.key)}
-              className={`h-9 shrink-0 rounded-full px-4 text-xs font-medium transition ${
+              className={`h-9 shrink-0 rounded-lg px-3.5 text-xs font-medium transition ${
                 filter === tab.key
-                  ? "bg-white text-zinc-950 font-semibold"
+                  ? "bg-emerald-500 text-zinc-950 font-semibold"
                   : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:border-white/25 hover:text-white"
               }`}
             >
@@ -398,7 +398,7 @@ function CoachStudentsContent() {
           return (
             <div
               key={st.id}
-              className="flex min-w-0 flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/[0.08]"
+              className="flex min-w-0 flex-col justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/[0.08]"
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
@@ -489,7 +489,7 @@ function CoachStudentsContent() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
+        <div className="rounded-xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">
           <p className="text-sm font-bold text-white">
             {students.length === 0
               ? "Aún no tienes alumnos registrados"
@@ -537,7 +537,7 @@ function CoachStudentsContent() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
+            className="w-full max-w-md rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
           >
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-lg font-bold text-white">
@@ -555,7 +555,7 @@ function CoachStudentsContent() {
 
             {inviteResult ? (
               <div className="space-y-4">
-                <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-200">
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-200">
                   <p className="font-bold text-emerald-300">
                     {inviteResult.existingUser
                       ? `Enlace de vinculación listo para ${inviteResult.email}`

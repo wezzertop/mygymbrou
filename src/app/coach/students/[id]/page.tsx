@@ -238,7 +238,7 @@ export default function Student360Page() {
           Volver a Mis Alumnos
         </Link>
 
-        <div className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center sm:p-5">
+        <div className="flex flex-col justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center sm:p-5">
           <div className="flex min-w-0 items-center gap-3.5 sm:gap-4">
             {student.avatar_url ? (
               <img
@@ -264,7 +264,7 @@ export default function Student360Page() {
                 )}
               </div>
               <p className="truncate text-xs text-zinc-400">{student.invited_email}</p>
-              <span className="mt-1 inline-block rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+              <span className="mt-1 inline-block rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
                 {student.fitness_goal || "Plan Personalizado"}
               </span>
             </div>
@@ -295,7 +295,7 @@ export default function Student360Page() {
         {/* Identity Verification Review Panel for Coach */}
         {(student.verification_status === "pending" ||
           student.identity_document_url) && (
-          <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4">
+          <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div className="space-y-1">
                 <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-400">
@@ -380,7 +380,7 @@ export default function Student360Page() {
 
         {/* Metas Activas y Limitaciones del Alumno (Sincronizadas en vivo) */}
         {studentGoal && (
-          <div className="rounded-2xl border border-emerald-500/30 bg-[#0e0f12] p-4">
+          <div className="rounded-xl border border-emerald-500/30 bg-[#0e0f12] p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
                 <Target className="h-4 w-4" />
@@ -429,7 +429,7 @@ export default function Student360Page() {
       )}
 
       {/* 360° Tabs */}
-      <div className="grid grid-cols-2 gap-2 rounded-2xl border border-white/[0.08] bg-[#060607] p-1.5 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/[0.08] bg-[#060607] p-1.5 sm:grid-cols-4">
         {(
           [
             { key: "assessment", label: "Evaluación y Medidas", icon: Activity },
@@ -447,7 +447,7 @@ export default function Student360Page() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition ${
                 active
-                  ? "bg-white text-zinc-950 text-zinc-950 shadow"
+                  ? "bg-white text-zinc-950 shadow"
                   : "text-zinc-400 hover:bg-[#0e0f12] hover:text-white"
               }`}
             >
@@ -464,7 +464,7 @@ export default function Student360Page() {
           {showNewForm && (
             <form
               onSubmit={handleSaveAssessment}
-              className="space-y-4 rounded-2xl border border-white/15 bg-[#0e0f12] p-5"
+              className="space-y-4 rounded-xl border border-white/15 bg-[#0e0f12] p-5"
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-white">
@@ -601,9 +601,9 @@ export default function Student360Page() {
           {/* Latest Comparison Grid */}
           {latest && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+              <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
+                  <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
                     Último Análisis — {latest.assessment_date}
                   </span>
                   {latest.goal_tag && (
@@ -674,7 +674,7 @@ export default function Student360Page() {
                 ].map((m) => (
                   <div
                     key={m.label}
-                    className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3.5"
+                    className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-3.5"
                   >
                     <p className="text-[11px] text-zinc-400">{m.label}</p>
                     <p className="mt-1 text-xl font-extrabold text-white">
@@ -705,7 +705,7 @@ export default function Student360Page() {
       {activeTab === "workout" && (
         <div className="space-y-5">
           {activeWorkout ? (
-            <div className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+            <div className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-bold uppercase text-emerald-400">
@@ -752,13 +752,13 @@ export default function Student360Page() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
+            <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
               Este alumno aún no tiene una rutina asignada.
             </div>
           )}
 
           {/* Assign template */}
-          <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+          <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
             <h3 className="text-sm font-bold text-white">
               Asignar desde Plantilla Reutilizable
             </h3>
@@ -795,7 +795,7 @@ export default function Student360Page() {
       {activeTab === "diet" && (
         <div className="space-y-5">
           {activeDiet ? (
-            <div className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+            <div className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
               <div>
                 <span className="text-[11px] font-bold uppercase text-emerald-400">
                   Plan Nutricional Activo
@@ -860,12 +860,12 @@ export default function Student360Page() {
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
+            <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
               Este alumno aún no tiene una dieta asignada.
             </div>
           )}
 
-          <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
+          <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
             <h3 className="text-sm font-bold text-white">
               Asignar Plantilla de Dieta
             </h3>
@@ -902,7 +902,7 @@ export default function Student360Page() {
       {activeTab === "subscription" && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Quick Assign Coach Plan */}
-          <div className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-6 lg:col-span-6">
+          <div className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-6 lg:col-span-6">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-white">
                 Asignar o Renovar Plan del Coach
@@ -976,7 +976,7 @@ export default function Student360Page() {
           {/* Manual override */}
           <form
             onSubmit={handleSaveSubscription}
-            className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-6 lg:col-span-6"
+            className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-6 lg:col-span-6"
           >
             <h2 className="text-base font-bold text-white">
               Ajuste Manual de Suscripción

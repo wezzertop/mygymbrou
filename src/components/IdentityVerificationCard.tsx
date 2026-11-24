@@ -119,7 +119,7 @@ export function IdentityVerificationCard({
   };
 
   return (
-    <section className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
+    <section className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export function IdentityVerificationCard({
       )}
 
       {status === "verified" ? (
-        <div className="flex flex-col gap-3 rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 rounded-xl border border-sky-500/30 bg-sky-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1.5">
             <VerifiedPersonBadge verified label="Persona Real Verificada" />
             <p className="text-xs text-zinc-300">
@@ -166,7 +166,7 @@ export function IdentityVerificationCard({
               . Tu marca de verificación es visible en tu perfil y solicitudes.
             </p>
           </div>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-400 ring-1 ring-sky-400/40">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-500/20 text-sky-400 ring-1 ring-sky-400/40">
             <BadgeCheck className="h-7 w-7" />
           </div>
         </div>
@@ -224,7 +224,7 @@ export function IdentityVerificationCard({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-[#060607] px-4 py-6 text-center transition hover:border-white/30 hover:bg-white/[0.02]"
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-[#060607] px-4 py-6 text-center transition hover:border-white/30 hover:bg-white/[0.02]"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
                 <Upload className="h-4 w-4" />

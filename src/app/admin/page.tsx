@@ -338,8 +338,8 @@ export default function AdminDashboardPage() {
   if (hydrated && !isDemoMode && accessDenied) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#060607] px-4 py-10">
-        <div className="w-full max-w-md space-y-5 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-7 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-400">
+        <div className="w-full max-w-md space-y-5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-7 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400">
             <Lock className="h-6 w-6" />
           </div>
           <div className="space-y-1.5">
@@ -420,14 +420,14 @@ export default function AdminDashboardPage() {
         </div>
 
         {toast && (
-          <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
+          <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             {toast}
           </div>
         )}
 
         {/* KPI Strip */}
-        <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12] sm:grid-cols-4 sm:divide-y-0">
+        <div className="grid grid-cols-2 divide-x divide-y divide-white/[0.06] overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12] sm:grid-cols-4 sm:divide-y-0">
           <div className="p-4 sm:p-5">
             <p className="text-[11px] font-medium text-zinc-500">
               Pagos SPEI pendientes
@@ -541,7 +541,7 @@ export default function AdminDashboardPage() {
               return (
                 <div
                   key={pay.id}
-                  className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5"
+                  className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5"
                 >
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                     <div className="space-y-1">
@@ -640,7 +640,7 @@ export default function AdminDashboardPage() {
             })}
 
             {filteredPayments.length === 0 && (
-              <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
+              <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
                 No hay solicitudes de pago SPEI en esta categoría.
               </div>
             )}
@@ -658,7 +658,7 @@ export default function AdminDashboardPage() {
               return (
                 <div
                   key={coach.id}
-                  className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5"
+                  className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5"
                 >
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                     <div className="space-y-0.5">
@@ -783,7 +783,7 @@ export default function AdminDashboardPage() {
               );
             })}
             {coaches.length === 0 && (
-              <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
+              <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
                 No hay solicitudes de coaches registradas aún.
               </div>
             )}
@@ -821,7 +821,7 @@ export default function AdminDashboardPage() {
             {filteredReports.map((rep) => (
               <div
                 key={rep.id}
-                className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5"
+                className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-2">
@@ -885,7 +885,7 @@ export default function AdminDashboardPage() {
             ))}
 
             {filteredReports.length === 0 && (
-              <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
+              <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
                 No hay reportes en esta categoría.
               </div>
             )}
@@ -898,7 +898,7 @@ export default function AdminDashboardPage() {
             {/* Issue Sanction Form */}
             <form
               onSubmit={handleIssueSanction}
-              className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-5"
+              className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-5"
             >
               <div>
                 <h2 className="text-base font-semibold text-white">
@@ -991,7 +991,7 @@ export default function AdminDashboardPage() {
             </form>
 
             {/* Sanctions History */}
-            <div className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-7">
+            <div className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-7">
               <h2 className="text-base font-semibold text-white">
                 Historial de sanciones ({sanctions.length})
               </h2>

@@ -27,7 +27,7 @@ export function SectionVisualHeader({
   actions,
 }: SectionVisualHeaderProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12]">
+    <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12]">
       <div className="h-32 w-full overflow-hidden bg-[#060607] sm:h-44">
         <img
           src={imageSrc}

@@ -52,7 +52,7 @@ export default function StudentNotificationsPage() {
           <button
             type="button"
             onClick={() => markAllNotificationsRead(studentProfile.id)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 hover:bg-cyan-500/20"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 hover:bg-emerald-500/20"
           >
             <CheckCheck className="h-4 w-4" />
             Marcar todas como leídas
@@ -68,7 +68,7 @@ export default function StudentNotificationsPage() {
               key={n.id}
               type="button"
               onClick={() => markNotificationRead(n.id)}
-              className={`flex w-full items-start gap-3.5 rounded-2xl border p-4 text-left transition ${
+              className={`flex w-full items-start gap-3.5 rounded-xl border p-4 text-left transition ${
                 n.is_read
                   ? "border-white/[0.08] bg-[#0e0f12] opacity-80"
                   : "border-white/15 bg-[#0e0f12] shadow-lg shadow-cyan-950/20"
@@ -78,7 +78,7 @@ export default function StudentNotificationsPage() {
                 className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
                   n.is_read
                     ? "bg-white/[0.06] text-zinc-400"
-                    : "bg-cyan-500/15 text-emerald-400"
+                    : "bg-emerald-500/15 text-emerald-400"
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -105,7 +105,7 @@ export default function StudentNotificationsPage() {
         })}
 
         {myNotifs.length === 0 && (
-          <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center text-sm text-zinc-400">
+          <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center text-sm text-zinc-400">
             No tienes notificaciones por ahora.
           </div>
         )}

@@ -151,7 +151,7 @@ export default function LandingPage() {
 
           {/* Unobstructed Hero Editorial Photograph — ZERO text covering the photo */}
           <div className="mt-12 sm:mt-16">
-            <div className="overflow-hidden rounded-2xl bg-[#0e0f12] ring-1 ring-white/10 sm:rounded-3xl">
+            <div className="overflow-hidden rounded-xl bg-[#0e0f12] ring-1 ring-white/10 sm:rounded-xl">
               <img
                 src="/images/landing/hero-athlete.jpg"
                 alt="Atleta entrenando fuerza con barra en gimnasio boutique"
@@ -198,7 +198,7 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
           {/* Unobstructed Coaching Photograph */}
           <div className="lg:col-span-6">
-            <div className="overflow-hidden rounded-2xl bg-[#0e0f12] ring-1 ring-white/10 sm:rounded-3xl">
+            <div className="overflow-hidden rounded-xl bg-[#0e0f12] ring-1 ring-white/10 sm:rounded-xl">
               <img
                 src="/images/landing/coach-session.jpg"
                 alt="Entrenador personal guiando a su alumna durante una sesión de fuerza"
@@ -303,7 +303,7 @@ export default function LandingPage() {
 
           {/* Unobstructed Nutrition Photograph */}
           <div className="order-1 lg:order-2 lg:col-span-6">
-            <div className="overflow-hidden rounded-2xl bg-[#0e0f12] ring-1 ring-white/10 sm:rounded-3xl">
+            <div className="overflow-hidden rounded-xl bg-[#0e0f12] ring-1 ring-white/10 sm:rounded-xl">
               <img
                 src="/images/landing/nutrition-editorial.jpg"
                 alt="Plan nutricional saludable con salmón, espárragos, quinoa y aguacate"
@@ -317,7 +317,7 @@ export default function LandingPage() {
       {/* Chapter 03 — Refined Mobile Interface Preview */}
       <section className="border-t border-white/[0.06] py-20 sm:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-12 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-10 lg:grid-cols-12 lg:p-14">
+          <div className="grid items-center gap-12 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-10 lg:grid-cols-12 lg:p-14">
             <div className="space-y-5 lg:col-span-6">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
                 03 · Experiencia Mobile-First
@@ -380,7 +380,7 @@ export default function LandingPage() {
                     </span>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.07] bg-[#0e0f12] p-3.5">
+                  <div className="rounded-xl border border-white/[0.07] bg-[#0e0f12] p-3.5">
                     <p className="text-[10px] font-medium uppercase tracking-wider text-emerald-400">
                       Nota de tu Coach
                     </p>
@@ -391,7 +391,7 @@ export default function LandingPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
-                    <div className="rounded-2xl border border-white/[0.07] bg-[#0e0f12] p-3">
+                    <div className="rounded-xl border border-white/[0.07] bg-[#0e0f12] p-3">
                       <p className="text-[10px] text-zinc-500">Peso actual</p>
                       <p className="mt-0.5 text-lg font-semibold tabular-nums text-white">
                         62.4 kg
@@ -400,7 +400,7 @@ export default function LandingPage() {
                         -1.3 kg este mes
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-white/[0.07] bg-[#0e0f12] p-3">
+                    <div className="rounded-xl border border-white/[0.07] bg-[#0e0f12] p-3">
                       <p className="text-[10px] text-zinc-500">Meta hoy</p>
                       <p className="mt-0.5 text-lg font-semibold tabular-nums text-white">
                         1,850
@@ -411,7 +411,7 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-white/[0.07] bg-[#0e0f12] p-3.5">
+                  <div className="rounded-xl border border-white/[0.07] bg-[#0e0f12] p-3.5">
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-semibold text-white">
                         Día 1 · Tren Inferior
@@ -425,7 +425,7 @@ export default function LandingPage() {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-5 gap-1 rounded-2xl border border-white/[0.06] bg-[#0a0a0c] px-2 py-2.5 text-center text-[9px] font-medium text-zinc-500">
+                  <div className="grid grid-cols-5 gap-1 rounded-xl border border-white/[0.06] bg-[#0a0a0c] px-2 py-2.5 text-center text-[9px] font-medium text-zinc-500">
                     <span className="text-emerald-400">Inicio</span>
                     <span>Rutinas</span>
                     <span>Dieta</span>
@@ -462,7 +462,7 @@ export default function LandingPage() {
             {SAAS_PLANS_MXN.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative flex flex-col rounded-2xl border p-6 transition ${
+                className={`relative flex flex-col rounded-xl border p-6 transition ${
                   plan.featured
                     ? "border-emerald-500/50 bg-[#111315] shadow-[0_20px_60px_-25px_rgba(16,185,129,0.28)]"
                     : "border-white/[0.08] bg-[#0e0f12] hover:border-white/15"

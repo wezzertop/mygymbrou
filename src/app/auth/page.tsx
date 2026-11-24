@@ -139,7 +139,7 @@ function AuthLoginContent() {
           </Link>
         </div>
 
-        <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
+        <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold tracking-[-0.025em] text-white">
               Iniciar sesión
@@ -210,7 +210,7 @@ function AuthLoginContent() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none transition focus:border-cyan-500"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none transition focus:border-emerald-500"
                   placeholder="tu@correo.com"
                 />
               </div>
@@ -235,7 +235,7 @@ function AuthLoginContent() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-11 text-sm text-white outline-none transition focus:border-cyan-500"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-11 text-sm text-white outline-none transition focus:border-emerald-500"
                   placeholder="••••••••"
                 />
                 <button

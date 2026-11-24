@@ -153,7 +153,7 @@ export function CoachCertificationsManager() {
   };
 
   return (
-    <section className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6">
+    <section className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -200,7 +200,7 @@ export function CoachCertificationsManager() {
       {showForm && (
         <form
           onSubmit={handleAddCert}
-          className="space-y-4 rounded-2xl border border-white/15 bg-[#060607] p-5"
+          className="space-y-4 rounded-xl border border-white/15 bg-[#060607] p-5"
         >
           <p className="text-xs font-bold uppercase tracking-wider text-cyan-400">
             Nuevo Diploma o Certificado
@@ -298,7 +298,7 @@ export function CoachCertificationsManager() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/15 bg-[#0e0f12] px-4 py-5 text-center transition hover:border-emerald-500/60"
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/15 bg-[#0e0f12] px-4 py-5 text-center transition hover:border-emerald-500/60"
             >
               <FileUp className="h-6 w-6 text-emerald-400" />
               <p className="text-xs font-bold text-white">
@@ -334,7 +334,7 @@ export function CoachCertificationsManager() {
 
       {/* Existing Diplomas List */}
       {myCertifications.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#060607] p-6 text-center">
+        <div className="rounded-xl border border-dashed border-white/[0.08] bg-[#060607] p-6 text-center">
           <Award className="mx-auto h-8 w-8 text-slate-600" />
           <p className="mt-2 text-sm font-bold text-zinc-300">
             Aún no has subido diplomas o certificaciones
@@ -349,7 +349,7 @@ export function CoachCertificationsManager() {
           {myCertifications.map((cert) => (
             <div
               key={cert.id}
-              className="flex flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#060607] p-4 transition hover:border-emerald-500/40"
+              className="flex flex-col justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#060607] p-4 transition hover:border-emerald-500/40"
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
@@ -399,7 +399,7 @@ export function CoachCertificationsManager() {
                 <button
                   type="button"
                   onClick={() => setViewingCert(cert)}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3 py-1.5 text-[11px] font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-white/[0.08] bg-emerald-500/10 px-3 py-1.5 text-[11px] font-bold text-cyan-300 transition hover:bg-emerald-500/20"
                 >
                   <Eye className="h-3.5 w-3.5" />
                   Ver Archivo

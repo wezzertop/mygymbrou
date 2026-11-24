@@ -227,7 +227,7 @@ export default function StudentProgressPage() {
       <div className="grid gap-3 sm:grid-cols-2">
         <Link
           href="/student/subscription"
-          className="flex flex-col justify-between gap-2 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
+          className="flex flex-col justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
         >
           <div className="flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
@@ -254,7 +254,7 @@ export default function StudentProgressPage() {
 
         <Link
           href="/student/profile"
-          className="flex flex-col justify-between gap-2 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
+          className="flex flex-col justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
         >
           <div className="flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
@@ -279,7 +279,7 @@ export default function StudentProgressPage() {
 
       {/* Featured Coach Analysis Card */}
       {latest && (
-        <section className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 shadow-xl shadow-cyan-950/20">
+        <section className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 shadow-xl shadow-cyan-950/20">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
               <img
@@ -292,8 +292,7 @@ export default function StudentProgressPage() {
               />
               <div>
                 <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Último Análisis del Coach
+Último Análisis del Coach
                 </p>
                 <p className="text-[11px] text-zinc-400">
                   {coachProfile.full_name} · {latest.assessment_date}
@@ -339,7 +338,7 @@ export default function StudentProgressPage() {
             return (
               <div
                 key={m.label}
-                className="rounded-2xl border border-white/[0.08] bg-[#0e0f12]/75 p-3.5"
+                className="rounded-xl border border-white/[0.08] bg-[#0e0f12]/75 p-3.5"
               >
                 <p className="text-[11px] font-medium text-zinc-400">
                   {m.label}
@@ -383,7 +382,7 @@ export default function StudentProgressPage() {
             {allPhotos.map((photo, idx) => (
               <div
                 key={`${photo.url}-${idx}`}
-                className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12]"
+                className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12]"
               >
                 <img
                   src={photo.url}
@@ -411,7 +410,7 @@ export default function StudentProgressPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
+            className="w-full max-w-md rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
           >
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-bold text-white">

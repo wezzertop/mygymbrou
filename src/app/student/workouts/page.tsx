@@ -43,8 +43,8 @@ function StudentWorkoutsContent() {
   if (activePlan && !activePlan.includes_workouts) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-7 text-center shadow-2xl">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-emerald-400">
+        <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-7 text-center shadow-2xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
             <Lock className="h-7 w-7" />
           </div>
           <span className="mt-4 inline-block rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-bold text-amber-300">
@@ -61,9 +61,8 @@ function StudentWorkoutsContent() {
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/student/subscription"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-6 py-3.5 text-xs font-bold text-zinc-950"
+              className="inline-flex items-center justify-center rounded-lg bg-emerald-500 px-6 py-3 text-xs font-bold text-zinc-950 transition hover:bg-emerald-400"
             >
-              <Sparkles className="h-4 w-4" />
               Ver Planes y Solicitar Actualización
             </Link>
           </div>
@@ -115,7 +114,7 @@ function StudentWorkoutsContent() {
 
   if (!activeWorkout) {
     return (
-      <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center">
+      <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center">
         <p className="text-base font-bold text-white">
           Aún no tienes una rutina asignada
         </p>
@@ -179,10 +178,10 @@ function StudentWorkoutsContent() {
             key={day.id}
             type="button"
             onClick={() => setSelectedDayIdx(idx)}
-            className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-bold transition ${
+            className={`shrink-0 rounded-lg px-4 py-2 text-xs font-semibold transition ${
               idx === selectedDayIdx
-                ? "bg-white hover:bg-zinc-200 text-zinc-950 shadow-lg shadow-none"
-                : "border border-white/[0.08] bg-[#0e0f12] text-zinc-300 hover:border-white/15"
+                ? "bg-emerald-500 text-zinc-950 hover:bg-emerald-400"
+                : "border border-white/[0.08] bg-[#0e0f12] text-zinc-300 hover:border-white/20"
             }`}
           >
             Día {day.day_number} · {day.focus_area || "Entreno"}
@@ -191,10 +190,10 @@ function StudentWorkoutsContent() {
       </div>
 
       {/* Integrated Rest Timer Bar */}
-      <div className="sticky top-14 z-20 rounded-2xl border border-white/[0.08] bg-[#060607]/95 p-3.5 shadow-xl backdrop-blur-md">
+      <div className="sticky top-14 z-20 rounded-xl border border-white/[0.08] bg-[#060607]/95 p-3.5 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-emerald-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
               <Timer className="h-5 w-5" />
             </div>
             <div>
@@ -208,7 +207,7 @@ function StudentWorkoutsContent() {
               >
                 {formatTime(secondsLeft)}
                 {secondsLeft === 0 && (
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 font-sans text-[10px] font-bold text-emerald-300">
+                  <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 font-sans text-[10px] font-bold text-emerald-300">
                     ¡Siguiente serie!
                   </span>
                 )}
@@ -224,8 +223,8 @@ function StudentWorkoutsContent() {
                 onClick={() => startRest(preset)}
                 className={`min-h-[36px] rounded-lg border px-2.5 py-1.5 text-[11px] font-bold transition active:scale-95 ${
                   selectedPreset === preset
-                    ? "border-cyan-500 bg-cyan-500/20 text-emerald-300"
-                    : "border-white/15 bg-[#0e0f12] text-zinc-200 hover:border-cyan-500/60"
+                    ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
+                    : "border-white/15 bg-[#0e0f12] text-zinc-200 hover:border-emerald-500/50"
                 }`}
               >
                 {preset}s
@@ -235,7 +234,7 @@ function StudentWorkoutsContent() {
               type="button"
               onClick={() => setTimerRunning((r) => !r)}
               aria-label={timerRunning ? "Pausar temporizador" : "Iniciar temporizador"}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-zinc-950 text-zinc-950 transition hover:bg-zinc-200 active:scale-95"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-zinc-950 transition hover:bg-emerald-400 active:scale-95"
             >
               {timerRunning ? (
                 <Pause className="h-4 w-4" />
@@ -259,7 +258,7 @@ function StudentWorkoutsContent() {
       </div>
 
       {/* Day Header & Progress */}
-      <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4">
+      <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4">
         <div className="flex items-center justify-between gap-2">
           <div>
             <h2 className="text-base font-bold text-white">
@@ -282,7 +281,7 @@ function StudentWorkoutsContent() {
       </div>
 
       {completedToast && (
-        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/40 bg-emerald-500/15 p-4 text-xs font-bold text-emerald-300">
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 p-4 text-xs font-bold text-emerald-300">
           <Trophy className="h-5 w-5 shrink-0" />
           ¡Rutina guardada en tu calendario y sincronizada con tu Coach!
         </div>
@@ -297,7 +296,7 @@ function StudentWorkoutsContent() {
           return (
             <div
               key={ex.id}
-              className={`overflow-hidden rounded-2xl border p-4 transition ${
+              className={`overflow-hidden rounded-xl border p-4 transition ${
                 done
                   ? "border-emerald-500/40 bg-emerald-950/20"
                   : "border-white/[0.08] bg-[#0e0f12]/75"
@@ -339,7 +338,7 @@ function StudentWorkoutsContent() {
                       type="button"
                       onClick={() => toggleExerciseComplete(ex.id)}
                       aria-label={`Marcar ${ex.name} completado`}
-                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-2 transition active:scale-95 ${
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 transition active:scale-95 ${
                         done
                           ? "border-emerald-400 bg-emerald-500 text-zinc-950"
                           : "border-slate-600 bg-[#060607] text-transparent hover:border-cyan-400"
@@ -355,7 +354,7 @@ function StudentWorkoutsContent() {
                       {ex.sets} series × {ex.reps}
                     </span>
                     {ex.target_weight_or_rpe && (
-                      <span className="rounded-lg bg-cyan-500/15 px-2.5 py-1 font-semibold text-emerald-300">
+                      <span className="rounded-lg bg-emerald-500/15 px-2.5 py-1 font-semibold text-emerald-300">
                         {ex.target_weight_or_rpe}
                       </span>
                     )}
@@ -418,7 +417,7 @@ function StudentWorkoutsContent() {
       <button
         type="button"
         onClick={handleFinishSession}
-        className={`flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-extrabold shadow-xl transition active:scale-[0.99] ${
+        className={`flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-extrabold shadow-xl transition active:scale-[0.99] ${
           alreadyLoggedToday
             ? "border border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
             : "bg-white hover:bg-zinc-200 text-zinc-950 shadow-emerald-500/25 "

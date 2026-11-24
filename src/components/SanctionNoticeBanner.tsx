@@ -24,7 +24,7 @@ export function SanctionNoticeBanner({ profile }: { profile: Profile }) {
 
   if (status === "warned") {
     return (
-      <div className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-500/35 bg-amber-500/10 p-4 text-xs text-amber-200">
+      <div className="mb-5 flex items-start gap-3 rounded-xl border border-amber-500/35 bg-amber-500/10 p-4 text-xs text-amber-200">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
         <div className="space-y-1">
           <p className="font-semibold text-amber-300">
@@ -47,8 +47,8 @@ export function SanctionNoticeBanner({ profile }: { profile: Profile }) {
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-md"
     >
-      <div className="w-full max-w-md space-y-5 rounded-3xl border border-rose-500/30 bg-[#0e0f12] p-6 text-center shadow-2xl">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-400">
+      <div className="w-full max-w-md space-y-5 rounded-xl border border-rose-500/30 bg-[#0e0f12] p-6 text-center shadow-2xl">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400">
           {isBanned ? <Ban className="h-7 w-7" /> : <Clock className="h-7 w-7" />}
         </div>
 
@@ -63,7 +63,7 @@ export function SanctionNoticeBanner({ profile }: { profile: Profile }) {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.08] bg-[#060607] p-4 text-left text-xs text-zinc-300">
+        <div className="rounded-xl border border-white/[0.08] bg-[#060607] p-4 text-left text-xs text-zinc-300">
           <p className="font-semibold text-rose-300">Motivo registrado:</p>
           <p className="mt-1 leading-relaxed">
             {profile.suspension_reason ||

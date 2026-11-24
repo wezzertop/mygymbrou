@@ -20,6 +20,7 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { SanctionNoticeBanner } from "@/components/SanctionNoticeBanner";
 import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
 import { SmartNotificationsCenter } from "@/components/SmartNotificationsCenter";
+import { PwaInstallButton } from "@/components/PwaInstallPrompt";
 
 const COACH_NAV = [
   { href: "/coach", label: "Inicio", icon: LayoutDashboard, exact: true },
@@ -165,6 +166,7 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
               <HelpCircle className="h-[18px] w-[18px] text-zinc-500" />
               <span>Tutorial Guiado</span>
             </button>
+            <PwaInstallButton variant="sidebar" />
           </div>
         </nav>
 
@@ -242,6 +244,7 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
                 Alumno
               </Link>
             )}
+            <PwaInstallButton variant="icon" />
             <SmartNotificationsCenter role="coach" />
             <button
               type="button"

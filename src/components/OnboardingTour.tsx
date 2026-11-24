@@ -247,7 +247,7 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
       }
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
     >
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#0e0f12] shadow-2xl shadow-black/90">
+      <div className="relative w-full max-w-md overflow-hidden rounded-xl border border-white/10 bg-[#0e0f12] shadow-2xl shadow-black/90">
         {/* Progress bar */}
         <div className="h-1 w-full bg-white/[0.06]">
           <div
@@ -260,8 +260,7 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
           {/* Top header */}
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-zinc-300">
-              <Sparkles className="h-3 w-3 text-emerald-400" />
-              Guía Rápida ({stepIdx + 1}/{steps.length})
+Guía Rápida ({stepIdx + 1}/{steps.length})
             </span>
             <button
               type="button"
@@ -276,7 +275,7 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
 
           {/* Visual Hero Icon + Content */}
           <div className="mt-5 space-y-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-emerald-400">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-emerald-400">
               <Icon className="h-6 w-6" />
             </div>
 
@@ -293,7 +292,7 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
               {current.description}
             </p>
 
-            <div className="rounded-2xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs text-zinc-300">
+            <div className="rounded-xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs text-zinc-300">
               <span className="font-semibold text-emerald-400">Tip: </span>
               {current.tip}
             </div>

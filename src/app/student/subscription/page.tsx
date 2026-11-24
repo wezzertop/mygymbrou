@@ -98,7 +98,7 @@ export default function StudentSubscriptionPage() {
       </div>
 
       {/* Active Plan Strategic Card */}
-      <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl">
+      <section className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <img
@@ -107,7 +107,7 @@ export default function StudentSubscriptionPage() {
                 "https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=128&q=80"
               }
               alt={coachProfile.full_name}
-              className="h-14 w-14 rounded-2xl object-cover ring-2 ring-emerald-500/40"
+              className="h-14 w-14 rounded-xl object-cover ring-2 ring-emerald-500/40"
             />
             <div>
               <p className="text-xs text-zinc-400">Plan Activo Actual</p>
@@ -147,7 +147,7 @@ export default function StudentSubscriptionPage() {
               </span>
             )}
             {currentPlan.includes_workouts && (
-              <span className="inline-flex items-center gap-1 rounded-xl bg-cyan-500/15 px-3 py-1.5 text-emerald-300">
+              <span className="inline-flex items-center gap-1 rounded-xl bg-emerald-500/15 px-3 py-1.5 text-emerald-300">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Rutinas Visuales
               </span>
@@ -201,7 +201,7 @@ export default function StudentSubscriptionPage() {
       </section>
 
       {/* Coach Diplomas & Certifications Showcase */}
-      <section className="space-y-3 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
+      <section className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="flex items-center gap-2 text-base font-extrabold text-white">
@@ -216,7 +216,7 @@ export default function StudentSubscriptionPage() {
 
           <Link
             href="/student/coaches"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-cyan-500/20"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500/20"
           >
             <Search className="h-3.5 w-3.5" />
             Explorar Otros Coaches
@@ -234,7 +234,7 @@ export default function StudentSubscriptionPage() {
                 key={cert.id}
                 type="button"
                 onClick={() => setViewingCert(cert)}
-                className="group flex flex-col justify-between gap-2 rounded-2xl border border-white/[0.08] bg-[#060607]/85 p-4 text-left transition hover:border-emerald-500/50"
+                className="group flex flex-col justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#060607]/85 p-4 text-left transition hover:border-emerald-500/50"
               >
                 <div className="space-y-1">
                   <div className="flex items-center justify-between gap-2">
@@ -275,8 +275,7 @@ export default function StudentSubscriptionPage() {
       <section className="space-y-4">
         <div>
           <h2 className="flex items-center gap-2 text-base font-extrabold text-white">
-            <Sparkles className="h-4 w-4 text-emerald-400" />
-            Planes Disponibles de {coachProfile.full_name}
+Planes Disponibles de {coachProfile.full_name}
           </h2>
           <p className="text-xs text-zinc-400">
             ¿Quieres agregar rutinas guiadas o sesiones presenciales? Solicita un
@@ -290,7 +289,7 @@ export default function StudentSubscriptionPage() {
             return (
               <div
                 key={plan.id}
-                className={`flex flex-col justify-between gap-4 rounded-2xl border p-5 transition ${
+                className={`flex flex-col justify-between gap-4 rounded-xl border p-5 transition ${
                   isCurrent
                     ? "border-emerald-500/50 bg-emerald-950/20"
                     : "border-white/[0.08] bg-[#0e0f12]/75 hover:border-white/25"
@@ -392,7 +391,7 @@ export default function StudentSubscriptionPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
+            className="w-full max-w-md rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
           >
             {requestSent ? (
               <div className="space-y-4 py-4 text-center">

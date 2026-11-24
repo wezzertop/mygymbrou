@@ -52,10 +52,10 @@ export default function ForgotPasswordPage() {
           Volver a iniciar sesión
         </Link>
 
-        <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
+        <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
           {sent ? (
             <div className="space-y-4 py-4 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-400">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-cyan-400">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <h1 className="text-xl font-bold text-white">
@@ -102,7 +102,7 @@ export default function ForgotPasswordPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="tu@correo.com"
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-emerald-500"
                     />
                   </div>
                 </div>

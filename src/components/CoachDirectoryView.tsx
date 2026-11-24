@@ -114,7 +114,7 @@ export function CoachDirectoryView({
   return (
     <div className="space-y-6">
       {/* Editorial Header Banner */}
-      <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-7">
+      <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-7">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="max-w-2xl space-y-2">
             <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
@@ -207,7 +207,7 @@ export function CoachDirectoryView({
 
       {/* Coaches Grid */}
       {filteredCoaches.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-white/[0.08] bg-[#0e0f12] p-10 text-center">
+        <div className="rounded-xl border border-dashed border-white/[0.08] bg-[#0e0f12] p-10 text-center">
           <Search className="mx-auto h-8 w-8 text-slate-600" />
           <p className="mt-3 text-sm font-bold text-white">
             No encontramos coaches con esos filtros
@@ -227,7 +227,7 @@ export function CoachDirectoryView({
             return (
               <article
                 key={coach.id}
-                className="overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0e0f12]/75 p-5 transition hover:border-cyan-500/40 sm:p-6"
+                className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12]/75 p-5 transition hover:border-emerald-500/40 sm:p-6"
               >
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                   {/* Coach Identity & Bio */}
@@ -239,7 +239,7 @@ export function CoachDirectoryView({
                           "https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=256&q=80"
                         }
                         alt={coach.full_name}
-                        className="h-20 w-20 rounded-2xl object-cover ring-2 ring-cyan-500/40"
+                        className="h-20 w-20 rounded-xl object-cover ring-2 ring-cyan-500/40"
                       />
                       {coach.is_verified_identity && (
                         <span
@@ -355,7 +355,7 @@ export function CoachDirectoryView({
                               coachName: coach.full_name,
                             })
                           }
-                          className="group flex flex-col justify-between gap-2 rounded-2xl border border-white/[0.08] bg-[#060607]/85 p-3.5 text-left transition hover:border-emerald-500/50 hover:bg-[#060607]"
+                          className="group flex flex-col justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#060607]/85 p-3.5 text-left transition hover:border-emerald-500/50 hover:bg-[#060607]"
                         >
                           <div className="space-y-1">
                             <div className="flex items-center justify-between gap-2">
@@ -409,7 +409,7 @@ export function CoachDirectoryView({
           onClick={() => setSelectedCoach(null)}
         >
           <div
-            className="w-full max-w-lg rounded-3xl border border-white/15 bg-[#060607] p-6 shadow-2xl"
+            className="w-full max-w-lg rounded-xl border border-white/15 bg-[#060607] p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
@@ -432,7 +432,7 @@ export function CoachDirectoryView({
 
             {sentSuccess ? (
               <div className="space-y-4 py-4 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
                 <h3 className="text-lg font-bold text-white">

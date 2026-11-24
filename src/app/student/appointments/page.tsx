@@ -35,9 +35,9 @@ export default function StudentAppointmentsPage() {
 
       {/* Featured Next Appointment */}
       {nextApt ? (
-        <section className="rounded-3xl border border-white/15 bg-[#0e0f12] p-6 shadow-xl">
+        <section className="rounded-xl border border-white/15 bg-[#0e0f12] p-6 shadow-xl">
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
               <CalendarDays className="h-3.5 w-3.5" />
               Próxima Cita Agendada
             </span>
@@ -77,7 +77,7 @@ export default function StudentAppointmentsPage() {
           </div>
 
           {nextApt.notes && (
-            <div className="mt-4 rounded-2xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs leading-relaxed text-zinc-300">
+            <div className="mt-4 rounded-xl border border-white/[0.08] bg-[#060607] p-3.5 text-xs leading-relaxed text-zinc-300">
               <span className="font-semibold text-emerald-400">
                 Recomendaciones previas:{" "}
               </span>
@@ -86,7 +86,7 @@ export default function StudentAppointmentsPage() {
           )}
         </section>
       ) : (
-        <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
+        <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
           No tienes citas próximas agendadas por el momento.
         </div>
       )}
@@ -98,7 +98,7 @@ export default function StudentAppointmentsPage() {
           {upcoming.slice(1).map((apt) => (
             <div
               key={apt.id}
-              className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4"
+              className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4"
             >
               <p className="text-sm font-bold text-white">{apt.title}</p>
               <p className="mt-1 text-xs text-zinc-400">
@@ -119,7 +119,7 @@ export default function StudentAppointmentsPage() {
         {past.map((apt) => (
           <div
             key={apt.id}
-            className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4"
+            className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4"
           >
             <div className="flex items-center justify-between gap-2">
               <p className="text-sm font-bold text-zinc-200">{apt.title}</p>
