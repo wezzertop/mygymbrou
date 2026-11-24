@@ -19,7 +19,7 @@ import {
   Utensils,
 } from "lucide-react";
 import { getDaysRemaining, useApp } from "@/context/AppContext";
-import { SectionVisualHeader } from "@/components/SectionVisualHeader";
+import { DynamicBannerHeader } from "@/components/DynamicBannerHeader";
 
 export default function StudentDailyHomePage() {
   const {
@@ -198,14 +198,11 @@ export default function StudentDailyHomePage() {
 
   return (
     <div className="space-y-6">
-      {/* Editorial Visual Header (mobile-adapted photo, zero text over photo) */}
-      <SectionVisualHeader
-        imageSrc="/images/landing/hero-athlete.jpg"
-        imageAlt="Entrenamiento diario de alto rendimiento"
-        imagePosition="object-[center_30%]"
+      {/* Dynamic Cover + Motivational Quote Header */}
+      <DynamicBannerHeader
+        role="student"
         eyebrow="Resumen de hoy"
         title={`Hola, ${firstName}`}
-        subtitle={studentProfile.fitness_goal || "Constancia diaria hacia tu meta"}
         actions={
           <>
             <button

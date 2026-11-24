@@ -21,6 +21,7 @@ import {
 } from "@/components/VerificationBadge";
 import { IdentityVerificationCard } from "@/components/IdentityVerificationCard";
 import { CoachCertificationsManager } from "@/components/CoachCertificationsManager";
+import { ReportIssueButton } from "@/components/ReportIssueButton";
 
 type CoachProfileTab = "perfil" | "diplomas" | "verificacion" | "cuenta";
 
@@ -323,6 +324,7 @@ export default function CoachProfilePage() {
               <HelpCircle className="h-4 w-4 text-emerald-400" />
               Ver Tutorial Guiado
             </button>
+            <ReportIssueButton defaultReportedRole="student" />
             {isDemoMode && (
               <button
                 type="button"

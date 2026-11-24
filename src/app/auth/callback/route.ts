@@ -64,6 +64,9 @@ export async function GET(request: Request) {
     const role =
       profile?.role || (user.user_metadata?.role as string | undefined);
 
+    if (role === "admin") {
+      return NextResponse.redirect(`${appOrigin}/admin`);
+    }
     if (role === "student") {
       return NextResponse.redirect(`${appOrigin}/student`);
     }

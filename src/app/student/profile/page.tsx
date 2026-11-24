@@ -16,6 +16,7 @@ import { useApp } from "@/context/AppContext";
 import { Gender } from "@/types/database";
 import { IdentityVerificationCard } from "@/components/IdentityVerificationCard";
 import { VerifiedPersonBadge } from "@/components/VerificationBadge";
+import { ReportIssueButton } from "@/components/ReportIssueButton";
 
 const PRIMARY_GOALS = [
   "Pérdida de grasa",
@@ -407,7 +408,7 @@ export default function StudentProfilePage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2.5 pt-2 sm:flex-row">
+          <div className="flex flex-col gap-2.5 pt-2 sm:flex-row sm:flex-wrap">
             <button
               type="button"
               onClick={() => resetOnboarding("student")}
@@ -416,6 +417,7 @@ export default function StudentProfilePage() {
               <HelpCircle className="h-4 w-4 text-emerald-400" />
               Ver Tutorial Guiado
             </button>
+            <ReportIssueButton defaultReportedRole="coach" />
             <button
               type="button"
               onClick={handleSignOut}

@@ -17,6 +17,7 @@ import {
 import { useApp } from "@/context/AppContext";
 import { VerifiedPersonBadge } from "@/components/VerificationBadge";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { SanctionNoticeBanner } from "@/components/SanctionNoticeBanner";
 
 const COACH_NAV = [
   { href: "/coach", label: "Inicio", icon: LayoutDashboard, exact: true },
@@ -255,6 +256,7 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-safe-nav lg:px-8 lg:py-8 lg:pb-12">
+          <SanctionNoticeBanner profile={coachProfile} />
           {children}
         </main>
 

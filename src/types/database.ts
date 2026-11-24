@@ -1,6 +1,11 @@
 export type UserRole = "coach" | "student" | "admin";
 export type Gender = "female" | "male";
 export type SaasPlanTier = "free" | "base" | "pro" | "studio";
+export type CoverType = "default_male" | "default_female" | "preset" | "custom";
+export type AccountStatus = "active" | "warned" | "suspended" | "banned";
+export type ReportStatus = "pendiente" | "en_revision" | "resuelto" | "descartado";
+export type ReportCategory = "servicio" | "conducta" | "contenido" | "seguimiento" | "otro";
+export type SanctionType = "warning" | "temporary_suspension" | "permanent_ban";
 export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
 export type IdentityDocumentType = "ine_id" | "passport" | "selfie_id";
 export type CertificationCategory =
@@ -32,9 +37,50 @@ export interface Profile {
   identity_document_type?: IdentityDocumentType;
   verification_notes?: string;
   has_completed_onboarding?: boolean;
+  onboarding_completed?: boolean;
+  onboarding_completed_at?: string;
+  onboarding_skipped?: boolean;
+  cover_url?: string;
+  cover_type?: CoverType;
+  custom_motivational_quote?: string;
+  selected_quote_id?: string;
+  account_status?: AccountStatus;
+  suspension_reason?: string;
+  suspended_until?: string;
   saas_plan_tier?: SaasPlanTier;
   saas_student_limit?: number | null;
   terms_accepted_at: string;
+  created_at: string;
+}
+
+export interface UserReport {
+  id: string;
+  reporter_id?: string;
+  reported_user_id?: string;
+  reporter_name: string;
+  reported_user_name: string;
+  reported_role: "coach" | "student";
+  category: ReportCategory;
+  description: string;
+  status: ReportStatus;
+  admin_notes?: string;
+  resolved_by?: string;
+  resolved_at?: string;
+  created_at: string;
+}
+
+export interface UserSanction {
+  id: string;
+  user_id: string;
+  user_name: string;
+  user_role: "coach" | "student";
+  sanction_type: SanctionType;
+  reason: string;
+  duration_days?: number;
+  expires_at?: string;
+  is_active: boolean;
+  issued_by?: string;
+  lifted_at?: string;
   created_at: string;
 }
 

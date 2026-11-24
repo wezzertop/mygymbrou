@@ -17,10 +17,15 @@ import {
   NutritionPlan,
   Profile,
   PublicCoachProfile,
+  ReportCategory,
+  ReportStatus,
   SaasPlanTier,
+  SanctionType,
   StudentGoal,
   SubscriptionStatus,
+  UserReport,
   UserRole,
+  UserSanction,
   WorkoutPlan,
   WorkoutSessionLog,
 } from "@/types/database";
@@ -74,11 +79,30 @@ interface AppState {
   completedExercises: Record<string, boolean>;
   completedMeals: Record<string, boolean>;
   exerciseLoads: Record<string, string>;
+  userReports: UserReport[];
+  userSanctions: UserSanction[];
 }
 
+const DEMO_REPORTS: UserReport[] = [
+  {
+    id: "rep-1",
+    reporter_id: "student-1",
+    reported_user_id: "coach-1",
+    reporter_name: "Sofía Ramírez",
+    reported_user_name: "Carlos Mendoza",
+    reported_role: "coach",
+    category: "seguimiento",
+    description: "Solicitud de aclaración sobre horario de cita presencial de evaluación mensual.",
+    status: "pendiente",
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+  },
+];
+
+const DEMO_SANCTIONS: UserSanction[] = [];
+
 const demoInitialState: AppState = {
-  coachProfile: { ...DEMO_COACH, saas_plan_tier: "pro", saas_student_limit: 50, has_completed_onboarding: false },
-  studentProfile: { ...DEMO_ACTIVE_STUDENT, has_completed_onboarding: false },
+  coachProfile: { ...DEMO_COACH, saas_plan_tier: "pro", saas_student_limit: 50, has_completed_onboarding: false, onboarding_completed: false, account_status: "active" },
+  studentProfile: { ...DEMO_ACTIVE_STUDENT, has_completed_onboarding: false, onboarding_completed: false, account_status: "active" },
   coachCertifications: DEMO_COACH_CERTIFICATIONS,
   directoryCoaches: DEMO_DIRECTORY_COACHES,
   coachInquiries: DEMO_COACH_INQUIRIES,
@@ -96,6 +120,8 @@ const demoInitialState: AppState = {
   completedExercises: {},
   completedMeals: {},
   exerciseLoads: {},
+  userReports: DEMO_REPORTS,
+  userSanctions: DEMO_SANCTIONS,
 };
 
 const emptyRealState: AppState = {
@@ -107,6 +133,8 @@ const emptyRealState: AppState = {
     saas_plan_tier: "free",
     saas_student_limit: 5,
     has_completed_onboarding: false,
+    onboarding_completed: false,
+    account_status: "active",
     terms_accepted_at: new Date().toISOString(),
     created_at: new Date().toISOString(),
   },
@@ -117,6 +145,8 @@ const emptyRealState: AppState = {
     full_name: "Mi Cuenta Alumno",
     email: "",
     has_completed_onboarding: false,
+    onboarding_completed: false,
+    account_status: "active",
     terms_accepted_at: new Date().toISOString(),
     created_at: new Date().toISOString(),
   },
@@ -137,6 +167,8 @@ const emptyRealState: AppState = {
   completedExercises: {},
   completedMeals: {},
   exerciseLoads: {},
+  userReports: [],
+  userSanctions: [],
 };
 
 interface AppContextValue extends AppState {
@@ -144,10 +176,32 @@ interface AppContextValue extends AppState {
   isDemoMode: boolean;
   authUserId: string | null;
   authUserRole: UserRole | null;
-  completeOnboarding: (role: "coach" | "student") => void;
+  manualTourTrigger: { role: "coach" | "student"; nonce: number } | null;
+  completeOnboarding: (role: "coach" | "student", skipped?: boolean) => void;
   resetOnboarding: (role: "coach" | "student") => void;
   updateCoachSaasPlan: (tier: SaasPlanTier) => void;
   setExerciseLoad: (exerciseId: string, load: string) => void;
+  submitUserReport: (input: {
+    reported_user_id?: string;
+    reported_user_name: string;
+    reported_role: "coach" | "student";
+    category: ReportCategory;
+    description: string;
+  }) => Promise<boolean>;
+  updateReportStatus: (
+    reportId: string,
+    status: ReportStatus,
+    adminNotes?: string
+  ) => void;
+  issueSanction: (input: {
+    user_id: string;
+    user_name: string;
+    user_role: "coach" | "student";
+    sanction_type: SanctionType;
+    reason: string;
+    duration_days?: number;
+  }) => void;
+  liftSanction: (sanctionId: string) => void;
   refreshData: () => Promise<void>;
   inviteStudent: (input: {
     name: string;
@@ -277,6 +331,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [authUserRole, setAuthUserRole] = useState<UserRole | null>(null);
+  const [manualTourTrigger, setManualTourTrigger] = useState<{
+    role: "coach" | "student";
+    nonce: number;
+  } | null>(null);
 
   // Load real data from Supabase for the currently authenticated user (strictly isolated by RLS)
   const loadRealUserData = useCallback(async () => {
@@ -394,7 +452,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       identity_document_name: profileRes.data?.identity_document_name || undefined,
       identity_document_type: profileRes.data?.identity_document_type || undefined,
       verification_notes: profileRes.data?.verification_notes || undefined,
-      has_completed_onboarding: Boolean(profileRes.data?.has_completed_onboarding),
+      has_completed_onboarding: Boolean(
+        profileRes.data?.onboarding_completed ||
+          profileRes.data?.has_completed_onboarding
+      ),
+      onboarding_completed: Boolean(
+        profileRes.data?.onboarding_completed ||
+          profileRes.data?.has_completed_onboarding
+      ),
+      onboarding_completed_at:
+        profileRes.data?.onboarding_completed_at || undefined,
+      onboarding_skipped: Boolean(profileRes.data?.onboarding_skipped),
+      cover_url: profileRes.data?.cover_url || undefined,
+      cover_type: profileRes.data?.cover_type || undefined,
+      custom_motivational_quote:
+        profileRes.data?.custom_motivational_quote || undefined,
+      selected_quote_id: profileRes.data?.selected_quote_id || undefined,
+      account_status: profileRes.data?.account_status || "active",
+      suspension_reason: profileRes.data?.suspension_reason || undefined,
+      suspended_until: profileRes.data?.suspended_until || undefined,
       saas_plan_tier: saasTier,
       saas_student_limit:
         profileRes.data?.saas_student_limit !== undefined
@@ -1447,20 +1523,173 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const completeOnboarding = (role: "coach" | "student") => {
+  const completeOnboarding = (role: "coach" | "student", skipped = false) => {
+    const now = new Date().toISOString();
+    const userKey = authUserId || (role === "coach" ? state.coachProfile.id : state.studentProfile.id) || "local";
+    try {
+      localStorage.setItem(
+        `migymbrou_onboarding_v2_${role}_${userKey}`,
+        JSON.stringify({ completed: true, skipped, completed_at: now })
+      );
+    } catch {
+      // ignore storage errors
+    }
+
+    const updates: Partial<Profile> = {
+      has_completed_onboarding: true,
+      onboarding_completed: true,
+      onboarding_completed_at: now,
+      onboarding_skipped: skipped,
+    };
+
     if (role === "coach") {
-      updateCoachProfile({ has_completed_onboarding: true });
+      updateCoachProfile(updates);
     } else {
-      updateStudentProfile({ has_completed_onboarding: true });
+      updateStudentProfile(updates);
     }
   };
 
   const resetOnboarding = (role: "coach" | "student") => {
-    if (role === "coach") {
-      updateCoachProfile({ has_completed_onboarding: false });
-    } else {
-      updateStudentProfile({ has_completed_onboarding: false });
+    // Abre el tutorial de forma explícita SIN borrar la persistencia de primera vez
+    setManualTourTrigger({ role, nonce: Date.now() });
+  };
+
+  const submitUserReport: AppContextValue["submitUserReport"] = async (input) => {
+    const reporter =
+      authUserRole === "student" ? state.studentProfile : state.coachProfile;
+    const created: UserReport = {
+      id: uid("rep"),
+      reporter_id: authUserId || reporter.id || undefined,
+      reported_user_id: input.reported_user_id,
+      reporter_name: reporter.full_name || "Usuario",
+      reported_user_name: input.reported_user_name,
+      reported_role: input.reported_role,
+      category: input.category,
+      description: input.description,
+      status: "pendiente",
+      created_at: new Date().toISOString(),
+    };
+    setState((prev) => ({
+      ...prev,
+      userReports: [created, ...prev.userReports],
+    }));
+
+    if (!isDemoMode) {
+      try {
+        const res = await fetch("/api/reports", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(input),
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
     }
+    return true;
+  };
+
+  const updateReportStatus: AppContextValue["updateReportStatus"] = (
+    reportId,
+    status,
+    adminNotes
+  ) => {
+    setState((prev) => ({
+      ...prev,
+      userReports: prev.userReports.map((r) =>
+        r.id === reportId
+          ? {
+              ...r,
+              status,
+              admin_notes: adminNotes ?? r.admin_notes,
+              resolved_at:
+                status === "resuelto" || status === "descartado"
+                  ? new Date().toISOString()
+                  : r.resolved_at,
+            }
+          : r
+      ),
+    }));
+  };
+
+  const issueSanction: AppContextValue["issueSanction"] = (input) => {
+    const expiresAt =
+      input.sanction_type === "temporary_suspension" && input.duration_days
+        ? new Date(
+            Date.now() + input.duration_days * 24 * 60 * 60 * 1000
+          ).toISOString()
+        : undefined;
+    const created: UserSanction = {
+      id: uid("sanc"),
+      user_id: input.user_id,
+      user_name: input.user_name,
+      user_role: input.user_role,
+      sanction_type: input.sanction_type,
+      reason: input.reason,
+      duration_days: input.duration_days,
+      expires_at: expiresAt,
+      is_active: true,
+      created_at: new Date().toISOString(),
+    };
+    const nextAccountStatus =
+      input.sanction_type === "warning"
+        ? "warned"
+        : input.sanction_type === "temporary_suspension"
+        ? "suspended"
+        : "banned";
+
+    setState((prev) => ({
+      ...prev,
+      userSanctions: [created, ...prev.userSanctions],
+      coachProfile:
+        prev.coachProfile.id === input.user_id
+          ? {
+              ...prev.coachProfile,
+              account_status: nextAccountStatus,
+              suspension_reason: input.reason,
+              suspended_until: expiresAt,
+            }
+          : prev.coachProfile,
+      studentProfile:
+        prev.studentProfile.id === input.user_id
+          ? {
+              ...prev.studentProfile,
+              account_status: nextAccountStatus,
+              suspension_reason: input.reason,
+              suspended_until: expiresAt,
+            }
+          : prev.studentProfile,
+    }));
+  };
+
+  const liftSanction: AppContextValue["liftSanction"] = (sanctionId) => {
+    const target = state.userSanctions.find((s) => s.id === sanctionId);
+    setState((prev) => ({
+      ...prev,
+      userSanctions: prev.userSanctions.map((s) =>
+        s.id === sanctionId
+          ? { ...s, is_active: false, lifted_at: new Date().toISOString() }
+          : s
+      ),
+      coachProfile:
+        target && prev.coachProfile.id === target.user_id
+          ? {
+              ...prev.coachProfile,
+              account_status: "active",
+              suspension_reason: undefined,
+              suspended_until: undefined,
+            }
+          : prev.coachProfile,
+      studentProfile:
+        target && prev.studentProfile.id === target.user_id
+          ? {
+              ...prev.studentProfile,
+              account_status: "active",
+              suspension_reason: undefined,
+              suspended_until: undefined,
+            }
+          : prev.studentProfile,
+    }));
   };
 
   const updateCoachSaasPlan = (tier: SaasPlanTier) => {
@@ -1495,10 +1724,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isDemoMode,
         authUserId,
         authUserRole,
+        manualTourTrigger,
         completeOnboarding,
         resetOnboarding,
         updateCoachSaasPlan,
         setExerciseLoad,
+        submitUserReport,
+        updateReportStatus,
+        issueSanction,
+        liftSanction,
         refreshData,
         inviteStudent,
         activateInvitedStudent,

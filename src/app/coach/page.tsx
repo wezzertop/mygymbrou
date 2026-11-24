@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { getDaysRemaining, useApp } from "@/context/AppContext";
 import { canInviteMoreStudents, getSaasPlanById } from "@/lib/saas-plans";
-import { SectionVisualHeader } from "@/components/SectionVisualHeader";
+import { DynamicBannerHeader } from "@/components/DynamicBannerHeader";
 
 type RosterFilter = "all" | "active" | "expiring" | "expired" | "pending";
 type QuickModal = "workout" | "diet" | "renew" | null;
@@ -139,14 +139,11 @@ export default function CoachDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Editorial Visual Header (mobile-adapted photo, zero text over photo) */}
-      <SectionVisualHeader
-        imageSrc="/images/landing/coach-session.jpg"
-        imageAlt="Sesión de entrenamiento personalizado"
-        imagePosition="object-[center_25%]"
+      {/* Dynamic Cover + Motivational Quote Header */}
+      <DynamicBannerHeader
+        role="coach"
         eyebrow={coachProfile.brand_name || "Panel Coach"}
         title={`Hola, ${coachProfile.full_name.split(" ")[0]}`}
-        subtitle="Resumen diario de tu cartera, citas y accesos rápidos."
         actions={
           <>
             <Link

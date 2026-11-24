@@ -147,37 +147,85 @@ const STUDENT_STEPS: TourStep[] = [
 ];
 
 export function OnboardingTour({ role }: { role: "coach" | "student" }) {
-  const { hydrated, coachProfile, studentProfile, completeOnboarding } = useApp();
+  const {
+    hydrated,
+    authUserId,
+    coachProfile,
+    studentProfile,
+    manualTourTrigger,
+    completeOnboarding,
+  } = useApp();
   const profile = role === "coach" ? coachProfile : studentProfile;
   const steps = role === "coach" ? COACH_STEPS : STUDENT_STEPS;
 
   const [stepIdx, setStepIdx] = useState(0);
-  const [dismissedLocally, setDismissedLocally] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [autoChecked, setAutoChecked] = useState(false);
 
-  // Cuando el usuario reactiva el tutorial desde Ajustes/Perfil (has_completed_onboarding vuelve a false)
+  const storageKey = `migymbrou_onboarding_v2_${role}_${
+    authUserId || profile.id || "local"
+  }`;
+
+  // Evaluación automática estricta de UNA SOLA VEZ al hidratar
   useEffect(() => {
-    if (profile.has_completed_onboarding === false) {
-      setDismissedLocally(false);
-      setStepIdx(0);
+    if (!hydrated || autoChecked) return;
+    setAutoChecked(true);
+
+    let doneInLocal = false;
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { completed?: boolean; skipped?: boolean };
+        doneInLocal = Boolean(parsed.completed || parsed.skipped);
+      }
+    } catch {
+      // ignore storage errors
     }
-  }, [profile.has_completed_onboarding]);
 
-  const shouldShow =
-    hydrated && profile.has_completed_onboarding === false && !dismissedLocally;
+    const doneInDb = Boolean(
+      profile.onboarding_completed ||
+        profile.has_completed_onboarding ||
+        profile.onboarding_skipped
+    );
+
+    if (!doneInLocal && !doneInDb) {
+      setStepIdx(0);
+      setIsOpen(true);
+    }
+  }, [
+    hydrated,
+    autoChecked,
+    storageKey,
+    profile.onboarding_completed,
+    profile.has_completed_onboarding,
+    profile.onboarding_skipped,
+  ]);
+
+  // Apertura explícita manual (desde "Ver Tutorial Guiado" o botón "?")
+  useEffect(() => {
+    if (manualTourTrigger && manualTourTrigger.role === role) {
+      setStepIdx(0);
+      setIsOpen(true);
+    }
+  }, [manualTourTrigger, role]);
+
+  const handleClose = (skipped: boolean) => {
+    setIsOpen(false);
+    completeOnboarding(role, skipped);
+  };
 
   useEffect(() => {
-    if (!shouldShow) return;
+    if (!isOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setDismissedLocally(true);
-        completeOnboarding(role);
+        handleClose(true);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [shouldShow, completeOnboarding, role]);
+  }, [isOpen]);
 
-  if (!shouldShow) return null;
+  if (!isOpen) return null;
 
   const current = steps[stepIdx] || steps[0];
   const Icon = current.icon;
@@ -185,10 +233,8 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
   const isLast = stepIdx === steps.length - 1;
   const progressPct = Math.round(((stepIdx + 1) / steps.length) * 100);
 
-  const handleFinish = () => {
-    setDismissedLocally(true);
-    completeOnboarding(role);
-  };
+  const handleFinish = () => handleClose(false);
+  const handleSkip = () => handleClose(true);
 
   return (
     <div
@@ -219,7 +265,7 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
             </span>
             <button
               type="button"
-              onClick={handleFinish}
+              onClick={handleSkip}
               aria-label="Omitir tutorial"
               className="inline-flex min-h-[36px] items-center gap-1 rounded-full px-2.5 text-xs font-medium text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
             >
@@ -284,7 +330,7 @@ export function OnboardingTour({ role }: { role: "coach" | "student" }) {
             ) : (
               <button
                 type="button"
-                onClick={handleFinish}
+                onClick={handleSkip}
                 className="inline-flex h-11 items-center justify-center rounded-full border border-white/10 px-4 text-xs font-medium text-zinc-400 transition hover:text-white"
               >
                 Omitir

@@ -105,6 +105,10 @@ function AuthLoginContent() {
             .maybeSingle();
           const actualRole =
             profile?.role || (user.user_metadata?.role as string | undefined) || role;
+          if (actualRole === "admin") {
+            router.push("/admin");
+            return;
+          }
           router.push(actualRole === "student" ? "/student" : "/coach");
           return;
         }
