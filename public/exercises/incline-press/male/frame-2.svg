@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" width="400" height="260" fill="none">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#152238" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0b1117" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="muscleGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff4d6d" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#f43f5e" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#f43f5e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="secGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#526075"/>
+      <stop offset="50%" stop-color="#3b4759"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="50%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Seamless Dark UI Canvas -->
+  <rect width="400" height="260" fill="url(#bgGlow)"/>
+  <!-- Subtle perspective studio floor -->
+  <ellipse cx="200" cy="228" rx="155" ry="12" fill="#060a0f" opacity="0.85"/>
+  <line x1="36" y1="226" x2="364" y2="226" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Anatomical Figure & Equipment Scene -->
+  
+    <!-- 30° Incline Bench -->
+    <path d="M108,124 L208,176 L262,176" stroke="#1e293b" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="132" y1="142" x2="132" y2="222" stroke="#334155" stroke-width="8"/>
+    <line x1="234" y1="176" x2="234" y2="222" stroke="#334155" stroke-width="8"/>
+
+    <!-- Athlete on Incline Bench -->
+    <circle cx="122" cy="100" r="13" fill="url(#bodyGrad)" stroke="#64748b" stroke-width="1.5"/>
+    <path d="M111,96 Q122,83 133,96 Q126,90 111,96 Z" fill="#1e293b"/>
+    <path d="M134,116 L204,160 L254,166 L268,218" stroke="url(#bodyGrad)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="264" y1="220" x2="290" y2="220" stroke="#06b6d4" stroke-width="7" stroke-linecap="round"/>
+
+    <!-- PRIMARY MUSCLE HIGHLIGHT: Upper Chest -->
+    <ellipse cx="164" cy="126" rx="20" ry="13" fill="url(#muscleGlow)" opacity="0.8" filter="url(#softGlow)"/>
+
+    <!-- Arms + Dumbbells -->
+    <line x1="158" y1="126" x2="176" y2="90" stroke="#475569" stroke-width="11" stroke-linecap="round"/>
+    <rect x="158" y="82" width="36" height="11" rx="4" fill="#0f172a" stroke="#06b6d4" stroke-width="2.5"/>
+  
+
+  <!-- Subtle Phase / Muscle Telemetry Bar -->
+  <g opacity="0.9">
+    <rect x="14" y="14" width="108" height="22" rx="11" fill="#0f172a" stroke="#1e293b"/>
+    <circle cx="26" cy="25" r="3.5" fill="#f43f5e"/>
+    <text x="35" y="29" fill="#e2e8f0" font-family="Inter, Segoe UI, sans-serif" font-size="10" font-weight="700">FASE 2/3</text>
+  </g>
+</svg>

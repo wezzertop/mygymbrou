@@ -1,0 +1,1660 @@
+import {
+  AdPlacement,
+  AppNotification,
+  Appointment,
+  BodyAssessment,
+  CoachCertification,
+  CoachInquiry,
+  CoachStudentRelation,
+  CoachSubscriptionPlan,
+  ExerciseLibraryItem,
+  NutritionPlan,
+  Profile,
+  PublicCoachProfile,
+  StudentGoal,
+  WorkoutPlan,
+  WorkoutSessionLog,
+} from "@/types/database";
+
+export function createDiplomaSvgDataUrl(opts: {
+  title: string;
+  institution: string;
+  coachName: string;
+  year: number;
+  credentialId: string;
+  accent?: string;
+}): string {
+  const accent = opts.accent || "#06b6d4";
+  const esc = (s: string) =>
+    s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#111c33"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="${accent}"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="640" fill="url(#bg)"/>
+  <rect x="28" y="28" width="904" height="584" rx="22" fill="none" stroke="url(#gold)" stroke-width="3" opacity="0.85"/>
+  <rect x="42" y="42" width="876" height="556" rx="16" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="6 6"/>
+  <text x="480" y="106" text-anchor="middle" fill="${accent}" font-family="Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="5">CERTIFICADO PROFESIONAL VERIFICADO</text>
+  <text x="480" y="148" text-anchor="middle" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="22" font-weight="600">${esc(opts.institution)}</text>
+  <line x1="260" y1="176" x2="700" y2="176" stroke="#1e293b" stroke-width="2"/>
+  <text x="480" y="224" text-anchor="middle" fill="#94a3b8" font-family="Arial, sans-serif" font-size="16">Otorga el presente diploma a:</text>
+  <text x="480" y="282" text-anchor="middle" fill="#ffffff" font-family="Georgia, serif" font-size="42" font-weight="700">${esc(opts.coachName)}</text>
+  <text x="480" y="330" text-anchor="middle" fill="#94a3b8" font-family="Arial, sans-serif" font-size="16">Por haber acreditado satisfactoriamente la especialidad:</text>
+  <text x="480" y="384" text-anchor="middle" fill="#34d399" font-family="Arial, sans-serif" font-size="26" font-weight="700">${esc(opts.title)}</text>
+  <rect x="330" y="422" width="300" height="44" rx="22" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
+  <text x="480" y="450" text-anchor="middle" fill="#6ee7b7" font-family="monospace" font-size="15" font-weight="700">FOLIO: ${esc(opts.credentialId)} · ${opts.year}</text>
+  <circle cx="804" cy="498" r="54" fill="#0f172a" stroke="url(#gold)" stroke-width="3"/>
+  <text x="804" y="492" text-anchor="middle" fill="#34d399" font-family="Arial, sans-serif" font-size="13" font-weight="800">SELLO</text>
+  <text x="804" y="510" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="12" font-weight="700">VALIDADO</text>
+  <text x="140" y="535" fill="#94a3b8" font-family="Arial, sans-serif" font-size="13">Documento respaldado en MiGymBrou</text>
+  <text x="140" y="556" fill="#64748b" font-family="Arial, sans-serif" font-size="12">Año de emisión: ${opts.year}</text>
+</svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+export function createDemoIdCardSvgDataUrl(personName: string): string {
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <rect width="640" height="400" rx="24" fill="#0f172a"/>
+  <rect x="16" y="16" width="608" height="368" rx="18" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+  <rect x="44" y="48" width="140" height="170" rx="14" fill="#0b1120" stroke="#475569" stroke-width="2"/>
+  <circle cx="114" cy="108" r="32" fill="#334155"/>
+  <path d="M68 198 C68 162, 160 162, 160 198" fill="#334155"/>
+  <text x="212" y="82" fill="#38bdf8" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="2">VERIFICACIÓN DE IDENTIDAD · SELFIE + ID</text>
+  <text x="212" y="128" fill="#ffffff" font-family="Arial, sans-serif" font-size="26" font-weight="700">${esc(personName)}</text>
+  <text x="212" y="164" fill="#94a3b8" font-family="Arial, sans-serif" font-size="15">Documento oficial cargado para validación</text>
+  <text x="212" y="192" fill="#94a3b8" font-family="Arial, sans-serif" font-size="14">de persona real en MiGymBrou.</text>
+  <rect x="44" y="254" width="552" height="92" rx="12" fill="#0b1120" stroke="#334155"/>
+  <text x="68" y="292" fill="#34d399" font-family="monospace" font-size="15" font-weight="700">ESTADO: DOCUMENTO LEGIBLE · COINCIDENCIA FACIAL LISTA</text>
+  <text x="68" y="322" fill="#64748b" font-family="monospace" font-size="13">PROTEGIDO CON ACCESO PRIVADO (SOLO COACH / VERIFICADOR)</text>
+</svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+export const DEMO_COACH: Profile = {
+  id: "coach-1",
+  role: "coach",
+  gender: "male",
+  full_name: "Carlos Mendoza",
+  email: "carlos@apexperformance.fit",
+  avatar_url:
+    "https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=256&q=80",
+  phone: "+52 55 4821 9034",
+  brand_name: "Apex Performance Lab",
+  specialty: "Hipertrofia, Recomposición Corporal y Antropometría ISAK",
+  bio: "Entrenador personal y especialista en recomposición corporal con más de 8 años transformando hábitos y rendimiento físico mediante ciencia aplicada y seguimiento cercano.",
+  city: "Ciudad de México (Presencial y Online)",
+  years_experience: 8,
+  accepting_students: true,
+  is_verified_identity: true,
+  verification_status: "verified",
+  verified_at: "2026-01-18T12:00:00.000Z",
+  identity_document_type: "selfie_id",
+  terms_accepted_at: "2026-01-15T10:00:00.000Z",
+  created_at: "2026-01-15T10:00:00.000Z",
+};
+
+export const DEMO_ACTIVE_STUDENT: Profile = {
+  id: "student-1",
+  role: "student",
+  gender: "female",
+  full_name: "Sofía Ramírez",
+  email: "sofia.ramirez@email.com",
+  avatar_url:
+    "https://images.unsplash.com/photo-1548690312-e3b507d8c110?auto=format&fit=crop&w=256&q=80",
+  phone: "+52 55 3910 2281",
+  fitness_goal: "Recomposición Corporal & Tonificación",
+  is_verified_identity: true,
+  verification_status: "verified",
+  verified_at: "2026-07-04T10:15:00.000Z",
+  identity_document_type: "selfie_id",
+  identity_document_name: "verificacion-sofia-id.svg",
+  terms_accepted_at: "2026-07-02T14:20:00.000Z",
+  created_at: "2026-07-02T14:20:00.000Z",
+};
+
+export const DEMO_SUBSCRIPTION_PLANS: CoachSubscriptionPlan[] = [
+  {
+    id: "plan-basico",
+    coach_id: "coach-1",
+    name: "Plan Básico",
+    description: "Plan alimenticio personalizado por calorías, macros e intercambios.",
+    price: 650,
+    duration_days: 30,
+    includes_nutrition: true,
+    includes_workouts: false,
+    coaching_mode: "none",
+    includes_assessments: false,
+    is_active: true,
+    created_at: "2026-01-20T10:00:00.000Z",
+  },
+  {
+    id: "plan-medio",
+    coach_id: "coach-1",
+    name: "Plan Medio",
+    description: "Nutrición completa + Rutinas guiadas con guía visual y seguimiento en app.",
+    price: 950,
+    duration_days: 30,
+    includes_nutrition: true,
+    includes_workouts: true,
+    coaching_mode: "none",
+    includes_assessments: true,
+    is_active: true,
+    created_at: "2026-01-20T10:05:00.000Z",
+  },
+  {
+    id: "plan-oro",
+    coach_id: "coach-1",
+    name: "Plan Oro",
+    description:
+      "Nutrición + Rutinas guiadas + Seguimiento Coach intermitente online y ajustes quincenales.",
+    price: 1250,
+    duration_days: 30,
+    includes_nutrition: true,
+    includes_workouts: true,
+    coaching_mode: "intermittent",
+    includes_assessments: true,
+    is_active: true,
+    created_at: "2026-01-20T10:10:00.000Z",
+  },
+  {
+    id: "plan-premium",
+    coach_id: "coach-1",
+    name: "Plan Premium",
+    description:
+      "Experiencia completa: Nutrición + Rutinas + Entrenamiento Coach Presencial y antropometría mensual.",
+    price: 1950,
+    duration_days: 30,
+    includes_nutrition: true,
+    includes_workouts: true,
+    coaching_mode: "in_person",
+    includes_assessments: true,
+    is_active: true,
+    created_at: "2026-01-20T10:15:00.000Z",
+  },
+];
+
+export const DEMO_STUDENTS: CoachStudentRelation[] = [
+  {
+    id: "rel-1",
+    coach_id: "coach-1",
+    student_id: "student-1",
+    plan_id: "plan-oro",
+    gender: "female",
+    invited_name: "Sofía Ramírez",
+    invited_email: "sofia.ramirez@email.com",
+    invite_token: "demo-token-sofia",
+    invite_status: "active",
+    subscription_status: "active",
+    subscription_plan_name: "Plan Oro",
+    subscription_price: 1250,
+    subscription_started_at: "2026-11-05",
+    expires_at: "2026-12-05",
+    next_billing_date: "2026-12-05",
+    avatar_url:
+      "https://images.unsplash.com/photo-1548690312-e3b507d8c110?auto=format&fit=crop&w=256&q=80",
+    fitness_goal: "Recomposición Corporal",
+    phone: "+52 55 3910 2281",
+    is_verified_identity: true,
+    verification_status: "verified",
+    verified_at: "2026-07-04T10:15:00.000Z",
+    identity_document_type: "selfie_id",
+    identity_document_name: "verificacion-sofia-id.svg",
+    identity_document_url: createDemoIdCardSvgDataUrl("Sofía Ramírez"),
+    created_at: "2026-07-02T14:20:00.000Z",
+  },
+  {
+    id: "rel-2",
+    coach_id: "coach-1",
+    student_id: "student-2",
+    plan_id: "plan-premium",
+    gender: "male",
+    invited_name: "Diego Morales",
+    invited_email: "diego.morales@email.com",
+    invite_token: "demo-token-diego",
+    invite_status: "active",
+    subscription_status: "pending_payment",
+    subscription_plan_name: "Plan Premium",
+    subscription_price: 1950,
+    subscription_started_at: "2026-10-24",
+    expires_at: "2026-11-23",
+    next_billing_date: "2026-11-23",
+    avatar_url:
+      "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=256&q=80",
+    fitness_goal: "Hipertrofia (Ganar masa muscular)",
+    phone: "+52 55 7712 4409",
+    is_verified_identity: false,
+    verification_status: "pending",
+    identity_document_type: "selfie_id",
+    identity_document_name: "ine-selfie-diego-morales.svg",
+    identity_document_url: createDemoIdCardSvgDataUrl("Diego Morales"),
+    created_at: "2026-08-10T09:15:00.000Z",
+  },
+  {
+    id: "rel-3",
+    coach_id: "coach-1",
+    student_id: "student-3",
+    plan_id: "plan-basico",
+    invited_name: "Valeria Torres",
+    invited_email: "valeria.torres@email.com",
+    invite_token: "demo-token-valeria",
+    invite_status: "active",
+    subscription_status: "active",
+    subscription_plan_name: "Plan Básico",
+    subscription_price: 650,
+    subscription_started_at: "2026-11-12",
+    expires_at: "2026-12-12",
+    next_billing_date: "2026-12-12",
+    avatar_url:
+      "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=256&q=80",
+    fitness_goal: "Pérdida de grasa",
+    phone: "+52 33 2190 8812",
+    is_verified_identity: true,
+    verification_status: "verified",
+    verified_at: "2026-09-03T16:10:00.000Z",
+    identity_document_type: "ine_id",
+    identity_document_name: "id-valeria-torres.svg",
+    identity_document_url: createDemoIdCardSvgDataUrl("Valeria Torres"),
+    created_at: "2026-09-01T11:30:00.000Z",
+  },
+  {
+    id: "rel-4",
+    coach_id: "coach-1",
+    student_id: null,
+    plan_id: "plan-medio",
+    invited_name: "Mateo Herrera",
+    invited_email: "mateo.herrera@email.com",
+    invite_token: "demo-token-mateo",
+    invite_status: "pending",
+    subscription_status: "trial",
+    subscription_plan_name: "Plan Medio",
+    subscription_price: 950,
+    subscription_started_at: "2026-11-18",
+    expires_at: "2026-12-18",
+    next_billing_date: "2026-12-18",
+    fitness_goal: "Pérdida de grasa",
+    is_verified_identity: false,
+    verification_status: "unverified",
+    created_at: "2026-11-18T16:40:00.000Z",
+  },
+];
+
+export const DEMO_COACH_CERTIFICATIONS: CoachCertification[] = [
+  {
+    id: "cert-1",
+    coach_id: "coach-1",
+    title: "Certificación Internacional en Antropometría ISAK Nivel 2",
+    institution: "ISAK — International Society for the Advancement of Kinanthropometry",
+    issue_year: 2024,
+    credential_id: "ISAK-L2-88412",
+    category: "salud",
+    file_name: "Diploma_ISAK_Nivel2_CarlosMendoza.svg",
+    file_url: createDiplomaSvgDataUrl({
+      title: "Antropometría ISAK Nivel 2",
+      institution: "ISAK Global Kinanthropometry",
+      coachName: "Carlos Mendoza",
+      year: 2024,
+      credentialId: "ISAK-L2-88412",
+      accent: "#06b6d4",
+    }),
+    file_type: "image",
+    file_size_bytes: 284500,
+    is_verified: true,
+    uploaded_at: "2026-01-16T11:20:00.000Z",
+  },
+  {
+    id: "cert-2",
+    coach_id: "coach-1",
+    title: "Especialista en Hipertrofia y Biomecánica Aplicada (NSCA-CSCS)",
+    institution: "National Strength and Conditioning Association (NSCA)",
+    issue_year: 2023,
+    credential_id: "NSCA-CSCS-55109",
+    category: "entrenamiento",
+    file_name: "Certificado_NSCA_CSCS_CarlosMendoza.svg",
+    file_url: createDiplomaSvgDataUrl({
+      title: "Hipertrofia y Biomecánica (CSCS)",
+      institution: "National Strength & Conditioning Association",
+      coachName: "Carlos Mendoza",
+      year: 2023,
+      credentialId: "NSCA-CSCS-55109",
+      accent: "#10b981",
+    }),
+    file_type: "image",
+    file_size_bytes: 312400,
+    is_verified: true,
+    uploaded_at: "2026-01-16T11:25:00.000Z",
+  },
+  {
+    id: "cert-3",
+    coach_id: "coach-1",
+    title: "Diplomado en Nutrición Deportiva y Recomposición Corporal",
+    institution: "Instituto Internacional de Ciencias del Deporte (IICD)",
+    issue_year: 2025,
+    credential_id: "IICD-ND-2025-441",
+    category: "nutricion",
+    file_name: "Diplomado_Nutricion_Deportiva_2025.svg",
+    file_url: createDiplomaSvgDataUrl({
+      title: "Nutrición Deportiva y Recomposición",
+      institution: "Instituto Internacional de Ciencias del Deporte",
+      coachName: "Carlos Mendoza",
+      year: 2025,
+      credentialId: "IICD-ND-2025-441",
+      accent: "#f59e0b",
+    }),
+    file_type: "image",
+    file_size_bytes: 298000,
+    is_verified: true,
+    uploaded_at: "2026-02-04T09:10:00.000Z",
+  },
+];
+
+export const DEMO_DIRECTORY_COACHES: PublicCoachProfile[] = [
+  {
+    ...DEMO_COACH,
+    certifications: DEMO_COACH_CERTIFICATIONS,
+    plans: DEMO_SUBSCRIPTION_PLANS,
+    active_students_count: 38,
+    rating: 4.9,
+  },
+  {
+    id: "coach-2",
+    role: "coach",
+    gender: "female",
+    full_name: "Dra. Mariana Vega",
+    email: "mariana@nutrifitpro.mx",
+    avatar_url:
+      "https://images.unsplash.com/photo-1594381898411-846e7d193883?auto=format&fit=crop&w=256&q=80",
+    phone: "+52 33 4120 7789",
+    brand_name: "NutriFit Clinical Studio",
+    specialty: "Nutrición Clínica Deportiva, Pérdida de Grasa y Entrenamiento Femenino",
+    bio: "Licenciada en Nutrición con maestría en Nutrición Deportiva. Enfoque basado en evidencia, adherencia sostenible sin dietas extremas y seguimiento quincenal.",
+    city: "Guadalajara, Jal. (Presencial y Online)",
+    years_experience: 6,
+    accepting_students: true,
+    is_verified_identity: true,
+    verification_status: "verified",
+    verified_at: "2026-02-11T14:00:00.000Z",
+    terms_accepted_at: "2026-02-10T09:00:00.000Z",
+    created_at: "2026-02-10T09:00:00.000Z",
+    active_students_count: 52,
+    rating: 5.0,
+    certifications: [
+      {
+        id: "cert-m1",
+        coach_id: "coach-2",
+        title: "Maestría en Nutrición Deportiva y Composición Corporal",
+        institution: "Universidad Autónoma de Guadalajara",
+        issue_year: 2023,
+        credential_id: "CED-PROF-11829402",
+        category: "nutricion",
+        file_name: "Titulo_Maestria_Nutricion_MarianaVega.svg",
+        file_url: createDiplomaSvgDataUrl({
+          title: "Maestría en Nutrición Deportiva",
+          institution: "Universidad Autónoma de Guadalajara",
+          coachName: "Dra. Mariana Vega",
+          year: 2023,
+          credentialId: "CED-PROF-11829402",
+          accent: "#10b981",
+        }),
+        file_type: "image",
+        file_size_bytes: 340000,
+        is_verified: true,
+        uploaded_at: "2026-02-12T10:00:00.000Z",
+      },
+      {
+        id: "cert-m2",
+        coach_id: "coach-2",
+        title: "Certificación en Entrenamiento de Fuerza para Mujeres",
+        institution: "International Sports Sciences Association (ISSA)",
+        issue_year: 2024,
+        credential_id: "ISSA-WFT-90312",
+        category: "entrenamiento",
+        file_name: "Certificado_ISSA_Fuerza_MarianaVega.svg",
+        file_url: createDiplomaSvgDataUrl({
+          title: "Entrenamiento de Fuerza Femenino",
+          institution: "International Sports Sciences Association",
+          coachName: "Dra. Mariana Vega",
+          year: 2024,
+          credentialId: "ISSA-WFT-90312",
+          accent: "#ec4899",
+        }),
+        file_type: "image",
+        file_size_bytes: 276000,
+        is_verified: true,
+        uploaded_at: "2026-02-12T10:05:00.000Z",
+      },
+    ],
+    plans: [
+      {
+        id: "plan-m-1",
+        coach_id: "coach-2",
+        name: "Plan Nutrición + Seguimiento",
+        description: "Plan alimenticio clínico, lista de equivalencias y ajustes cada 15 días.",
+        price: 890,
+        duration_days: 30,
+        includes_nutrition: true,
+        includes_workouts: false,
+        coaching_mode: "intermittent",
+        includes_assessments: true,
+        is_active: true,
+        created_at: "2026-02-12T10:00:00.000Z",
+      },
+      {
+        id: "plan-m-2",
+        coach_id: "coach-2",
+        name: "Plan Transformación Integral",
+        description: "Nutrición clínica + Rutinas de fuerza en app + Revisión semanal.",
+        price: 1450,
+        duration_days: 30,
+        includes_nutrition: true,
+        includes_workouts: true,
+        coaching_mode: "intermittent",
+        includes_assessments: true,
+        is_active: true,
+        created_at: "2026-02-12T10:05:00.000Z",
+      },
+    ],
+  },
+  {
+    id: "coach-3",
+    role: "coach",
+    gender: "male",
+    full_name: "Roberto Silva",
+    email: "roberto@ironmethod.fit",
+    avatar_url:
+      "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=256&q=80",
+    phone: "+52 81 8923 1140",
+    brand_name: "Iron Method Strength",
+    specialty: "Fuerza, Powerlifting, Prevención de Lesiones y Acondicionamiento",
+    bio: "Coach certificado de fuerza y acondicionamiento físico. Especialista en técnica de levantamientos compuestos, progresión de cargas y rehabilitación funcional.",
+    city: "Monterrey, N.L. (Online y Presencial)",
+    years_experience: 10,
+    accepting_students: true,
+    is_verified_identity: true,
+    verification_status: "verified",
+    verified_at: "2026-03-02T11:30:00.000Z",
+    terms_accepted_at: "2026-03-01T10:00:00.000Z",
+    created_at: "2026-03-01T10:00:00.000Z",
+    active_students_count: 29,
+    rating: 4.8,
+    certifications: [
+      {
+        id: "cert-r1",
+        coach_id: "coach-3",
+        title: "Entrenador Oficial de Levantamiento de Fuerza Nivel 2",
+        institution: "Federación Mexicana de Powerlifting y Fuerza",
+        issue_year: 2022,
+        credential_id: "FMPF-N2-3391",
+        category: "especialidad",
+        file_name: "Diploma_Powerlifting_N2_RobertoSilva.svg",
+        file_url: createDiplomaSvgDataUrl({
+          title: "Entrenador de Fuerza y Powerlifting N2",
+          institution: "Federación Mexicana de Powerlifting",
+          coachName: "Roberto Silva",
+          year: 2022,
+          credentialId: "FMPF-N2-3391",
+          accent: "#38bdf8",
+        }),
+        file_type: "image",
+        file_size_bytes: 305000,
+        is_verified: true,
+        uploaded_at: "2026-03-03T12:00:00.000Z",
+      },
+      {
+        id: "cert-r2",
+        coach_id: "coach-3",
+        title: "Certificación en Movilidad Articular y Prevención de Lesiones",
+        institution: "Functional Movement Systems (FMS)",
+        issue_year: 2025,
+        credential_id: "FMS-L1-77219",
+        category: "salud",
+        file_name: "Certificado_FMS_RobertoSilva.svg",
+        file_url: createDiplomaSvgDataUrl({
+          title: "Functional Movement Systems (FMS L1)",
+          institution: "Functional Movement Systems",
+          coachName: "Roberto Silva",
+          year: 2025,
+          credentialId: "FMS-L1-77219",
+          accent: "#a855f7",
+        }),
+        file_type: "image",
+        file_size_bytes: 289000,
+        is_verified: true,
+        uploaded_at: "2026-03-03T12:15:00.000Z",
+      },
+    ],
+    plans: [
+      {
+        id: "plan-r-1",
+        coach_id: "coach-3",
+        name: "Plan Fuerza Online",
+        description: "Programación de fuerza personalizada + revisión de técnica semanal.",
+        price: 1100,
+        duration_days: 30,
+        includes_nutrition: false,
+        includes_workouts: true,
+        coaching_mode: "intermittent",
+        includes_assessments: true,
+        is_active: true,
+        created_at: "2026-03-03T12:00:00.000Z",
+      },
+      {
+        id: "plan-r-2",
+        coach_id: "coach-3",
+        name: "Plan Atleta Completo",
+        description: "Fuerza + Nutrición deportiva + Sesiones presenciales o 1:1 en vivo.",
+        price: 1850,
+        duration_days: 30,
+        includes_nutrition: true,
+        includes_workouts: true,
+        coaching_mode: "in_person",
+        includes_assessments: true,
+        is_active: true,
+        created_at: "2026-03-03T12:05:00.000Z",
+      },
+    ],
+  },
+];
+
+export const DEMO_COACH_INQUIRIES: CoachInquiry[] = [
+  {
+    id: "inq-1",
+    coach_id: "coach-1",
+    student_id: "prospect-1",
+    student_name: "Andrea Castillo",
+    student_email: "andrea.castillo@email.com",
+    student_is_verified: true,
+    goal: "Recomposición corporal y tonificación",
+    preferred_plan_name: "Plan Oro",
+    message:
+      "Hola Coach Carlos, revisé tus diplomas ISAK y NSCA y me encantó tu enfoque. Busco entrenar 4 días por semana con plan de alimentación.",
+    status: "pending",
+    created_at: "2026-11-21T18:30:00.000Z",
+  },
+];
+
+export const DEMO_STUDENT_GOALS: StudentGoal[] = [
+  {
+    student_id: "student-1",
+    primary_goal: "Recomposición corporal",
+    priority_zones: ["Abdomen", "Pierna/Glúteo", "Espalda"],
+    target_weight_kg: 60.5,
+    days_per_week: 4,
+    limitations_or_injuries:
+      "Molestia leve en rodilla izquierda al hacer saltos de alto impacto; sin problema en fuerza controlada.",
+    updated_at: "2026-11-15T09:00:00.000Z",
+  },
+  {
+    student_id: "student-2",
+    primary_goal: "Hipertrofia (ganar masa muscular)",
+    priority_zones: ["Pecho", "Brazos/Bíceps", "Espalda"],
+    target_weight_kg: 84.0,
+    days_per_week: 5,
+    limitations_or_injuries: "Sin lesiones activas. Priorizar técnica en lumbar.",
+    updated_at: "2026-11-10T12:00:00.000Z",
+  },
+  {
+    student_id: "student-3",
+    primary_goal: "Pérdida de grasa",
+    priority_zones: ["Abdomen", "Pierna/Glúteo"],
+    target_weight_kg: 58.0,
+    days_per_week: 3,
+    limitations_or_injuries: "Entrena en casa y gimnasio 3 veces por semana.",
+    updated_at: "2026-11-12T10:00:00.000Z",
+  },
+];
+
+const HIP_THRUST_FRAMES = {
+  female: [
+    {
+      phase: 1,
+      label: "Hip Thrust con Barra",
+      image_url: "/exercises/anatomical/hip-thrust-female-2.jpg",
+    },
+  ],
+  male: [
+    {
+      phase: 1,
+      label: "Hip Thrust con Barra",
+      image_url: "/exercises/anatomical/hip-thrust-male-1.jpg",
+    },
+  ],
+};
+
+const BULGARIAN_FRAMES = {
+  female: [
+    {
+      phase: 1,
+      label: "Sentadilla Búlgara",
+      image_url: "/exercises/anatomical/bulgarian-female-3.jpg",
+    },
+  ],
+  male: [
+    {
+      phase: 1,
+      label: "Sentadilla Búlgara",
+      image_url: "/exercises/anatomical/bulgarian-female-3.jpg",
+    },
+  ],
+};
+
+const RDL_FRAMES = {
+  female: [
+    {
+      phase: 1,
+      label: "Peso Muerto Rumano",
+      image_url: "/exercises/anatomical/rdl-female-3.jpg",
+    },
+  ],
+  male: [
+    {
+      phase: 1,
+      label: "Peso Muerto Rumano",
+      image_url: "/exercises/anatomical/rdl-female-3.jpg",
+    },
+  ],
+};
+
+// Plancha isométrica: postura fija sin parpadeo
+const PLANK_FRAMES = {
+  female: [
+    {
+      phase: 1,
+      label: "Alineación isométrica",
+      image_url: "/exercises/anatomical/plank-female-2.jpg",
+    },
+  ],
+  male: [
+    {
+      phase: 1,
+      label: "Alineación isométrica",
+      image_url: "/exercises/anatomical/plank-female-1.jpg",
+    },
+  ],
+};
+
+const LAT_PULLDOWN_FRAMES = {
+  female: [
+    {
+      phase: 1,
+      label: "Jalón dorsal",
+      image_url: "/exercises/anatomical/lat-pulldown-female-1.jpg",
+    },
+  ],
+  male: [
+    {
+      phase: 1,
+      label: "Jalón dorsal",
+      image_url: "/exercises/anatomical/lat-pulldown-female-1.jpg",
+    },
+  ],
+};
+
+const INCLINE_PRESS_FRAMES = {
+  female: [
+    {
+      phase: 1,
+      label: "Press inclinado",
+      image_url: "/exercises/anatomical/incline-press-female-1.jpg",
+    },
+  ],
+  male: [
+    {
+      phase: 1,
+      label: "Press inclinado",
+      image_url: "/exercises/anatomical/incline-press-male-1.jpg",
+    },
+  ],
+};
+
+// Secuencia sincronizada píxel a píxel (bucle ping-pong 1 -> 2 -> 3 -> 2 -> 1)
+const BICEP_CURL_FRAMES = {
+  female: [
+    {
+      phase: 1,
+      label: "Inicio",
+      image_url: "/exercises/anatomical/bicep-curl-female-1.jpg",
+    },
+    {
+      phase: 2,
+      label: "Flexión 90°",
+      image_url: "/exercises/anatomical/bicep-curl-female-2.jpg",
+    },
+    {
+      phase: 3,
+      label: "Contracción máxima",
+      image_url: "/exercises/anatomical/bicep-curl-female-3.jpg",
+    },
+  ],
+  male: [
+    {
+      phase: 1,
+      label: "Inicio",
+      image_url: "/exercises/anatomical/bicep-curl-female-1.jpg",
+    },
+    {
+      phase: 2,
+      label: "Flexión 90°",
+      image_url: "/exercises/anatomical/bicep-curl-female-2.jpg",
+    },
+    {
+      phase: 3,
+      label: "Contracción máxima",
+      image_url: "/exercises/anatomical/bicep-curl-female-3.jpg",
+    },
+  ],
+};
+
+// Secuencia sincronizada píxel a píxel (bucle ping-pong 1 -> 2 -> 3 -> 2 -> 1)
+const LATERAL_RAISE_FRAMES = {
+  female: [
+    {
+      phase: 1,
+      label: "Inicio",
+      image_url: "/exercises/anatomical/lateral-raise-female-1.jpg",
+    },
+    {
+      phase: 2,
+      label: "Elevación media",
+      image_url: "/exercises/anatomical/lateral-raise-female-2.jpg",
+    },
+    {
+      phase: 3,
+      label: "Contracción horizontal",
+      image_url: "/exercises/anatomical/lateral-raise-female-3.jpg",
+    },
+  ],
+  male: [
+    {
+      phase: 1,
+      label: "Inicio",
+      image_url: "/exercises/anatomical/lateral-raise-female-1.jpg",
+    },
+    {
+      phase: 2,
+      label: "Elevación media",
+      image_url: "/exercises/anatomical/lateral-raise-female-2.jpg",
+    },
+    {
+      phase: 3,
+      label: "Contracción horizontal",
+      image_url: "/exercises/anatomical/lateral-raise-female-3.jpg",
+    },
+  ],
+};
+
+export const DEMO_EXERCISE_LIBRARY: ExerciseLibraryItem[] = [
+  {
+    id: "lib-6",
+    coach_id: null,
+    name: "Hip Thrust con Barra",
+    muscle_group: "Pierna",
+    primary_muscles: ["Glúteo mayor", "Femorales"],
+    secondary_muscles: ["Core"],
+    equipment: "Barra y Banco",
+    instructions:
+      "Escápulas firmes en el banco, mentón al pecho. Extiende la cadera por completo con pausa de 2 segundos arriba.",
+    media_type: "sequence",
+    frames: HIP_THRUST_FRAMES,
+    frame_interval_ms: 800,
+    animation_key: "hip_thrust",
+  },
+  {
+    id: "lib-5",
+    coach_id: null,
+    name: "Sentadilla Búlgara con Mancuernas",
+    muscle_group: "Pierna",
+    primary_muscles: ["Cuádriceps", "Glúteo"],
+    secondary_muscles: ["Estabilizadores de cadera"],
+    equipment: "Mancuernas y Banco",
+    instructions:
+      "Inclina ligeramente el torso hacia adelante, baja controlando rodilla alineada y empuja con el talón delantero.",
+    media_type: "sequence",
+    frames: BULGARIAN_FRAMES,
+    frame_interval_ms: 850,
+    animation_key: "squat",
+  },
+  {
+    id: "lib-7",
+    coach_id: null,
+    name: "Peso Muerto Rumano",
+    muscle_group: "Pierna",
+    primary_muscles: ["Isquiotibiales", "Glúteos"],
+    secondary_muscles: ["Erectores espinales"],
+    equipment: "Barra / Mancuernas",
+    instructions:
+      "Bisagra de cadera hacia atrás con rodillas semiflexionadas, espalda recta y barra pegada a los muslos.",
+    media_type: "sequence",
+    frames: RDL_FRAMES,
+    frame_interval_ms: 850,
+    animation_key: "rdl",
+  },
+  {
+    id: "lib-13",
+    coach_id: null,
+    name: "Plancha Abdominal Isométrica",
+    muscle_group: "Abdomen",
+    primary_muscles: ["Recto abdominal", "Core profundo"],
+    secondary_muscles: ["Oblicuos", "Hombros"],
+    equipment: "Peso Corporal",
+    instructions:
+      "Alinea cabeza, espalda y talones. Contrae abdomen profundo y glúteos respirando de forma continua.",
+    media_type: "sequence",
+    frames: PLANK_FRAMES,
+    frame_interval_ms: 850,
+    animation_key: "plank",
+  },
+  {
+    id: "lib-3",
+    coach_id: null,
+    name: "Jalón al Pecho Agarre Neutro",
+    muscle_group: "Espalda",
+    primary_muscles: ["Dorsal ancho", "Espalda alta"],
+    secondary_muscles: ["Bíceps"],
+    equipment: "Polea Alta",
+    instructions:
+      "Pecho erguido, deprime escápulas antes de flexionar codos y llévalos hacia la cadera controlando el retorno.",
+    media_type: "sequence",
+    frames: LAT_PULLDOWN_FRAMES,
+    frame_interval_ms: 850,
+    animation_key: "lat_pulldown",
+  },
+  {
+    id: "lib-2",
+    coach_id: null,
+    name: "Press Inclinado con Mancuernas",
+    muscle_group: "Pecho",
+    primary_muscles: ["Pectoral superior"],
+    secondary_muscles: ["Deltoides anterior", "Tríceps"],
+    equipment: "Mancuernas y Banco 30°",
+    instructions:
+      "Banco a 30°. Codos a 45° respecto al torso. Baja profundo estirando pectoral superior y sube sin chocar mancuernas.",
+    media_type: "sequence",
+    frames: INCLINE_PRESS_FRAMES,
+    frame_interval_ms: 850,
+    animation_key: "bench_press",
+  },
+  {
+    id: "lib-11",
+    coach_id: null,
+    name: "Curl de Bíceps con Mancuernas",
+    muscle_group: "Bíceps",
+    primary_muscles: ["Bíceps braquial"],
+    secondary_muscles: ["Antebrazo"],
+    equipment: "Mancuernas",
+    instructions:
+      "Mantén los codos pegados al costado, flexiona los antebrazos con control hasta contraer el bíceps y desciende lentamente.",
+    media_type: "sequence",
+    frames: BICEP_CURL_FRAMES,
+    frame_interval_ms: 560,
+    animation_key: "bicep_curl",
+  },
+  {
+    id: "lib-10",
+    coach_id: null,
+    name: "Elevaciones Laterales con Mancuernas",
+    muscle_group: "Hombro",
+    primary_muscles: ["Deltoides lateral"],
+    secondary_muscles: ["Trapecio superior"],
+    equipment: "Mancuernas",
+    instructions:
+      "Eleva ambos brazos hacia los costados con ligera flexión de codo hasta la altura de los hombros sin balancear el torso.",
+    media_type: "sequence",
+    frames: LATERAL_RAISE_FRAMES,
+    frame_interval_ms: 560,
+    animation_key: "lateral_raise",
+  },
+];
+
+export const DEMO_ASSESSMENTS: BodyAssessment[] = [
+  {
+    id: "assess-1",
+    student_id: "student-1",
+    coach_id: "coach-1",
+    assessment_date: "2026-08-18",
+    weight_kg: 66.8,
+    height_cm: 165,
+    body_fat_percentage: 27.4,
+    muscle_mass_kg: 26.8,
+    chest_cm: 90.5,
+    back_width_cm: 94.0,
+    waist_cm: 76.0,
+    abdomen_cm: 83.5,
+    hip_cm: 99.0,
+    bicep_left_cm: 27.2,
+    bicep_right_cm: 27.5,
+    forearm_cm: 23.0,
+    thigh_left_cm: 55.2,
+    thigh_right_cm: 55.5,
+    calf_cm: 35.0,
+    goal_tag: "Recomposición",
+    coach_analysis_notes:
+      "Evaluación inicial. Buena base estructural y movilidad. Priorizaremos déficit moderado con proteína alta y progresión de cargas.",
+    progress_photos: [
+      {
+        label: "Frente",
+        url: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=500&q=80",
+      },
+    ],
+    created_at: "2026-08-18T10:00:00.000Z",
+  },
+  {
+    id: "assess-2",
+    student_id: "student-1",
+    coach_id: "coach-1",
+    assessment_date: "2026-09-19",
+    weight_kg: 65.1,
+    height_cm: 165,
+    body_fat_percentage: 25.6,
+    muscle_mass_kg: 27.3,
+    chest_cm: 90.0,
+    back_width_cm: 94.8,
+    waist_cm: 73.8,
+    abdomen_cm: 80.9,
+    hip_cm: 98.4,
+    bicep_left_cm: 27.8,
+    bicep_right_cm: 28.0,
+    forearm_cm: 23.2,
+    thigh_left_cm: 55.8,
+    thigh_right_cm: 56.0,
+    calf_cm: 35.2,
+    goal_tag: "Recomposición",
+    coach_analysis_notes:
+      "Excelente primer mes: -2.6 cm en abdomen y +0.5 kg de masa muscular.",
+    progress_photos: [],
+    created_at: "2026-09-19T10:00:00.000Z",
+  },
+  {
+    id: "assess-3",
+    student_id: "student-1",
+    coach_id: "coach-1",
+    assessment_date: "2026-10-18",
+    weight_kg: 63.7,
+    height_cm: 165,
+    body_fat_percentage: 23.9,
+    muscle_mass_kg: 27.9,
+    chest_cm: 89.5,
+    back_width_cm: 95.5,
+    waist_cm: 71.5,
+    abdomen_cm: 78.2,
+    hip_cm: 97.8,
+    bicep_left_cm: 28.4,
+    bicep_right_cm: 28.6,
+    forearm_cm: 23.4,
+    thigh_left_cm: 56.4,
+    thigh_right_cm: 56.6,
+    calf_cm: 35.5,
+    goal_tag: "Recomposición",
+    coach_analysis_notes:
+      "Tendencia impecable: -2.7 cm en abdomen incrementando muslo y bíceps.",
+    progress_photos: [],
+    created_at: "2026-10-18T10:00:00.000Z",
+  },
+  {
+    id: "assess-4",
+    student_id: "student-1",
+    coach_id: "coach-1",
+    assessment_date: "2026-11-16",
+    weight_kg: 62.4,
+    height_cm: 165,
+    body_fat_percentage: 22.1,
+    muscle_mass_kg: 28.6,
+    chest_cm: 89.2,
+    back_width_cm: 96.4,
+    waist_cm: 69.4,
+    abdomen_cm: 75.7,
+    hip_cm: 97.5,
+    bicep_left_cm: 29.1,
+    bicep_right_cm: 29.3,
+    forearm_cm: 23.6,
+    thigh_left_cm: 57.1,
+    thigh_right_cm: 57.3,
+    calf_cm: 35.8,
+    goal_tag: "Definición Magra",
+    coach_analysis_notes:
+      "¡Gran evolución este mes, Sofía! Bajaste 2.5 cm de abdomen y 2.1 cm de cintura ganando +0.7 kg de masa magra y +0.7 cm en bíceps. Para diciembre subiremos 100 kcal los días de pierna.",
+    progress_photos: [
+      {
+        label: "Frente",
+        url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=500&q=80",
+      },
+      {
+        label: "Espalda",
+        url: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=500&q=80",
+      },
+    ],
+    created_at: "2026-11-16T11:30:00.000Z",
+  },
+  {
+    id: "assess-diego-1",
+    student_id: "student-2",
+    coach_id: "coach-1",
+    assessment_date: "2026-10-15",
+    weight_kg: 78.5,
+    height_cm: 179,
+    body_fat_percentage: 15.8,
+    muscle_mass_kg: 38.2,
+    chest_cm: 104.0,
+    back_width_cm: 112.0,
+    waist_cm: 82.0,
+    abdomen_cm: 85.0,
+    hip_cm: 98.0,
+    bicep_left_cm: 36.2,
+    bicep_right_cm: 36.6,
+    forearm_cm: 29.5,
+    thigh_left_cm: 59.0,
+    thigh_right_cm: 59.4,
+    calf_cm: 38.0,
+    goal_tag: "Hipertrofia",
+    coach_analysis_notes: "Arranque de volumen limpio con superávit controlado.",
+    progress_photos: [],
+    created_at: "2026-10-15T10:00:00.000Z",
+  },
+  {
+    id: "assess-diego-2",
+    student_id: "student-2",
+    coach_id: "coach-1",
+    assessment_date: "2026-11-14",
+    weight_kg: 80.1,
+    height_cm: 179,
+    body_fat_percentage: 16.0,
+    muscle_mass_kg: 39.4,
+    chest_cm: 105.8,
+    back_width_cm: 114.2,
+    waist_cm: 82.3,
+    abdomen_cm: 85.4,
+    hip_cm: 98.5,
+    bicep_left_cm: 37.3,
+    bicep_right_cm: 37.6,
+    forearm_cm: 30.0,
+    thigh_left_cm: 60.5,
+    thigh_right_cm: 60.8,
+    calf_cm: 38.4,
+    goal_tag: "Hipertrofia",
+    coach_analysis_notes:
+      "Volumen muy limpio: +1.2 kg de masa muscular, +1.8 cm en pecho y +1.1 cm en bíceps.",
+    progress_photos: [],
+    created_at: "2026-11-14T10:00:00.000Z",
+  },
+];
+
+export const DEMO_WORKOUTS: WorkoutPlan[] = [
+  {
+    id: "workout-1",
+    coach_id: "coach-1",
+    student_id: "student-1",
+    is_template: false,
+    title: "Fase 3 — Recomposición Upper / Lower",
+    description:
+      "Enfoque en sobrecarga progresiva con control excéntrico de 3 segundos en ejercicios compuestos.",
+    goal: "Recomposición Corporal",
+    level: "intermedio",
+    is_active: true,
+    created_at: "2026-11-01T09:00:00.000Z",
+    days: [
+      {
+        id: "day-1",
+        workout_id: "workout-1",
+        day_number: 1,
+        title: "Día 1: Tren Inferior (Glúteo & Cuádriceps)",
+        focus_area: "Pierna y Glúteo",
+        assigned_weekdays: [1, 4], // Lunes y Jueves
+        estimated_minutes: 60,
+        exercises: [
+          {
+            id: "ex-1",
+            workout_day_id: "day-1",
+            exercise_library_id: "lib-6",
+            sort_order: 1,
+            name: "Hip Thrust con Barra",
+            muscle_group: "Pierna",
+            primary_muscles: ["Glúteo mayor", "Femorales"],
+            secondary_muscles: ["Core"],
+            sets: 4,
+            reps: "8-10",
+            rest_seconds: 120,
+            target_weight_or_rpe: "75 kg / RPE 8.5",
+            coach_notes: "Pausa de 2 segundos arriba apretando glúteos. Mentón al pecho.",
+            instructions:
+              "Escápulas firmes en el banco, pies al ancho de hombros. Extiende la cadera por completo sin hiperextender la zona lumbar.",
+            media_type: "sequence",
+            frames: HIP_THRUST_FRAMES,
+            frame_interval_ms: 650,
+            animation_key: "hip_thrust",
+          },
+          {
+            id: "ex-2",
+            workout_day_id: "day-1",
+            exercise_library_id: "lib-5",
+            sort_order: 2,
+            name: "Sentadilla Búlgara con Mancuernas",
+            muscle_group: "Pierna",
+            primary_muscles: ["Cuádriceps", "Glúteo"],
+            secondary_muscles: ["Estabilizadores"],
+            sets: 3,
+            reps: "10 c/pierna",
+            rest_seconds: 90,
+            target_weight_or_rpe: "14 kg c/m / RPE 8",
+            coach_notes: "Sin saltos para proteger rodilla izquierda; bajada controlada.",
+            instructions:
+              "Inclina ligeramente el torso hacia adelante para mayor reclutamiento de glúteo y empuja con el talón delantero.",
+            media_type: "sequence",
+            frames: BULGARIAN_FRAMES,
+            frame_interval_ms: 650,
+            animation_key: "squat",
+          },
+          {
+            id: "ex-3",
+            workout_day_id: "day-1",
+            exercise_library_id: "lib-7",
+            sort_order: 3,
+            name: "Peso Muerto Rumano",
+            muscle_group: "Pierna",
+            primary_muscles: ["Isquiotibiales", "Glúteos"],
+            secondary_muscles: ["Espalda baja"],
+            sets: 4,
+            reps: "10-12",
+            rest_seconds: 90,
+            target_weight_or_rpe: "50 kg / RPE 8",
+            coach_notes: "Mantén la barra pegada a las piernas durante todo el recorrido.",
+            instructions:
+              "Bisagra de cadera hacia atrás con rodillas semiflexionadas y espalda completamente neutra.",
+            media_type: "sequence",
+            frames: RDL_FRAMES,
+            frame_interval_ms: 680,
+            animation_key: "rdl",
+          },
+          {
+            id: "ex-4",
+            workout_day_id: "day-1",
+            exercise_library_id: "lib-13",
+            sort_order: 4,
+            name: "Plancha Abdominal Isométrica",
+            muscle_group: "Abdomen",
+            primary_muscles: ["Recto abdominal", "Core profundo"],
+            secondary_muscles: ["Oblicuos"],
+            sets: 3,
+            reps: "45 seg",
+            rest_seconds: 60,
+            target_weight_or_rpe: "Peso corporal",
+            coach_notes: "Activa el abdomen profundo y glúteos sin hundir la cadera.",
+            instructions:
+              "Apoya antebrazos alineados bajo hombros, mantén cuerpo en línea recta respirando de forma constante.",
+            media_type: "sequence",
+            frames: PLANK_FRAMES,
+            frame_interval_ms: 700,
+            animation_key: "plank",
+          },
+        ],
+      },
+      {
+        id: "day-2",
+        workout_id: "workout-1",
+        day_number: 2,
+        title: "Día 2: Espalda y Pecho Superior",
+        focus_area: "Tren Superior",
+        assigned_weekdays: [2, 5], // Martes y Viernes
+        estimated_minutes: 50,
+        exercises: [
+          {
+            id: "ex-5",
+            workout_day_id: "day-2",
+            exercise_library_id: "lib-3",
+            sort_order: 1,
+            name: "Jalón al Pecho Agarre Neutro",
+            muscle_group: "Espalda",
+            primary_muscles: ["Dorsal ancho", "Espalda alta"],
+            secondary_muscles: ["Bíceps"],
+            sets: 4,
+            reps: "10-12",
+            rest_seconds: 90,
+            target_weight_or_rpe: "42 kg / RPE 8",
+            coach_notes: "Dirige los codos hacia la cadera, no jales con los antebrazos.",
+            instructions:
+              "Saca el pecho, deprime escápulas antes de doblar codos y controla la subida completa.",
+            media_type: "sequence",
+            frames: LAT_PULLDOWN_FRAMES,
+            frame_interval_ms: 850,
+            animation_key: "lat_pulldown",
+          },
+          {
+            id: "ex-9",
+            workout_day_id: "day-2",
+            exercise_library_id: "lib-2",
+            sort_order: 2,
+            name: "Press Inclinado con Mancuernas",
+            muscle_group: "Pecho",
+            primary_muscles: ["Pectoral superior"],
+            secondary_muscles: ["Deltoides anterior", "Tríceps"],
+            sets: 4,
+            reps: "10",
+            rest_seconds: 90,
+            target_weight_or_rpe: "12 kg c/m / RPE 8",
+            coach_notes: "Banco a 30°. Codos a 45° respecto al torso.",
+            instructions:
+              "Baja controlando hasta estirar pectoral superior y empuja sin bloquear agresivamente los codos.",
+            media_type: "sequence",
+            frames: INCLINE_PRESS_FRAMES,
+            frame_interval_ms: 850,
+            animation_key: "bench_press",
+          },
+          {
+            id: "ex-12",
+            workout_day_id: "day-2",
+            exercise_library_id: "lib-11",
+            sort_order: 3,
+            name: "Curl de Bíceps con Mancuernas",
+            muscle_group: "Bíceps",
+            primary_muscles: ["Bíceps braquial"],
+            secondary_muscles: ["Antebrazo"],
+            sets: 3,
+            reps: "12",
+            rest_seconds: 60,
+            target_weight_or_rpe: "8 kg c/m / RPE 8.5",
+            coach_notes: "Codos fijos al costado y bajada controlada en 3 segundos.",
+            instructions:
+              "Mantén el torso firme sin balanceo, sube hasta contracción máxima de bíceps y desciende con control.",
+            media_type: "sequence",
+            frames: BICEP_CURL_FRAMES,
+            frame_interval_ms: 560,
+            animation_key: "bicep_curl",
+          },
+          {
+            id: "ex-13",
+            workout_day_id: "day-2",
+            exercise_library_id: "lib-10",
+            sort_order: 4,
+            name: "Elevaciones Laterales con Mancuernas",
+            muscle_group: "Hombro",
+            primary_muscles: ["Deltoides lateral"],
+            secondary_muscles: ["Trapecio superior"],
+            sets: 4,
+            reps: "15",
+            rest_seconds: 60,
+            target_weight_or_rpe: "6 kg c/m / RPE 9",
+            coach_notes: "Sube hasta la línea del hombro manteniendo tensión continua.",
+            instructions:
+              "Eleva ambos brazos hacia los costados con ligera flexión de codo evitando encoger los hombros.",
+            media_type: "sequence",
+            frames: LATERAL_RAISE_FRAMES,
+            frame_interval_ms: 560,
+            animation_key: "lateral_raise",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "workout-diego-1",
+    coach_id: "coach-1",
+    student_id: "student-2",
+    is_template: false,
+    title: "Hipertrofia Push / Pull / Legs",
+    description: "Frecuencia 2 de tren superior y pierna para volumen limpio.",
+    goal: "Hipertrofia",
+    level: "avanzado",
+    is_active: true,
+    created_at: "2026-10-25T09:00:00.000Z",
+    days: [
+      {
+        id: "diego-day-1",
+        workout_id: "workout-diego-1",
+        day_number: 1,
+        title: "Día 1: Push Fuerza",
+        focus_area: "Pecho y Hombro",
+        assigned_weekdays: [1, 3, 5],
+        estimated_minutes: 65,
+        exercises: [
+          {
+            id: "diego-ex-1",
+            workout_day_id: "diego-day-1",
+            exercise_library_id: "lib-1",
+            sort_order: 1,
+            name: "Press de Banca Plano con Barra",
+            muscle_group: "Pecho",
+            sets: 4,
+            reps: "6-8",
+            rest_seconds: 120,
+            target_weight_or_rpe: "85 kg / RPE 8.5",
+            media_type: "svg_anim",
+            animation_key: "bench_press",
+          },
+        ],
+      },
+    ],
+  },
+];
+
+export const DEMO_WORKOUT_LOGS: WorkoutSessionLog[] = [
+  {
+    id: "wlog-1",
+    student_id: "student-1",
+    workout_day_id: "day-1",
+    workout_day_title: "Día 1: Tren Inferior (Glúteo & Cuádriceps)",
+    completed_date: "2026-11-09",
+    status: "completed",
+    exercises_completed: 4,
+    total_exercises: 4,
+    created_at: "2026-11-09T18:30:00.000Z",
+  },
+  {
+    id: "wlog-2",
+    student_id: "student-1",
+    workout_day_id: "day-2",
+    workout_day_title: "Día 2: Espalda y Bíceps",
+    completed_date: "2026-11-10",
+    status: "completed",
+    exercises_completed: 3,
+    total_exercises: 3,
+    created_at: "2026-11-10T18:15:00.000Z",
+  },
+  {
+    id: "wlog-3",
+    student_id: "student-1",
+    workout_day_id: "day-1",
+    workout_day_title: "Día 1: Tren Inferior (Glúteo & Cuádriceps)",
+    completed_date: "2026-11-12",
+    status: "completed",
+    exercises_completed: 4,
+    total_exercises: 4,
+    created_at: "2026-11-12T19:00:00.000Z",
+  },
+  {
+    id: "wlog-4",
+    student_id: "student-1",
+    workout_day_id: "day-1",
+    workout_day_title: "Día 1: Tren Inferior (Glúteo & Cuádriceps)",
+    completed_date: "2026-11-16",
+    status: "completed",
+    exercises_completed: 4,
+    total_exercises: 4,
+    created_at: "2026-11-16T18:40:00.000Z",
+  },
+  {
+    id: "wlog-5",
+    student_id: "student-1",
+    workout_day_id: "day-2",
+    workout_day_title: "Día 2: Espalda y Bíceps",
+    completed_date: "2026-11-17",
+    status: "completed",
+    exercises_completed: 3,
+    total_exercises: 3,
+    created_at: "2026-11-17T18:20:00.000Z",
+  },
+  {
+    id: "wlog-6",
+    student_id: "student-1",
+    workout_day_id: "day-3",
+    workout_day_title: "Día 3: Pecho, Hombro y Tríceps",
+    completed_date: "2026-11-18",
+    status: "completed",
+    exercises_completed: 3,
+    total_exercises: 3,
+    created_at: "2026-11-18T18:10:00.000Z",
+  },
+  {
+    id: "wlog-diego-1",
+    student_id: "student-2",
+    workout_day_id: "diego-day-1",
+    workout_day_title: "Día 1: Push Fuerza",
+    completed_date: "2026-11-16",
+    status: "completed",
+    exercises_completed: 1,
+    total_exercises: 1,
+    created_at: "2026-11-16T19:00:00.000Z",
+  },
+  {
+    id: "wlog-diego-2",
+    student_id: "student-2",
+    workout_day_id: "diego-day-1",
+    workout_day_title: "Día 1: Push Fuerza",
+    completed_date: "2026-11-18",
+    status: "completed",
+    exercises_completed: 1,
+    total_exercises: 1,
+    created_at: "2026-11-18T19:00:00.000Z",
+  },
+];
+
+export const DEMO_NUTRITION_PLANS: NutritionPlan[] = [
+  {
+    id: "diet-1",
+    coach_id: "coach-1",
+    student_id: "student-1",
+    is_template: false,
+    title: "Plan Recomposición Alta Proteína — 1,850 kcal",
+    notes:
+      "Priorizar hidratación con electrolitos durante el entrenamiento. Los domingos puedes usar 1 comida libre controlada.",
+    daily_calories: 1850,
+    protein_g: 135,
+    carbs_g: 195,
+    fats_g: 58,
+    water_liters: 2.8,
+    is_active: true,
+    created_at: "2026-11-01T09:00:00.000Z",
+    meals: [
+      {
+        id: "meal-1",
+        nutrition_plan_id: "diet-1",
+        sort_order: 1,
+        meal_time: "Desayuno",
+        suggested_hour: "08:00 AM",
+        foods_description:
+          "3 claras + 2 huevos enteros revueltos con espinaca, 2 rebanadas de pan integral tostado, 1/3 de aguacate y café negro.",
+        exchange_options:
+          "Intercambio: 150 g de yogur griego 0% + 1 scoop proteína whey + 50 g avena + 80 g frutos rojos.",
+        calories: 430,
+        protein_g: 32,
+        carbs_g: 36,
+        fats_g: 17,
+      },
+      {
+        id: "meal-2",
+        nutrition_plan_id: "diet-1",
+        sort_order: 2,
+        meal_time: "Colación Media Mañana",
+        suggested_hour: "11:30 AM",
+        foods_description:
+          "180 g de yogur griego natural sin azúcar + 1 manzana verde + 15 g de almendras naturales.",
+        exchange_options: "Intercambio: 120 g queso cottage + 1 pera + 15 g nueces.",
+        calories: 270,
+        protein_g: 21,
+        carbs_g: 26,
+        fats_g: 9,
+      },
+      {
+        id: "meal-3",
+        nutrition_plan_id: "diet-1",
+        sort_order: 3,
+        meal_time: "Comida Principal",
+        suggested_hour: "02:30 PM",
+        foods_description:
+          "160 g de pechuga de pollo a la plancha (peso en cocido), 150 g de arroz jazmín cocido, ensalada verde abundante con 1 cdita de aceite de oliva extra virgen.",
+        exchange_options:
+          "Intercambio: 160 g filete de res magro o pescado blanco + 180 g camote/papa al horno.",
+        calories: 520,
+        protein_g: 44,
+        carbs_g: 52,
+        fats_g: 14,
+      },
+      {
+        id: "meal-4",
+        nutrition_plan_id: "diet-1",
+        sort_order: 4,
+        meal_time: "Pre-Entreno",
+        suggested_hour: "05:30 PM",
+        foods_description:
+          "1 plátano mediano + 2 tortitas de arroz inflado con 1 cdita de miel + 5 g de creatina monohidratada.",
+        exchange_options: "Intercambio: 40 g de avena instantánea con canela y frutos rojos.",
+        calories: 240,
+        protein_g: 4,
+        carbs_g: 53,
+        fats_g: 1,
+      },
+      {
+        id: "meal-5",
+        nutrition_plan_id: "diet-1",
+        sort_order: 5,
+        meal_time: "Cena",
+        suggested_hour: "08:30 PM",
+        foods_description:
+          "150 g de salmón al horno (o atún sellado), 120 g de puré de papa o camote y brócoli/espárragos al vapor.",
+        exchange_options:
+          "Intercambio: 160 g de pavo a la plancha + 2 tortillas de maíz + 1/4 de aguacate.",
+        calories: 390,
+        protein_g: 34,
+        carbs_g: 28,
+        fats_g: 17,
+      },
+    ],
+  },
+  {
+    id: "diet-template-1",
+    coach_id: "coach-1",
+    student_id: null,
+    is_template: true,
+    title: "Plantilla: Volumen Limpio 2,700 kcal",
+    notes: "Ideal para fase de hipertrofia con superávit controlado.",
+    daily_calories: 2700,
+    protein_g: 185,
+    carbs_g: 330,
+    fats_g: 70,
+    water_liters: 3.5,
+    is_active: true,
+    created_at: "2026-09-12T10:00:00.000Z",
+    meals: [
+      {
+        id: "tpl-meal-1",
+        nutrition_plan_id: "diet-template-1",
+        sort_order: 1,
+        meal_time: "Desayuno",
+        suggested_hour: "07:30 AM",
+        foods_description: "4 huevos enteros + 80 g avena + 1 plátano + 20 g crema de cacahuate.",
+        calories: 760,
+        protein_g: 40,
+        carbs_g: 85,
+        fats_g: 26,
+      },
+    ],
+  },
+];
+
+export const DEMO_APPOINTMENTS: Appointment[] = [
+  {
+    id: "apt-1",
+    coach_id: "coach-1",
+    student_id: "student-1",
+    student_name: "Sofía Ramírez",
+    title: "Toma de Medidas Mensuales y Ajuste de Dieta",
+    scheduled_at: "2026-11-24T17:00:00.000Z",
+    location_or_link: "Apex Performance Studio — Consultorio 2",
+    status: "scheduled",
+    notes: "Asistir con ropa ligera deportiva y 2 horas de ayuno previo.",
+    created_at: "2026-11-16T12:00:00.000Z",
+  },
+  {
+    id: "apt-2",
+    coach_id: "coach-1",
+    student_id: "student-2",
+    student_name: "Diego Morales",
+    title: "Revisión Técnica de Sentadilla y Peso Muerto",
+    scheduled_at: "2026-11-21T16:30:00.000Z",
+    location_or_link: "Zona de Pesas Libres — SmartGym Sur",
+    status: "scheduled",
+    notes: "Llevar cinturón de levantamiento y calzado plano.",
+    created_at: "2026-11-15T10:00:00.000Z",
+  },
+  {
+    id: "apt-3",
+    coach_id: "coach-1",
+    student_id: "student-3",
+    student_name: "Valeria Torres",
+    title: "Check-in Quincenal Online",
+    scheduled_at: "2026-11-22T18:00:00.000Z",
+    location_or_link: "https://meet.google.com/apex-checkin",
+    status: "scheduled",
+    notes: "Revisar adherencia nutricional y energía semanal.",
+    created_at: "2026-11-14T15:00:00.000Z",
+  },
+  {
+    id: "apt-4",
+    coach_id: "coach-1",
+    student_id: "student-1",
+    student_name: "Sofía Ramírez",
+    title: "Evaluación Antropométrica Mes 3",
+    scheduled_at: "2026-10-18T17:00:00.000Z",
+    location_or_link: "Apex Performance Studio — Consultorio 2",
+    status: "completed",
+    notes: "Se registró reducción de 2.7 cm en abdomen.",
+    created_at: "2026-10-10T10:00:00.000Z",
+  },
+];
+
+export const DEMO_NOTIFICATIONS: AppNotification[] = [
+  {
+    id: "notif-1",
+    user_id: "student-1",
+    title: "Nuevo análisis de tu Coach",
+    message:
+      "Carlos Mendoza registró tu evaluación física de noviembre: -2.5 cm en abdomen y +0.7 kg de masa muscular.",
+    type: "assessment",
+    is_read: false,
+    created_at: "2026-11-16T11:35:00.000Z",
+  },
+  {
+    id: "notif-2",
+    user_id: "student-1",
+    title: "Próxima cita confirmada",
+    message:
+      "Tienes agendada 'Toma de Medidas Mensuales y Ajuste de Dieta' el 24 de noviembre.",
+    type: "appointment",
+    is_read: false,
+    created_at: "2026-11-16T12:05:00.000Z",
+  },
+  {
+    id: "notif-3",
+    user_id: "student-1",
+    title: "Rutina con guía visual actualizada",
+    message: "Tu rutina Fase 3 ya cuenta con animaciones demostrativas en cada ejercicio.",
+    type: "workout",
+    is_read: true,
+    created_at: "2026-11-01T09:10:00.000Z",
+  },
+];
+
+export const DEMO_ADS: AdPlacement[] = [
+  {
+    id: "ad-1",
+    sponsor_name: "ProFuel Labs",
+    title: "Creatina Monohidratada 100% Pura — 15% OFF",
+    description: "Beneficio exclusivo para alumnos activos en MiGymBrou. Código: GYMBROU15",
+    cta_text: "Ver beneficio",
+    cta_url: "#sponsor-profuel",
+    badge_text: "Patrocinado",
+    placement_slot: "post_workout",
+    is_active: true,
+  },
+  {
+    id: "ad-2",
+    sponsor_name: "Kinetix Wear",
+    title: "Ropa deportiva técnica transpirable",
+    description: "Envío gratis en tu primer pedido de colección Otoño/Invierno.",
+    cta_text: "Explorar",
+    cta_url: "#sponsor-kinetix",
+    badge_text: "Partner Fitness",
+    placement_slot: "student_footer",
+    is_active: true,
+  },
+];

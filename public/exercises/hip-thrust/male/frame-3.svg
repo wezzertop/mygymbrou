@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" width="400" height="260" fill="none">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#152238" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0b1117" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="muscleGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff4d6d" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#f43f5e" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#f43f5e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="secGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#526075"/>
+      <stop offset="50%" stop-color="#3b4759"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="50%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Seamless Dark UI Canvas -->
+  <rect width="400" height="260" fill="url(#bgGlow)"/>
+  <!-- Subtle perspective studio floor -->
+  <ellipse cx="200" cy="228" rx="155" ry="12" fill="#060a0f" opacity="0.85"/>
+  <line x1="36" y1="226" x2="364" y2="226" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Anatomical Figure & Equipment Scene -->
+  
+      <!-- Weight Bench -->
+      <rect x="66" y="132" width="58" height="94" rx="10" fill="#111827" stroke="#334155" stroke-width="2"/>
+      <rect x="74" y="140" width="42" height="12" rx="4" fill="#1e293b"/>
+
+      <!-- Back leg (depth) -->
+      <path d="M210,138 Q250,144 266,158 L272,220 L292,222" stroke="#1e293b" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Sculpted Torso (upper back on bench -> hips) -->
+      <path d="M120,132 Q165,128 206,132 L200,154 Q158,154 114,148 Z"
+            fill="url(#bodyGrad)" stroke="#64748b" stroke-width="1.5"/>
+
+      <!-- Head -->
+      <circle cx="106" cy="116" r="13" fill="url(#bodyGrad)" stroke="#64748b" stroke-width="1.5"/>
+      <path d="M95,112 Q106,99 117,112 Q110,106 95,112 Z" fill="#1e293b"/>
+
+      <!-- Front Thigh + Shin + Foot -->
+      <path d="M204,136 Q246,128 274,148 L280,218" stroke="url(#bodyGrad)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M276,220 L306,220" stroke="#06b6d4" stroke-width="8" stroke-linecap="round"/>
+
+      <!-- PRIMARY MUSCLE HIGHLIGHT: Glutes & Hamstrings -->
+      <ellipse cx="204" cy="140" rx="21" ry="15" fill="url(#muscleGlow)" opacity="1" filter="url(#softGlow)"/>
+      <path d="M192,144 Q228,148 260,158" stroke="#f43f5e" stroke-width="9" stroke-linecap="round" opacity="0.85" filter="url(#softGlow)"/>
+
+      <!-- Arm holding barbell -->
+      <path d="M132,140 Q164,120 196,122" stroke="#475569" stroke-width="11" stroke-linecap="round"/>
+
+      <!-- Barbell Plate over Hip -->
+      <circle cx="202" cy="122" r="24" fill="#0f172a" stroke="#06b6d4" stroke-width="3.5"/>
+      <circle cx="202" cy="122" r="8" fill="#334155" stroke="#94a3b8" stroke-width="2"/>
+    
+
+  <!-- Subtle Phase / Muscle Telemetry Bar -->
+  <g opacity="0.9">
+    <rect x="14" y="14" width="108" height="22" rx="11" fill="#0f172a" stroke="#1e293b"/>
+    <circle cx="26" cy="25" r="3.5" fill="#f43f5e"/>
+    <text x="35" y="29" fill="#e2e8f0" font-family="Inter, Segoe UI, sans-serif" font-size="10" font-weight="700">FASE 3/4</text>
+  </g>
+</svg>
