@@ -1,0 +1,336 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  Activity,
+  ArrowLeft,
+  ArrowRight,
+  Award,
+  CalendarCheck,
+  CheckCircle2,
+  Dumbbell,
+  Flame,
+  LineChart,
+  Sparkles,
+  UserPlus,
+  Utensils,
+  X,
+} from "lucide-react";
+import { useApp } from "@/context/AppContext";
+
+interface TourStep {
+  title: string;
+  subtitle: string;
+  description: string;
+  tip: string;
+  href: string;
+  ctaLabel: string;
+  icon: React.ComponentType<{ className?: string }>;
+  accent: "cyan" | "emerald";
+}
+
+const COACH_STEPS: TourStep[] = [
+  {
+    title: "Configura tu Perfil y Diplomas",
+    subtitle: "Paso 1 · Tu identidad profesional",
+    description:
+      "Completa el nombre de tu marca, especialidad, verificación de identidad y sube tus diplomas o certificaciones para destacar en el directorio de coaches.",
+    tip: "Los alumnos confían 3x más en perfiles con diplomas verificables.",
+    href: "/coach/profile",
+    ctaLabel: "Ir a mi Perfil",
+    icon: Award,
+    accent: "cyan",
+  },
+  {
+    title: "Crea Plantillas de Rutinas y Dietas",
+    subtitle: "Paso 2 · Ahorra horas cada semana",
+    description:
+      "Diseña rutinas visuales con demostraciones de ejercicios y planes nutricionales por macros reutilizables para asignarlos a cualquier alumno en segundos.",
+    tip: "Puedes asignar una plantilla directamente desde tu panel de inicio.",
+    href: "/coach/workouts",
+    ctaLabel: "Explorar Rutinas",
+    icon: Dumbbell,
+    accent: "emerald",
+  },
+  {
+    title: "Invita a tu Primer Alumno por Correo",
+    subtitle: "Paso 3 · Vinculación automática",
+    description:
+      "Envía una invitación personalizada con enlace único. Tu alumno crea su cuenta rápida (o acepta en 1 clic si ya tiene cuenta) y entra gratis a su app móvil.",
+    tip: "Tu contador de alumnos activos y cupo disponible se actualiza al instante.",
+    href: "/coach/students?invite=true",
+    ctaLabel: "Invitar Alumno",
+    icon: UserPlus,
+    accent: "cyan",
+  },
+  {
+    title: "Registra Evaluaciones Antropométricas",
+    subtitle: "Paso 4 · Resultados medibles",
+    description:
+      "Guarda peso, porcentaje de grasa, masa muscular, perímetros y fotos de progreso. El alumno verá gráficas automáticas comparando mes contra mes.",
+    tip: "Cada nueva evaluación envía una notificación directa a la app del alumno.",
+    href: "/coach/students",
+    ctaLabel: "Ver Expedientes",
+    icon: Activity,
+    accent: "emerald",
+  },
+  {
+    title: "Agenda Citas y Controla Membresías",
+    subtitle: "Paso 5 · Operación sin fricción",
+    description:
+      "Programa valoraciones presenciales u online y monitorea qué alumnos están al día, por vencer o vencidos para renovar sus planes en un solo toque.",
+    tip: "Usa los filtros rápidos del dashboard para no perder ninguna renovación.",
+    href: "/coach/agenda",
+    ctaLabel: "Abrir Agenda",
+    icon: CalendarCheck,
+    accent: "cyan",
+  },
+];
+
+const STUDENT_STEPS: TourStep[] = [
+  {
+    title: "¡Bienvenido a tu App MiGymBrou!",
+    subtitle: "Paso 1 · Todo tu entrenamiento en el bolsillo",
+    description:
+      "Desde tu pantalla de Inicio tendrás acceso inmediato a tu entrenamiento de hoy, tus comidas del día y tus próximos objetivos sin navegar menús complicados.",
+    tip: "Todo lo que marcas se sincroniza en tiempo real con tu Coach.",
+    href: "/student",
+    ctaLabel: "Ver mi Inicio",
+    icon: Flame,
+    accent: "emerald",
+  },
+  {
+    title: "Tu Rutina del Día y Temporizador",
+    subtitle: "Paso 2 · Diseñada para el gimnasio",
+    description:
+      "Consulta tus ejercicios, series, repeticiones y cargas sugeridas. Marca cada ejercicio completado, registra tu peso levantado y usa el temporizador de descanso integrado.",
+    tip: "Toca cualquier ejercicio para ver su demostración visual paso a paso.",
+    href: "/student/workouts",
+    ctaLabel: "Ver mi Rutina",
+    icon: Dumbbell,
+    accent: "cyan",
+  },
+  {
+    title: "Plan Nutricional y Macros",
+    subtitle: "Paso 3 · Claro y práctico en la cocina",
+    description:
+      "Revisa tus comidas del día, calorías, proteína, carbohidratos, grasas y opciones de intercambio. Lleva también tu contador diario de vasos de agua.",
+    tip: "Marca cada comida conforme la termines para ver tu progreso diario.",
+    href: "/student/diet",
+    ctaLabel: "Ver mi Dieta",
+    icon: Utensils,
+    accent: "emerald",
+  },
+  {
+    title: "Gráficas de Avance y Check-ins",
+    subtitle: "Paso 4 · Visualiza tu transformación",
+    description:
+      "Observa tu evolución de peso, cintura, masa muscular y medidas corporales con los comentarios personalizados de tu Coach y sube tu check-in semanal.",
+    tip: "Compara tus avances contra el mes anterior o contra tu punto de inicio.",
+    href: "/student/progress",
+    ctaLabel: "Ver mis Avances",
+    icon: LineChart,
+    accent: "cyan",
+  },
+  {
+    title: "Confirma tus Próximas Citas",
+    subtitle: "Paso 5 · Acompañamiento continuo",
+    description:
+      "Revisa tus valoraciones presenciales o videollamadas programadas, recibe alertas cuando tu Coach actualiza tu plan y gestiona tus metas en tu perfil.",
+    tip: "Puedes volver a ver este tutorial cuando quieras desde tu Perfil.",
+    href: "/student/appointments",
+    ctaLabel: "Ver mis Citas",
+    icon: CalendarCheck,
+    accent: "emerald",
+  },
+];
+
+export function OnboardingTour({ role }: { role: "coach" | "student" }) {
+  const { hydrated, coachProfile, studentProfile, completeOnboarding } = useApp();
+  const profile = role === "coach" ? coachProfile : studentProfile;
+  const steps = role === "coach" ? COACH_STEPS : STUDENT_STEPS;
+
+  const [stepIdx, setStepIdx] = useState(0);
+  const [dismissedLocally, setDismissedLocally] = useState(false);
+
+  // Cuando el usuario reactiva el tutorial desde Ajustes/Perfil (has_completed_onboarding vuelve a false)
+  useEffect(() => {
+    if (profile.has_completed_onboarding === false) {
+      setDismissedLocally(false);
+      setStepIdx(0);
+    }
+  }, [profile.has_completed_onboarding]);
+
+  const shouldShow =
+    hydrated && profile.has_completed_onboarding === false && !dismissedLocally;
+
+  useEffect(() => {
+    if (!shouldShow) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setDismissedLocally(true);
+        completeOnboarding(role);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [shouldShow, completeOnboarding, role]);
+
+  if (!shouldShow) return null;
+
+  const current = steps[stepIdx] || steps[0];
+  const Icon = current.icon;
+  const isFirst = stepIdx === 0;
+  const isLast = stepIdx === steps.length - 1;
+  const progressPct = Math.round(((stepIdx + 1) / steps.length) * 100);
+
+  const handleFinish = () => {
+    setDismissedLocally(true);
+    completeOnboarding(role);
+  };
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={
+        role === "coach"
+          ? "Tutorial de bienvenida para Coach"
+          : "Tutorial de bienvenida para Alumno"
+      }
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+    >
+      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-800 bg-[#121212] shadow-2xl shadow-black/80">
+        {/* Progress bar */}
+        <div className="h-1.5 w-full bg-slate-900">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-all duration-300"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+
+        <div className="p-5 sm:p-6">
+          {/* Top header */}
+          <div className="flex items-center justify-between gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-[11px] font-bold text-cyan-300">
+              <Sparkles className="h-3 w-3" />
+              Guía Rápida ({stepIdx + 1}/{steps.length})
+            </span>
+            <button
+              type="button"
+              onClick={handleFinish}
+              aria-label="Omitir tutorial"
+              className="inline-flex min-h-[36px] items-center gap-1 rounded-lg px-2 text-xs font-semibold text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            >
+              Omitir
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Visual Hero Icon + Content */}
+          <div className="mt-5 space-y-3">
+            <div
+              className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
+                current.accent === "cyan"
+                  ? "bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/30"
+                  : "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30"
+              }`}
+            >
+              <Icon className="h-7 w-7" />
+            </div>
+
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                {current.subtitle}
+              </p>
+              <h2 className="mt-1 text-xl font-extrabold text-white">
+                {current.title}
+              </h2>
+            </div>
+
+            <p className="text-sm leading-relaxed text-slate-300">
+              {current.description}
+            </p>
+
+            <div className="rounded-2xl border border-slate-800 bg-[#0a0a0a] p-3.5 text-xs text-slate-300">
+              <span className="font-bold text-emerald-400">Tip práctico: </span>
+              {current.tip}
+            </div>
+          </div>
+
+          {/* Step Dots */}
+          <div className="mt-5 flex items-center justify-center gap-1.5">
+            {steps.map((s, idx) => (
+              <button
+                key={s.title}
+                type="button"
+                aria-label={`Ir al paso ${idx + 1}`}
+                onClick={() => setStepIdx(idx)}
+                className={`h-2 rounded-full transition-all ${
+                  idx === stepIdx
+                    ? "w-6 bg-gradient-to-r from-emerald-400 to-cyan-400"
+                    : "w-2 bg-slate-700 hover:bg-slate-600"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Controls */}
+          <div className="mt-5 flex items-center gap-2.5">
+            {!isFirst ? (
+              <button
+                type="button"
+                onClick={() => setStepIdx((i) => Math.max(0, i - 1))}
+                className="inline-flex min-h-[46px] items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-4 text-xs font-bold text-slate-200 transition hover:bg-slate-800"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Anterior
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleFinish}
+                className="inline-flex min-h-[46px] items-center justify-center rounded-xl border border-slate-800 bg-slate-950 px-3.5 text-xs font-semibold text-slate-400 transition hover:text-white"
+              >
+                Omitir tutorial
+              </button>
+            )}
+
+            {isLast ? (
+              <button
+                type="button"
+                onClick={handleFinish}
+                className="inline-flex min-h-[46px] flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:brightness-110"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                ¡Listo, empezar ahora!
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() =>
+                  setStepIdx((i) => Math.min(steps.length - 1, i + 1))
+                }
+                className="inline-flex min-h-[46px] flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
+              >
+                Siguiente
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          <div className="mt-3 text-center">
+            <Link
+              href={current.href}
+              onClick={handleFinish}
+              className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline"
+            >
+              {current.ctaLabel} directamente →
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

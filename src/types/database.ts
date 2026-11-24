@@ -1,5 +1,6 @@
 export type UserRole = "coach" | "student" | "admin";
 export type Gender = "female" | "male";
+export type SaasPlanTier = "free" | "base" | "pro" | "studio";
 export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
 export type IdentityDocumentType = "ine_id" | "passport" | "selfie_id";
 export type CertificationCategory =
@@ -30,6 +31,9 @@ export interface Profile {
   identity_document_name?: string;
   identity_document_type?: IdentityDocumentType;
   verification_notes?: string;
+  has_completed_onboarding?: boolean;
+  saas_plan_tier?: SaasPlanTier;
+  saas_student_limit?: number | null;
   terms_accepted_at: string;
   created_at: string;
 }

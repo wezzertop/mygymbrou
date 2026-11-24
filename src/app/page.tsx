@@ -17,6 +17,11 @@ import {
   Users,
   Utensils,
 } from "lucide-react";
+import {
+  LandingHeaderAuth,
+  LandingHeroAuthActions,
+} from "@/components/LandingAuthControls";
+import { PRICING_FOOTNOTE_MXN, SAAS_PLANS_MXN } from "@/lib/saas-plans";
 
 const STUDENT_BENEFITS = [
   {
@@ -64,54 +69,11 @@ const COACH_BENEFITS = [
   },
 ];
 
-const PLANS = [
-  {
-    name: "Starter",
-    price: "$29",
-    period: "/mes",
-    desc: "Para entrenadores que buscan ofrecer una experiencia digital moderna a su grupo inicial.",
-    features: [
-      "Hasta 15 alumnos activos",
-      "Historial antropométrico ilimitado",
-      "Constructor de rutinas y planes nutricionales",
-      "App móvil para todos tus alumnos",
-    ],
-    featured: false,
-  },
-  {
-    name: "Pro Performance",
-    price: "$59",
-    period: "/mes",
-    desc: "Diseñado para coaches con comunidad en crecimiento y seguimiento integral.",
-    features: [
-      "Hasta 60 alumnos activos",
-      "Plantillas reutilizables de rutinas y dietas",
-      "Comparativas visuales y galería de progreso",
-      "Agenda de citas y control de membresías",
-      "Soporte prioritario",
-    ],
-    featured: true,
-  },
-  {
-    name: "Studio / Gym",
-    price: "$119",
-    period: "/mes",
-    desc: "Para estudios de entrenamiento, boxes y equipos multidisciplinarios.",
-    features: [
-      "Alumnos ilimitados",
-      "Múltiples coaches bajo una misma marca",
-      "Identidad personalizada para tu estudio",
-      "Listo para conectar Stripe o Mercado Pago",
-    ],
-    featured: false,
-  },
-];
-
 export default function LandingPage() {
   return (
-    <div className="min-h-screen w-full overflow-x-clip bg-[#0b1120] text-slate-100">
+    <div className="min-h-screen w-full overflow-x-clip bg-[#0a0a0a] text-slate-100">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-[#0b1120]/85 backdrop-blur-lg">
+      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-[#0a0a0a]/90 pt-[env(safe-area-inset-top)] backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 text-slate-950 shadow-lg shadow-cyan-500/20">
@@ -137,24 +99,11 @@ export default function LandingPage() {
               Para Coaches
             </a>
             <a href="#planes" className="transition hover:text-white">
-              Planes
+              Planes MXN
             </a>
           </nav>
 
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/auth?role=student"
-              className="rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:border-emerald-500/50 hover:bg-slate-800 sm:text-sm"
-            >
-              Iniciar Sesión
-            </Link>
-            <Link
-              href="/auth/register-coach"
-              className="rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-3.5 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 sm:text-sm"
-            >
-              Soy Coach
-            </Link>
-          </div>
+          <LandingHeaderAuth />
         </div>
       </header>
 
@@ -186,22 +135,8 @@ export default function LandingPage() {
               tiempo real.
             </p>
 
-            {/* Primary CTAs */}
-            <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-              <Link
-                href="/auth?role=student"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-4 text-sm font-bold text-slate-950 shadow-xl shadow-emerald-500/20 transition hover:brightness-110"
-              >
-                Soy Alumno (Iniciar Sesión)
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/auth/register-coach"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-900/90 px-6 py-4 text-sm font-bold text-white transition hover:border-cyan-500/50 hover:bg-slate-800"
-              >
-                Soy Coach (Crear Cuenta)
-              </Link>
-            </div>
+            {/* Primary CTAs (session-aware) */}
+            <LandingHeroAuthActions />
 
             {/* Instant Interactive Demo Bar */}
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
@@ -495,69 +430,100 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Plans for Coaches */}
+      {/* Plans for Coaches (MXN — IVA + Stripe incluidos) */}
       <section
         id="planes"
-        className="border-t border-slate-800/80 bg-slate-950/60 py-16"
+        className="border-t border-slate-800/80 bg-[#0d0d0d] py-16"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
-              Planes para Coaches y Estudios
+              Planes para Coaches y Estudios · MXN
             </span>
             <h2 className="mt-2 text-3xl font-extrabold text-white sm:text-4xl">
-              Crece a tu ritmo con la plataforma que tu equipo merece
+              Crece a tu ritmo con precios transparentes en Pesos Mexicanos
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm text-slate-400">
-              Tus alumnos acceden sin costo adicional desde su celular mediante
-              tu invitación directa.
+            <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-400">
+              IVA y comisión de procesamiento ya contemplados. Empieza gratis y
+              escala conforme crece tu comunidad de alumnos.
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            {PLANS.map((plan) => (
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            {SAAS_PLANS_MXN.map((plan) => (
               <div
-                key={plan.name}
-                className={`relative flex flex-col rounded-3xl border p-7 ${
+                key={plan.id}
+                className={`relative flex flex-col rounded-3xl border p-6 transition ${
                   plan.featured
-                    ? "border-cyan-500/60 bg-slate-900 shadow-2xl shadow-cyan-500/10"
-                    : "border-slate-800 bg-slate-900/50"
+                    ? "border-emerald-500/60 bg-[#121212] shadow-2xl shadow-emerald-500/10 ring-1 ring-emerald-500/30"
+                    : "border-slate-800 bg-[#121212]/80 hover:border-slate-700"
                 }`}
               >
-                {plan.featured && (
-                  <span className="absolute -top-3 right-6 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-3 py-1 text-[11px] font-bold text-slate-950">
-                    Más Popular
+                {plan.badge && (
+                  <span className="absolute -top-3 right-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-3 py-1 text-[11px] font-extrabold text-slate-950 shadow-md">
+                    {plan.badge}
                   </span>
                 )}
-                <h3 className="text-lg font-bold text-white">{plan.name}</h3>
-                <p className="mt-1.5 text-sm text-slate-400">{plan.desc}</p>
-                <div className="my-6 flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-white">
-                    {plan.price}
-                  </span>
-                  <span className="text-sm text-slate-400">USD{plan.period}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-lg font-extrabold text-white">
+                    {plan.name}
+                  </h3>
                 </div>
-                <ul className="mb-8 flex-1 space-y-3 text-sm text-slate-300">
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
+                  {plan.description}
+                </p>
+
+                <div className="my-5 space-y-1">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-4xl font-black tracking-tight text-white">
+                      {plan.priceLabel}
+                    </span>
+                    <span className="text-xs font-semibold text-slate-400">
+                      {plan.period}
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-semibold text-emerald-400">
+                    {plan.priceMxn === 0
+                      ? "Sin tarjeta requerida"
+                      : "IVA incluido"}
+                  </p>
+                </div>
+
+                <div className="mb-4 rounded-xl border border-slate-800 bg-[#0a0a0a] px-3 py-2 text-xs font-bold text-cyan-300">
+                  {plan.studentLimitLabel}
+                  {plan.coachLimitLabel && (
+                    <span className="mt-0.5 block text-[11px] font-medium text-slate-400">
+                      {plan.coachLimitLabel}
+                    </span>
+                  )}
+                </div>
+
+                <ul className="mb-7 flex-1 space-y-2.5 text-xs text-slate-300 sm:text-sm">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5">
+                    <li key={f} className="flex items-start gap-2">
                       <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
                       <span>{f}</span>
                     </li>
                   ))}
                 </ul>
+
                 <Link
-                  href="/auth/register-coach"
-                  className={`inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-bold transition ${
+                  href={`/auth/register-coach?plan=${plan.id}`}
+                  className={`inline-flex min-h-[46px] items-center justify-center rounded-2xl px-5 py-3 text-sm font-bold transition ${
                     plan.featured
-                      ? "bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 hover:brightness-110"
-                      : "border border-slate-700 bg-slate-800 text-white hover:bg-slate-700"
+                      ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:brightness-110"
+                      : "border border-slate-700 bg-slate-900 text-white hover:border-cyan-500/50 hover:bg-slate-800"
                   }`}
                 >
-                  Comenzar Prueba Gratis
+                  {plan.ctaLabel}
                 </Link>
               </div>
             ))}
           </div>
+
+          <p className="mx-auto mt-8 max-w-2xl rounded-2xl border border-slate-800/90 bg-[#121212] px-5 py-3.5 text-center text-xs font-medium text-slate-300 sm:text-sm">
+            {PRICING_FOOTNOTE_MXN}
+          </p>
         </div>
       </section>
 

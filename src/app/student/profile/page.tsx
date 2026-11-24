@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   Camera,
   CheckCircle2,
+  HelpCircle,
   LogOut,
   Save,
   ShieldCheck,
@@ -39,6 +40,7 @@ export default function StudentProfilePage() {
     studentGoals,
     updateStudentProfile,
     updateStudentGoal,
+    resetOnboarding,
     signOut,
   } = useApp();
   const [signingOut, setSigningOut] = useState(false);
@@ -343,12 +345,20 @@ export default function StudentProfilePage() {
             {new Date(studentProfile.terms_accepted_at).toLocaleString("es-MX")}
           </span>
         </p>
-        <div className="pt-2">
+        <div className="flex flex-wrap gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => resetOnboarding("student")}
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
+          >
+            <HelpCircle className="h-4 w-4" />
+            Ver Tutorial Guiado nuevamente
+          </button>
           <button
             type="button"
             onClick={handleSignOut}
             disabled={signingOut}
-            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20 disabled:opacity-50"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20 disabled:opacity-50"
           >
             <LogOut className="h-3.5 w-3.5" />
             {signingOut ? "Cerrando sesión..." : "Cerrar Sesión"}

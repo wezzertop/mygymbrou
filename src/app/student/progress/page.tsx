@@ -451,7 +451,7 @@ export default function StudentProgressPage() {
                     type="url"
                     value={photoUrl}
                     onChange={(e) => setPhotoUrl(e.target.value)}
-                    placeholder="https://... (Supabase Storage en producción)"
+                    placeholder="https://... (URL de tu foto de progreso)"
                     className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3 pl-10 pr-3.5 text-xs text-white outline-none focus:border-emerald-500"
                   />
                 </div>

@@ -10,25 +10,35 @@ import {
   CreditCard,
   Dumbbell,
   Flame,
+  HelpCircle,
+  Home,
   LayoutDashboard,
   Search,
   TrendingUp,
+  UserCircle2,
   Utensils,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { VerifiedPersonBadge } from "@/components/VerificationBadge";
+import { OnboardingTour } from "@/components/OnboardingTour";
 
 const STUDENT_NAV = [
-  { href: "/student/progress", label: "Avances", icon: TrendingUp },
+  { href: "/student", label: "Inicio", icon: Home, exact: true },
   { href: "/student/workouts", label: "Rutinas", icon: Dumbbell },
   { href: "/student/diet", label: "Dieta", icon: Utensils },
-  { href: "/student/calendar", label: "Calendario", icon: CalendarDays },
-  { href: "/student/subscription", label: "Mi Plan", icon: CreditCard },
+  { href: "/student/progress", label: "Avances", icon: TrendingUp },
+  { href: "/student/profile", label: "Perfil", icon: UserCircle2 },
 ];
 
 export function StudentShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { studentProfile, notifications, appointments, isDemoMode } = useApp();
+  const {
+    studentProfile,
+    notifications,
+    appointments,
+    isDemoMode,
+    resetOnboarding,
+  } = useApp();
 
   const unreadCount = notifications.filter(
     (n) => n.user_id === studentProfile.id && !n.is_read
@@ -38,13 +48,14 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
     (a) => a.student_id === studentProfile.id && a.status === "scheduled"
   ).length;
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href: string, exact?: boolean) =>
+    exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <div className="min-h-screen w-full overflow-x-clip bg-[#0b1120] text-slate-100 lg:flex">
+    <div className="min-h-screen w-full overflow-x-clip bg-[#0a0a0a] text-slate-100 lg:flex">
+      <OnboardingTour role="student" />
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-slate-800/80 lg:bg-slate-950/90">
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-slate-800/80 lg:bg-[#121212]">
         <div className="flex h-16 items-center gap-3 border-b border-slate-800/80 px-5">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950 shadow-lg shadow-emerald-500/20">
@@ -64,7 +75,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
         <nav aria-label="Menú principal Alumno" className="flex-1 space-y-1.5 px-3 py-5">
           {STUDENT_NAV.map((item) => {
             const Icon = item.icon;
-            const active = isActive(item.href);
+            const active = isActive(item.href, item.exact);
             return (
               <Link
                 key={item.href}
@@ -84,8 +95,32 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
           <div className="space-y-1.5 pt-4">
             <p className="px-3.5 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-              Mi Cuenta y Coaches
+              Agenda, Plan y Coaches
             </p>
+            <Link
+              href="/student/calendar"
+              aria-current={isActive("/student/calendar") ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                isActive("/student/calendar")
+                  ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
+                  : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
+              }`}
+            >
+              <CalendarDays className="h-5 w-5" />
+              <span>Calendario</span>
+            </Link>
+            <Link
+              href="/student/subscription"
+              aria-current={isActive("/student/subscription") ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                isActive("/student/subscription")
+                  ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
+                  : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
+              }`}
+            >
+              <CreditCard className="h-5 w-5" />
+              <span>Mi Plan</span>
+            </Link>
             <Link
               href="/student/coaches"
               aria-current={isActive("/student/coaches") ? "page" : undefined}
@@ -183,9 +218,9 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <div className="flex min-h-screen w-full min-w-0 flex-1 flex-col lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-slate-800/80 bg-[#0b1120]/90 px-4 backdrop-blur-md">
+        <header className="sticky top-0 z-30 flex min-h-[56px] w-full items-center justify-between border-b border-slate-800/80 bg-[#0a0a0a]/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-md">
           <Link
-            href="/student/progress"
+            href="/student"
             className="flex items-center gap-2 lg:hidden"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950">
@@ -213,27 +248,29 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/student/coaches"
-              className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 lg:hidden"
-            >
-              <Search className="h-3 w-3" />
-              Coaches
-            </Link>
+          <div className="flex items-center gap-2">
             {isDemoMode && (
               <Link
                 href="/coach"
-                className="inline-flex items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-[11px] font-semibold text-cyan-300 lg:hidden"
+                className="inline-flex min-h-[36px] items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 text-[11px] font-semibold text-cyan-300 lg:hidden"
               >
                 Coach
               </Link>
             )}
 
+            <button
+              type="button"
+              onClick={() => resetOnboarding("student")}
+              aria-label="Abrir tutorial guiado"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-[#121212] text-slate-400 transition hover:border-emerald-500/40 hover:text-emerald-300"
+            >
+              <HelpCircle className="h-4 w-4" />
+            </button>
+
             <Link
               href="/student/notifications"
               aria-label="Notificaciones"
-              className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-300 transition hover:border-cyan-500/40 hover:text-white"
+              className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-[#121212] text-slate-300 transition hover:border-cyan-500/40 hover:text-white"
             >
               <Bell className="h-4 w-4" />
               {unreadCount > 0 && (
@@ -267,18 +304,18 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
         {/* Mobile Fixed Bottom Navigation Bar */}
         <nav
           aria-label="Navegación Alumno"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800/90 bg-slate-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800/90 bg-[#121212]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden"
         >
           <div className="mx-auto grid max-w-lg grid-cols-5 px-1 py-1.5">
             {STUDENT_NAV.map((item) => {
               const Icon = item.icon;
-              const active = isActive(item.href);
+              const active = isActive(item.href, item.exact);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-xl py-1 text-[10px] font-semibold transition ${
+                  className={`flex min-h-[48px] flex-col items-center justify-center gap-0.5 rounded-xl py-1 text-[10px] font-semibold transition ${
                     active ? "text-emerald-400" : "text-slate-400 hover:text-slate-200"
                   }`}
                 >

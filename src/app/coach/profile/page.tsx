@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
   ExternalLink,
+  HelpCircle,
   LogOut,
   RotateCcw,
   Save,
@@ -26,6 +27,7 @@ export default function CoachProfilePage() {
     coachCertifications,
     isDemoMode,
     updateCoachProfile,
+    resetOnboarding,
     resetDemoData,
     signOut,
   } = useApp();
@@ -263,6 +265,14 @@ export default function CoachProfilePage() {
         </p>
 
         <div className="flex flex-wrap gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => resetOnboarding("coach")}
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-500/20"
+          >
+            <HelpCircle className="h-4 w-4" />
+            Ver Tutorial Guiado nuevamente
+          </button>
           {isDemoMode && (
             <button
               type="button"
@@ -271,7 +281,7 @@ export default function CoachProfilePage() {
                 setSaved(true);
                 setTimeout(() => setSaved(false), 2500);
               }}
-              className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:bg-slate-700"
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:bg-slate-700"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               Restaurar Datos Demo
@@ -281,7 +291,7 @@ export default function CoachProfilePage() {
             type="button"
             onClick={handleSignOut}
             disabled={signingOut}
-            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20 disabled:opacity-50"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20 disabled:opacity-50"
           >
             <LogOut className="h-3.5 w-3.5" />
             {signingOut ? "Cerrando sesión..." : "Cerrar Sesión"}

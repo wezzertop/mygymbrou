@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   CheckCircle2,
   CreditCard,
+  Crown,
   Plus,
   Trash2,
   UserCheck,
@@ -11,6 +13,12 @@ import {
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { CoachingMode } from "@/types/database";
+import {
+  canInviteMoreStudents,
+  getSaasPlanById,
+  PRICING_FOOTNOTE_MXN,
+  SAAS_PLANS_MXN,
+} from "@/lib/saas-plans";
 
 const COACHING_LABELS: Record<CoachingMode, string> = {
   none: "Sin sesiones 1:1",
@@ -18,7 +26,15 @@ const COACHING_LABELS: Record<CoachingMode, string> = {
   in_person: "Coach Presencial",
 };
 
-export default function CoachPlansPage() {
+function CoachPlansContent() {
+  const searchParams = useSearchParams();
+  const initialTab =
+    searchParams.get("tab") === "saas"
+      ? "saas"
+      : searchParams.get("tab") === "diets"
+      ? "diets"
+      : "subscriptions";
+
   const {
     coachProfile,
     students,
@@ -29,9 +45,19 @@ export default function CoachPlansPage() {
     assignSubscriptionPlanToStudent,
     addNutritionPlan,
     assignNutritionToStudent,
+    updateCoachSaasPlan,
   } = useApp();
 
-  const [tab, setTab] = useState<"subscriptions" | "diets">("subscriptions");
+  const [tab, setTab] = useState<"subscriptions" | "diets" | "saas">(initialTab);
+  const currentSaasPlan = getSaasPlanById(coachProfile.saas_plan_tier);
+  const occupiedSlots = students.filter(
+    (s) => s.invite_status === "active" || s.invite_status === "pending"
+  ).length;
+  const quota = canInviteMoreStudents(
+    occupiedSlots,
+    coachProfile.saas_plan_tier,
+    coachProfile.saas_student_limit
+  );
   const [selectedRelationId, setSelectedRelationId] = useState(
     students[0]?.id || ""
   );
@@ -163,34 +189,154 @@ export default function CoachPlansPage() {
       )}
 
       {/* Tabs */}
-      <div className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 sm:max-w-md">
+      <div className="grid grid-cols-3 gap-1.5 rounded-2xl border border-slate-800 bg-slate-950 p-1.5 sm:max-w-xl">
         <button
           type="button"
           onClick={() => setTab("subscriptions")}
-          className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition ${
+          className={`flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition ${
             tab === "subscriptions"
               ? "bg-cyan-500 text-slate-950"
               : "text-slate-400 hover:text-white"
           }`}
         >
-          <CreditCard className="h-4 w-4" />
-          Mis Paquetes ({subscriptionPlans.length})
+          <CreditCard className="h-4 w-4 shrink-0" />
+          <span className="truncate">Paquetes ({subscriptionPlans.length})</span>
         </button>
         <button
           type="button"
           onClick={() => setTab("diets")}
-          className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition ${
+          className={`flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition ${
             tab === "diets"
               ? "bg-emerald-500 text-slate-950"
               : "text-slate-400 hover:text-white"
           }`}
         >
-          <Utensils className="h-4 w-4" />
-          Plantillas Dieta ({nutritionPlans.length})
+          <Utensils className="h-4 w-4 shrink-0" />
+          <span className="truncate">Dietas ({nutritionPlans.length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("saas")}
+          className={`flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition ${
+            tab === "saas"
+              ? "bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-950"
+              : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Crown className="h-4 w-4 shrink-0" />
+          <span className="truncate">Mi Plan MXN</span>
         </button>
       </div>
 
-      {tab === "subscriptions" ? (
+      {tab === "saas" ? (
+        <div className="space-y-6">
+          <div className="flex flex-col justify-between gap-4 rounded-2xl border border-cyan-500/30 bg-[#121212] p-5 sm:flex-row sm:items-center">
+            <div className="space-y-1">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
+                <Crown className="h-3.5 w-3.5" />
+                Plan actual: {currentSaasPlan.name} ({currentSaasPlan.priceLabel}{" "}
+                {currentSaasPlan.period})
+              </span>
+              <p className="text-sm font-bold text-white">
+                {quota.limit === null
+                  ? `Tienes ${occupiedSlots} alumnos en cartera (cupo ilimitado).`
+                  : `Cupo usado: ${occupiedSlots} de ${quota.limit} alumnos (${quota.remaining} disponibles).`}
+              </p>
+              <p className="text-xs text-slate-400">
+                Actualiza tu plan en cualquier momento para ampliar tu límite de alumnos activos.
+              </p>
+            </div>
+            {quota.limit !== null && (
+              <div className="w-full sm:w-48">
+                <div className="mb-1 flex justify-between text-[11px] font-semibold text-slate-400">
+                  <span>Uso del cupo</span>
+                  <span>
+                    {Math.min(100, Math.round((occupiedSlots / quota.limit) * 100))}%
+                  </span>
+                </div>
+                <div className="h-2.5 overflow-hidden rounded-full bg-slate-800">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        Math.round((occupiedSlots / quota.limit) * 100)
+                      )}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {SAAS_PLANS_MXN.map((plan) => {
+              const isCurrent = currentSaasPlan.id === plan.id;
+              return (
+                <div
+                  key={plan.id}
+                  className={`relative flex flex-col rounded-3xl border p-5 ${
+                    isCurrent
+                      ? "border-emerald-500 bg-[#121212] ring-1 ring-emerald-500/40"
+                      : plan.featured
+                      ? "border-cyan-500/50 bg-[#121212]"
+                      : "border-slate-800 bg-[#121212]/80"
+                  }`}
+                >
+                  {plan.badge && (
+                    <span className="absolute -top-2.5 right-4 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 px-2.5 py-0.5 text-[10px] font-extrabold text-slate-950">
+                      {plan.badge}
+                    </span>
+                  )}
+                  <h3 className="text-base font-extrabold text-white">
+                    {plan.name}
+                  </h3>
+                  <div className="my-3 flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-white">
+                      {plan.priceLabel}
+                    </span>
+                    <span className="text-[11px] font-semibold text-slate-400">
+                      {plan.period}
+                    </span>
+                  </div>
+                  <p className="mb-3 rounded-lg bg-[#0a0a0a] px-2.5 py-1.5 text-[11px] font-bold text-cyan-300">
+                    {plan.studentLimitLabel}
+                  </p>
+                  <ul className="mb-5 flex-1 space-y-2 text-xs text-slate-300">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    type="button"
+                    disabled={isCurrent}
+                    onClick={() => {
+                      updateCoachSaasPlan(plan.id);
+                      notify(
+                        `Plan actualizado a ${plan.name} (${plan.studentLimitLabel}).`
+                      );
+                    }}
+                    className={`min-h-[44px] w-full rounded-xl px-4 py-2.5 text-xs font-bold transition ${
+                      isCurrent
+                        ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
+                        : "bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 hover:brightness-110"
+                    }`}
+                  >
+                    {isCurrent ? "Plan Activo Actual" : `Cambiar a ${plan.name}`}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="rounded-2xl border border-slate-800 bg-[#121212] p-3.5 text-center text-xs text-slate-400">
+            {PRICING_FOOTNOTE_MXN}
+          </p>
+        </div>
+      ) : tab === "subscriptions" ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Creator Form */}
           <form
@@ -564,5 +710,19 @@ export default function CoachPlansPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CoachPlansPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-12 text-center text-sm text-slate-400">
+          Cargando planes...
+        </div>
+      }
+    >
+      <CoachPlansContent />
+    </Suspense>
   );
 }

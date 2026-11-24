@@ -32,6 +32,9 @@ create table if not exists public.profiles (
   identity_document_name text,
   identity_document_type text check (identity_document_type in ('ine_id', 'passport', 'selfie_id')),
   verification_notes text,
+  has_completed_onboarding boolean not null default false,
+  saas_plan_tier text not null check (saas_plan_tier in ('free', 'base', 'pro', 'studio')) default 'free',
+  saas_student_limit int default 5,
   terms_accepted_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -49,6 +52,9 @@ alter table public.profiles add column if not exists identity_document_url text;
 alter table public.profiles add column if not exists identity_document_name text;
 alter table public.profiles add column if not exists identity_document_type text;
 alter table public.profiles add column if not exists verification_notes text;
+alter table public.profiles add column if not exists has_completed_onboarding boolean not null default false;
+alter table public.profiles add column if not exists saas_plan_tier text not null default 'free';
+alter table public.profiles add column if not exists saas_student_limit int default 5;
 
 create index if not exists idx_profiles_role on public.profiles(role);
 create index if not exists idx_profiles_email on public.profiles(email);

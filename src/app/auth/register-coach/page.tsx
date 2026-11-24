@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Building2,
@@ -13,10 +14,15 @@ import {
   Mail,
   User,
 } from "lucide-react";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { createClient, getAppUrl, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useApp } from "@/context/AppContext";
+import { getSaasPlanById, SaasPlanTier } from "@/lib/saas-plans";
 
-export default function RegisterCoachPage() {
+function RegisterCoachContent() {
+  const searchParams = useSearchParams();
+  const planParam = (searchParams.get("plan") as SaasPlanTier) || "free";
+  const selectedPlan = getSaasPlanById(planParam);
+
   const { updateCoachProfile, isDemoMode } = useApp();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,12 +59,13 @@ export default function RegisterCoachPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth`,
+            emailRedirectTo: `${getAppUrl()}/auth/callback?next=/coach`,
             data: {
               role: "coach",
               full_name: fullName,
               brand_name: brandName,
               specialty,
+              saas_plan_tier: selectedPlan.id,
               terms_accepted_at: termsTimestamp,
             },
           },
@@ -74,6 +81,8 @@ export default function RegisterCoachPage() {
           email,
           brand_name: brandName,
           specialty,
+          saas_plan_tier: selectedPlan.id,
+          saas_student_limit: selectedPlan.studentLimit,
           terms_accepted_at: termsTimestamp,
         });
       }
@@ -305,5 +314,19 @@ export default function RegisterCoachPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterCoachPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] text-sm text-slate-400">
+          Cargando registro...
+        </div>
+      }
+    >
+      <RegisterCoachContent />
+    </Suspense>
   );
 }

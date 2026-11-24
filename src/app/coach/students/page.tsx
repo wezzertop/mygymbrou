@@ -16,6 +16,10 @@ import {
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import {
+  canInviteMoreStudents,
+  getSaasPlanById,
+} from "@/lib/saas-plans";
+import {
   VerificationStatusPill,
   VerifiedPersonBadge,
 } from "@/components/VerificationBadge";
@@ -63,12 +67,25 @@ function CoachStudentsContent() {
   );
   const [goal, setGoal] = useState("Recomposición Corporal");
   const [sending, setSending] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
   const [inviteResult, setInviteResult] = useState<{
     email: string;
     link: string;
     mode: string;
+    existingUser?: boolean;
+    message?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const activeCount = students.filter((s) => s.invite_status === "active").length;
+  const pendingCount = students.filter((s) => s.invite_status === "pending").length;
+  const occupiedSlots = activeCount + pendingCount;
+  const currentSaasPlan = getSaasPlanById(coachProfile.saas_plan_tier);
+  const quota = canInviteMoreStudents(
+    occupiedSlots,
+    coachProfile.saas_plan_tier,
+    coachProfile.saas_student_limit
+  );
 
   useEffect(() => {
     if (!modalOpen) return;
@@ -107,6 +124,15 @@ function CoachStudentsContent() {
 
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setInviteError(null);
+
+    if (!quota.allowed && quota.limit !== null) {
+      setInviteError(
+        `Has alcanzado el cupo máximo de ${quota.limit} alumnos de tu plan ${currentSaasPlan.name}. Actualiza tu plan para invitar más alumnos.`
+      );
+      return;
+    }
+
     setSending(true);
     const created = inviteStudent({
       name,
@@ -126,9 +152,15 @@ function CoachStudentsContent() {
           email,
           coachId: coachProfile.id,
           token: created.invite_token,
+          planName,
         }),
       });
       const data = await res.json();
+      if (!res.ok) {
+        setInviteError(data.error || "No se pudo enviar la invitación.");
+        setSending(false);
+        return;
+      }
       setInviteResult({
         email,
         link:
@@ -137,6 +169,8 @@ function CoachStudentsContent() {
             email
           )}&name=${encodeURIComponent(name)}`,
         mode: data.mode || "demo",
+        existingUser: data.existingUser,
+        message: data.message,
       });
     } catch {
       setInviteResult({
@@ -172,14 +206,69 @@ function CoachStudentsContent() {
           type="button"
           onClick={() => {
             setInviteResult(null);
+            setInviteError(null);
             setModalOpen(true);
           }}
-          className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 active:scale-[0.98]"
+          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 active:scale-[0.98]"
         >
           <UserPlus className="h-4 w-4" />
           Invitar Alumno por Correo
         </button>
       </div>
+
+      {/* Live Plan Quota & Roster Counter Bar */}
+      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-800 bg-[#121212] p-4 sm:flex-row sm:items-center">
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold text-cyan-300">
+              {currentSaasPlan.name}
+            </span>
+            <span className="text-xs font-semibold text-white">
+              {activeCount} activos · {pendingCount} invitación(es) pendiente(s)
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-400">
+            {quota.limit === null
+              ? "Tu plan Estudio / Gym incluye cupo ilimitado de alumnos."
+              : `Cupo utilizado: ${occupiedSlots} de ${quota.limit} alumnos (${quota.remaining} disponibles).`}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {quota.limit !== null && (
+            <div className="w-32 sm:w-40">
+              <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    !quota.allowed
+                      ? "bg-rose-500"
+                      : occupiedSlots / quota.limit >= 0.8
+                      ? "bg-amber-400"
+                      : "bg-gradient-to-r from-emerald-400 to-cyan-400"
+                  }`}
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      Math.round((occupiedSlots / quota.limit) * 100)
+                    )}%`,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+          <Link
+            href="/coach/plans?tab=saas"
+            className="shrink-0 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] font-bold text-cyan-300 transition hover:border-cyan-500/50"
+          >
+            {quota.allowed ? "Ver mi plan" : "Ampliar cupo"}
+          </Link>
+        </div>
+      </div>
+
+      {inviteError && !modalOpen && (
+        <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-300">
+          {inviteError}
+        </div>
+      )}
 
       {/* Incoming Coaching Inquiries from Directory */}
       {pendingInquiries.length > 0 && (
@@ -461,12 +550,13 @@ function CoachStudentsContent() {
               <div className="space-y-4">
                 <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-200">
                   <p className="font-bold text-emerald-300">
-                    ¡Invitación enviada a {inviteResult.email}!
+                    {inviteResult.existingUser
+                      ? `Enlace de vinculación listo para ${inviteResult.email}`
+                      : `¡Invitación enviada a ${inviteResult.email}!`}
                   </p>
                   <p className="mt-1 leading-relaxed text-emerald-200/80">
-                    Cuando el alumno abra su enlace podrá definir su contraseña,
-                    aceptar Términos y Condiciones y quedar vinculado
-                    automáticamente contigo.
+                    {inviteResult.message ||
+                      "Cuando el alumno abra su enlace podrá definir su contraseña, aceptar Términos y Condiciones y quedar vinculado automáticamente contigo."}
                   </p>
                 </div>
 
@@ -512,6 +602,17 @@ function CoachStudentsContent() {
               </div>
             ) : (
               <form onSubmit={handleInviteSubmit} className="space-y-4">
+                {inviteError && (
+                  <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-300">
+                    <p>{inviteError}</p>
+                    <Link
+                      href="/coach/plans?tab=saas"
+                      className="mt-1.5 inline-block font-bold text-cyan-300 underline"
+                    >
+                      Ver planes disponibles en MXN →
+                    </Link>
+                  </div>
+                )}
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-300">
                     Nombre completo del alumno *

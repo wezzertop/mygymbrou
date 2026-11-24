@@ -17,11 +17,14 @@ import {
   NutritionPlan,
   Profile,
   PublicCoachProfile,
+  SaasPlanTier,
   StudentGoal,
   SubscriptionStatus,
+  UserRole,
   WorkoutPlan,
   WorkoutSessionLog,
 } from "@/types/database";
+import { getSaasPlanById } from "@/lib/saas-plans";
 import {
   DEMO_ACTIVE_STUDENT,
   DEMO_ADS,
@@ -70,11 +73,12 @@ interface AppState {
   ads: AdPlacement[];
   completedExercises: Record<string, boolean>;
   completedMeals: Record<string, boolean>;
+  exerciseLoads: Record<string, string>;
 }
 
 const demoInitialState: AppState = {
-  coachProfile: DEMO_COACH,
-  studentProfile: DEMO_ACTIVE_STUDENT,
+  coachProfile: { ...DEMO_COACH, saas_plan_tier: "pro", saas_student_limit: 50, has_completed_onboarding: false },
+  studentProfile: { ...DEMO_ACTIVE_STUDENT, has_completed_onboarding: false },
   coachCertifications: DEMO_COACH_CERTIFICATIONS,
   directoryCoaches: DEMO_DIRECTORY_COACHES,
   coachInquiries: DEMO_COACH_INQUIRIES,
@@ -91,6 +95,7 @@ const demoInitialState: AppState = {
   ads: DEMO_ADS,
   completedExercises: {},
   completedMeals: {},
+  exerciseLoads: {},
 };
 
 const emptyRealState: AppState = {
@@ -99,6 +104,9 @@ const emptyRealState: AppState = {
     role: "coach",
     full_name: "Mi Cuenta Coach",
     email: "",
+    saas_plan_tier: "free",
+    saas_student_limit: 5,
+    has_completed_onboarding: false,
     terms_accepted_at: new Date().toISOString(),
     created_at: new Date().toISOString(),
   },
@@ -108,6 +116,7 @@ const emptyRealState: AppState = {
     gender: "female",
     full_name: "Mi Cuenta Alumno",
     email: "",
+    has_completed_onboarding: false,
     terms_accepted_at: new Date().toISOString(),
     created_at: new Date().toISOString(),
   },
@@ -127,12 +136,19 @@ const emptyRealState: AppState = {
   ads: DEMO_ADS,
   completedExercises: {},
   completedMeals: {},
+  exerciseLoads: {},
 };
 
 interface AppContextValue extends AppState {
   hydrated: boolean;
   isDemoMode: boolean;
   authUserId: string | null;
+  authUserRole: UserRole | null;
+  completeOnboarding: (role: "coach" | "student") => void;
+  resetOnboarding: (role: "coach" | "student") => void;
+  updateCoachSaasPlan: (tier: SaasPlanTier) => void;
+  setExerciseLoad: (exerciseId: string, load: string) => void;
+  refreshData: () => Promise<void>;
   inviteStudent: (input: {
     name: string;
     email: string;
@@ -260,6 +276,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
   const [hydrated, setHydrated] = useState(false);
   const [authUserId, setAuthUserId] = useState<string | null>(null);
+  const [authUserRole, setAuthUserRole] = useState<UserRole | null>(null);
 
   // Load real data from Supabase for the currently authenticated user (strictly isolated by RLS)
   const loadRealUserData = useCallback(async () => {
@@ -270,6 +287,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     if (!user) {
       setAuthUserId(null);
+      setAuthUserRole(null);
       setState(emptyRealState);
       setHydrated(true);
       return;
@@ -336,6 +354,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       (profileRes.data?.role as Profile["role"]) ||
       (user.user_metadata?.role as Profile["role"]) ||
       "coach";
+    setAuthUserRole(userRole);
+
+    const saasTier =
+      (profileRes.data?.saas_plan_tier as SaasPlanTier) ||
+      (user.user_metadata?.saas_plan_tier as SaasPlanTier) ||
+      "free";
+    const planConfig = getSaasPlanById(saasTier);
 
     const builtProfile: Profile = {
       id: user.id,
@@ -369,6 +394,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       identity_document_name: profileRes.data?.identity_document_name || undefined,
       identity_document_type: profileRes.data?.identity_document_type || undefined,
       verification_notes: profileRes.data?.verification_notes || undefined,
+      has_completed_onboarding: Boolean(profileRes.data?.has_completed_onboarding),
+      saas_plan_tier: saasTier,
+      saas_student_limit:
+        profileRes.data?.saas_student_limit !== undefined
+          ? profileRes.data?.saas_student_limit
+          : planConfig.studentLimit,
       terms_accepted_at:
         profileRes.data?.terms_accepted_at || new Date().toISOString(),
       created_at: profileRes.data?.created_at || new Date().toISOString(),
@@ -1411,7 +1442,48 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const supabase = createClient();
       await supabase.auth.signOut();
       setAuthUserId(null);
+      setAuthUserRole(null);
       setState(emptyRealState);
+    }
+  };
+
+  const completeOnboarding = (role: "coach" | "student") => {
+    if (role === "coach") {
+      updateCoachProfile({ has_completed_onboarding: true });
+    } else {
+      updateStudentProfile({ has_completed_onboarding: true });
+    }
+  };
+
+  const resetOnboarding = (role: "coach" | "student") => {
+    if (role === "coach") {
+      updateCoachProfile({ has_completed_onboarding: false });
+    } else {
+      updateStudentProfile({ has_completed_onboarding: false });
+    }
+  };
+
+  const updateCoachSaasPlan = (tier: SaasPlanTier) => {
+    const plan = getSaasPlanById(tier);
+    updateCoachProfile({
+      saas_plan_tier: tier,
+      saas_student_limit: plan.studentLimit,
+    });
+  };
+
+  const setExerciseLoad = (exerciseId: string, load: string) => {
+    setState((prev) => ({
+      ...prev,
+      exerciseLoads: {
+        ...prev.exerciseLoads,
+        [exerciseId]: load,
+      },
+    }));
+  };
+
+  const refreshData = async () => {
+    if (!isDemoMode) {
+      await loadRealUserData();
     }
   };
 
@@ -1422,6 +1494,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         hydrated,
         isDemoMode,
         authUserId,
+        authUserRole,
+        completeOnboarding,
+        resetOnboarding,
+        updateCoachSaasPlan,
+        setExerciseLoad,
+        refreshData,
         inviteStudent,
         activateInvitedStudent,
         updateStudentSubscription,

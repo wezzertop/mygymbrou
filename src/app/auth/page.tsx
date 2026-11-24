@@ -13,12 +13,14 @@ import {
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { createClient, getAppUrl, isSupabaseConfigured } from "@/lib/supabase/client";
 
 function AuthLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialRole = searchParams.get("role") === "student" ? "student" : "coach";
+  const nextPath = searchParams.get("next");
+  const callbackError = searchParams.get("error");
 
   const demoMode =
     !isSupabaseConfigured() || process.env.NEXT_PUBLIC_DEMO_MODE === "true";
@@ -29,12 +31,35 @@ function AuthLoginContent() {
       ? initialRole === "coach"
         ? "carlos@apexperformance.fit"
         : "sofia.ramirez@email.com"
-      : ""
+      : searchParams.get("email") || ""
   );
   const [password, setPassword] = useState(demoMode ? "Demo1234!" : "");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(callbackError);
+
+  const handleResendConfirmation = async () => {
+    if (!email || !isSupabaseConfigured()) return;
+    setResending(true);
+    setResendSuccess(false);
+    const supabase = createClient();
+    const { error: resendErr } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: `${getAppUrl()}/auth/callback`,
+      },
+    });
+    setResending(false);
+    if (resendErr) {
+      setError(resendErr.message);
+    } else {
+      setResendSuccess(true);
+      setError(null);
+    }
+  };
 
   const handleRoleChange = (nextRole: "coach" | "student") => {
     setRole(nextRole);
@@ -56,7 +81,7 @@ function AuthLoginContent() {
     try {
       if (isSupabaseConfigured()) {
         const supabase = createClient();
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -65,8 +90,26 @@ function AuthLoginContent() {
           setLoading(false);
           return;
         }
+
+        if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
+          router.push(nextPath);
+          return;
+        }
+
+        const user = data.user;
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .maybeSingle();
+          const actualRole =
+            profile?.role || (user.user_metadata?.role as string | undefined) || role;
+          router.push(actualRole === "student" ? "/student" : "/coach");
+          return;
+        }
       }
-      router.push(role === "coach" ? "/coach" : "/student/progress");
+      router.push(role === "coach" ? "/coach" : "/student");
     } catch {
       setError("Ocurrió un error al iniciar sesión. Intenta nuevamente.");
       setLoading(false);
@@ -127,8 +170,25 @@ function AuthLoginContent() {
           </div>
 
           {error && (
-            <div className="mb-4 rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-300">
-              {error}
+            <div className="mb-4 space-y-2 rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-300">
+              <p>{error}</p>
+              {error.toLowerCase().includes("confirm") && isSupabaseConfigured() && (
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={resending}
+                  className="font-bold text-cyan-300 underline hover:text-cyan-200 disabled:opacity-60"
+                >
+                  {resending
+                    ? "Reenviando correo..."
+                    : "Reenviar correo de confirmación"}
+                </button>
+              )}
+            </div>
+          )}
+          {resendSuccess && (
+            <div className="mb-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs text-emerald-300">
+              Te reenviamos el correo de confirmación. Revisa tu bandeja de entrada y spam.
             </div>
           )}
 
