@@ -43,7 +43,54 @@ function RegisterCoachContent() {
   const [isCustomGym, setIsCustomGym] = useState(false);
   const [customGymCity, setCustomGymCity] = useState("");
   const [specialty, setSpecialty] = useState("");
+  const [promoCodeInput, setPromoCodeInput] = useState(
+    (searchParams.get("ref") || searchParams.get("code") || "").toUpperCase()
+  );
+  const [validatingCode, setValidatingCode] = useState(false);
+  const [validatedCode, setValidatedCode] = useState<{
+    code: string;
+    codeKind: "referral" | "promo";
+    sponsorCoachId?: string;
+    discountType: "percent" | "fixed_mxn";
+    discountValue: number;
+    description: string;
+  } | null>(null);
+  const [codeError, setCodeError] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  const handleValidateCode = async () => {
+    const clean = promoCodeInput.trim().toUpperCase();
+    if (!clean) {
+      setValidatedCode(null);
+      setCodeError(null);
+      return;
+    }
+    setValidatingCode(true);
+    setCodeError(null);
+    try {
+      const qs = new URLSearchParams({ code: clean });
+      if (email.trim()) qs.set("email", email.trim().toLowerCase());
+      const res = await fetch(`/api/referrals?${qs.toString()}`);
+      const data = await res.json();
+      if (data.valid) {
+        setValidatedCode({
+          code: data.code,
+          codeKind: data.codeKind,
+          sponsorCoachId: data.sponsorCoachId,
+          discountType: data.discountType,
+          discountValue: data.discountValue,
+          description: data.description,
+        });
+      } else {
+        setValidatedCode(null);
+        setCodeError(data.error || "Código no válido.");
+      }
+    } catch {
+      setCodeError("No se pudo validar el código.");
+    } finally {
+      setValidatingCode(false);
+    }
+  };
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -88,7 +135,9 @@ function RegisterCoachContent() {
               // Las cuentas de pago inician en 'free' hasta aprobar el comprobante SPEI
               saas_plan_tier: "free",
               requested_plan_tier: selectedPlan.id,
+              referred_by_code: validatedCode?.code || undefined,
               terms_accepted_at: termsTimestamp,
+              terms_version: "2026.2",
             },
           },
         });
@@ -117,6 +166,21 @@ function RegisterCoachContent() {
             name: brandName.trim(),
             city: customGymCity.trim() || undefined,
             submitted_by_email: email.trim().toLowerCase(),
+          }),
+        }).catch(() => {});
+      }
+
+      if (validatedCode) {
+        fetch("/api/referrals", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: validatedCode.code,
+            code_kind: validatedCode.codeKind,
+            sponsor_coach_id: validatedCode.sponsorCoachId || null,
+            invited_email: email.trim().toLowerCase(),
+            discount_type: validatedCode.discountType,
+            discount_value: validatedCode.discountValue,
           }),
         }).catch(() => {});
       }
@@ -340,6 +404,42 @@ function RegisterCoachContent() {
                   value={specialty}
                   onChange={setSpecialty}
                 />
+
+                {/* Código de referido o promocional (solo al crear cuenta por primera vez) */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-zinc-300">
+                    Código de referido o promocional (opcional · solo al registrarte)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoCodeInput}
+                      onChange={(e) => {
+                        setPromoCodeInput(e.target.value.toUpperCase());
+                        setValidatedCode(null);
+                        setCodeError(null);
+                      }}
+                      placeholder="Ej. BIENVENIDO25 o CARLOS-A4F2"
+                      className="min-h-[44px] flex-1 rounded-xl border border-white/15 bg-[#060607] px-3.5 font-mono text-sm uppercase text-white outline-none focus:border-emerald-500"
+                    />
+                    <button
+                      type="button"
+                      disabled={validatingCode || !promoCodeInput.trim()}
+                      onClick={handleValidateCode}
+                      className="h-[44px] shrink-0 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500 hover:text-[#0a0a0a] disabled:opacity-40"
+                    >
+                      {validatingCode ? "..." : "Validar"}
+                    </button>
+                  </div>
+                  {validatedCode && (
+                    <p className="text-[11px] font-medium text-emerald-400">
+                      ✓ Código aplicado: {validatedCode.description} (uso único en tu primer mes).
+                    </p>
+                  )}
+                  {codeError && (
+                    <p className="text-[11px] text-rose-400">{codeError}</p>
+                  )}
+                </div>
 
                 {/* Mandatory Terms & Conditions */}
                 <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/[0.08] bg-[#060607] p-3.5">

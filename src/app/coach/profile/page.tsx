@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -40,6 +40,14 @@ export default function CoachProfilePage() {
   } = useApp();
 
   const [tab, setTab] = useState<CoachProfileTab>("perfil");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const t = new URLSearchParams(window.location.search).get("tab");
+    if (t === "verificacion" || t === "diplomas" || t === "cuenta" || t === "perfil") {
+      setTab(t);
+    }
+  }, []);
   const [fullName, setFullName] = useState(coachProfile.full_name);
   const [brandName, setBrandName] = useState(coachProfile.brand_name || "");
   const [isCustomGym, setIsCustomGym] = useState(false);

@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import {
   BadgeCheck,
+  Camera,
   CheckCircle2,
   Clock,
   FileCheck2,
@@ -13,6 +14,7 @@ import {
 import { useApp } from "@/context/AppContext";
 import { IdentityDocumentType, Profile } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
+import { getCoachVerificationGraceStatus } from "@/lib/referrals";
 import {
   VerificationStatusPill,
   VerifiedPersonBadge,
@@ -31,21 +33,48 @@ export function IdentityVerificationCard({
   role: "coach" | "student";
   profile: Profile;
 }) {
-  const { isDemoMode, authUserId, submitIdentityVerification } = useApp();
+  const {
+    isDemoMode,
+    authUserId,
+    submitIdentityVerification,
+    updateCoachProfile,
+  } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const faceInputRef = useRef<HTMLInputElement>(null);
 
   const [docType, setDocType] = useState<IdentityDocumentType>(
-    profile.identity_document_type || "selfie_id"
+    profile.identity_document_type || "ine_id"
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     profile.identity_document_url || null
+  );
+  const [faceFile, setFaceFile] = useState<File | null>(null);
+  const [facePreviewUrl, setFacePreviewUrl] = useState<string | null>(
+    profile.face_verification_url || null
   );
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const status = profile.verification_status || (profile.is_verified_identity ? "verified" : "unverified");
+  const coachGrace = role === "coach" ? getCoachVerificationGraceStatus(profile) : null;
+
+  const handleFaceFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      setError("La foto de rostro supera el límite de 8 MB.");
+      return;
+    }
+    setFaceFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") setFacePreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
@@ -68,33 +97,62 @@ export function IdentityVerificationCard({
   const handleSubmit = async (autoApproveDemo = false) => {
     setError(null);
     if (!previewUrl) {
-      setError("Sube primero una foto o archivo de tu identificación para verificarte.");
+      setError("1. Sube una foto legible de tu identificación oficial.");
+      return;
+    }
+    if (role === "coach" && !facePreviewUrl) {
+      setError("2. Toma o sube una foto clara de tu rostro (selfie) para cotejo visual.");
       return;
     }
 
     setSubmitting(true);
     try {
       let finalUrl = previewUrl;
+      let finalFaceUrl = facePreviewUrl;
       const fileName =
         selectedFile?.name ||
         profile.identity_document_name ||
         `verificacion-${role}-${Date.now()}.png`;
+      const faceFileName =
+        faceFile?.name ||
+        profile.face_verification_name ||
+        `rostro-${role}-${Date.now()}.jpg`;
 
-      if (!isDemoMode && selectedFile && authUserId) {
+      if (!isDemoMode && authUserId) {
         const supabase = createClient();
-        const ext = selectedFile.name.split(".").pop() || "jpg";
-        const path = `${authUserId}/identity-${Date.now()}.${ext}`;
-        const { error: uploadError } = await supabase.storage
-          .from("identity-docs")
-          .upload(path, selectedFile, { upsert: true });
-        if (!uploadError) {
-          const { data: signed } = await supabase.storage
+        if (selectedFile) {
+          const ext = selectedFile.name.split(".").pop() || "jpg";
+          const path = `${authUserId}/identity-${Date.now()}.${ext}`;
+          const { error: uploadError } = await supabase.storage
             .from("identity-docs")
-            .createSignedUrl(path, 60 * 60 * 24 * 30);
-          if (signed?.signedUrl) {
-            finalUrl = signed.signedUrl;
+            .upload(path, selectedFile, { upsert: true });
+          if (!uploadError) {
+            const { data: signed } = await supabase.storage
+              .from("identity-docs")
+              .createSignedUrl(path, 60 * 60 * 24 * 30);
+            if (signed?.signedUrl) finalUrl = signed.signedUrl;
           }
         }
+        if (faceFile) {
+          const ext = faceFile.name.split(".").pop() || "jpg";
+          const path = `${authUserId}/face-${Date.now()}.${ext}`;
+          const { error: faceErr } = await supabase.storage
+            .from("identity-docs")
+            .upload(path, faceFile, { upsert: true });
+          if (!faceErr) {
+            const { data: signed } = await supabase.storage
+              .from("identity-docs")
+              .createSignedUrl(path, 60 * 60 * 24 * 30);
+            if (signed?.signedUrl) finalFaceUrl = signed.signedUrl;
+          }
+        }
+      }
+
+      if (role === "coach" && finalFaceUrl) {
+        updateCoachProfile({
+          face_verification_url: finalFaceUrl,
+          face_verification_name: faceFileName,
+        });
       }
 
       submitIdentityVerification({
@@ -254,12 +312,61 @@ export function IdentityVerificationCard({
             </div>
           )}
 
+          {role === "coach" && coachGrace && coachGrace.state !== "verified" && (
+            <div className="rounded-xl border border-amber-500/25 bg-amber-500/[0.06] p-3 text-xs text-amber-200">
+              Plazo de verificación obligatoria:{" "}
+              <strong>
+                {coachGrace.state === "expired_locked"
+                  ? "Plazo de 15 días vencido — envía tu ID oficial y rostro para reactivar"
+                  : `${coachGrace.daysRemaining} día(s) restantes de 15`}
+              </strong>
+              . Archivos privados protegidos conforme a la LFPDPPP.
+            </div>
+          )}
+
+          {role === "coach" && (
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-zinc-300">
+                2. Comprobación de rostro (selfie clara para cotejo visual) *
+              </label>
+              <input
+                ref={faceInputRef}
+                type="file"
+                accept="image/*"
+                capture="user"
+                onChange={handleFaceFileChange}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => faceInputRef.current?.click()}
+                className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-dashed border-emerald-500/35 bg-[#060607] px-4 py-4 text-xs font-medium text-white transition hover:border-emerald-500/60 hover:bg-emerald-500/[0.04]"
+              >
+                <Camera className="h-4 w-4 text-emerald-400" />
+                <span>
+                  {faceFile
+                    ? faceFile.name
+                    : "Tomar selfie con cámara o subir foto de rostro"}
+                </span>
+              </button>
+              {facePreviewUrl && (
+                <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#060607] p-2">
+                  <img
+                    src={facePreviewUrl}
+                    alt="Vista previa de rostro"
+                    className="max-h-40 w-full rounded-lg object-contain"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-wrap items-center gap-2.5">
             <button
               type="button"
               disabled={submitting}
               onClick={() => handleSubmit(false)}
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-50"
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-emerald-500 px-5 text-xs font-bold text-[#0a0a0a] transition hover:bg-emerald-400 disabled:opacity-50"
             >
               <ShieldCheck className="h-4 w-4" />
               {submitting ? "Enviando..." : "Enviar Verificación"}

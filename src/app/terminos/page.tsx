@@ -287,6 +287,84 @@ export default function TerminosPage() {
           </div>
         </section>
 
+        {/* 7. Programa de Referidos y Códigos Promocionales */}
+        <section className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8">
+          <div className="flex items-center gap-2.5">
+            <FileText className="h-5 w-5 shrink-0 text-emerald-400" />
+            <h2 className="text-lg font-semibold text-white sm:text-xl">
+              7. Programa de Referidos y Códigos de Descuento
+            </h2>
+          </div>
+          <div className="space-y-3 text-xs leading-relaxed text-zinc-400 sm:text-sm">
+            <ul className="list-disc space-y-2 pl-5">
+              <li>
+                <strong className="text-zinc-200">Uso único al registrarse:</strong>{" "}
+                los códigos de referido de otros coaches o códigos promocionales emitidos
+                por administración aplican exclusivamente al crear la cuenta por primera
+                vez (una sola vez por usuario; no son redimibles de forma retroactiva ni
+                se permite auto-referido).
+              </li>
+              <li>
+                <strong className="text-zinc-200">
+                  Descuento del Coach invitado:
+                </strong>{" "}
+                el porcentaje o monto promocional otorgado es válido únicamente en el{" "}
+                <strong>primer mes comprado</strong> de un plan de pago; las renovaciones
+                subsecuentes se cobran al precio regular vigente.
+              </li>
+              <li>
+                <strong className="text-zinc-200">
+                  Cola mensual consecutiva del Coach padrino:
+                </strong>{" "}
+                cada referido que complete el pago de su suscripción genera 1 descuento
+                mensual para el coach padrino (ej. 25%). Las recompensas acumuladas se
+                aplican <strong>1 por mes en meses consecutivos</strong> (nunca se apilan
+                dos o más descuentos en un mismo mes) y están sujetas a un tope operativo
+                de <strong>12 a 24 recompensas concluidas exitosamente</strong> por coach.
+              </li>
+              <li>
+                <strong className="text-zinc-200">
+                  Cambio de plan con recompensas pendientes:
+                </strong>{" "}
+                si el coach padrino sube de plan (<em>upgrade</em>), sus descuentos
+                pendientes se calculan con base en el{" "}
+                <strong>valor del plan en el que se generaron</strong> (sin inflarse al
+                precio del plan superior). Si baja de plan (<em>downgrade</em>),{" "}
+                <strong>no existe devolución de dinero</strong> y el descuento se ajusta
+                al valor del <strong>plan actual vigente</strong> al momento de aplicarse.
+                En ningún caso se generan saldos negativos ni reembolsos en efectivo.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        {/* 8. Verificación Obligatoria de Identidad y Rostro (15 Días) */}
+        <section className="space-y-3 rounded-xl border border-emerald-500/25 bg-[#0e0f12] p-6 sm:p-8">
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-400" />
+            <h2 className="text-lg font-semibold text-white sm:text-xl">
+              8. Verificación Obligatoria de Identidad y Rostro (Plazo de 15 Días)
+            </h2>
+          </div>
+          <div className="space-y-3 text-xs leading-relaxed text-zinc-400 sm:text-sm">
+            <p>
+              Para garantizar la seguridad de la comunidad, validar la autenticidad de los
+              entrenadores y prevenir el uso indebido de múltiples cuentas gratuitas (
+              <em>Inicio / Free</em>), todo Coach dispone de un plazo máximo de{" "}
+              <strong className="text-zinc-200">15 días naturales</strong> a partir de su
+              registro para enviar su{" "}
+              <strong className="text-zinc-200">Identificación Oficial vigente</strong> y
+              una <strong className="text-zinc-200">comprobación de rostro (selfie)</strong>
+              .
+            </p>
+            <p>
+              En caso de vencer el plazo de 15 días sin haber enviado la verificación, el
+              acceso operativo del panel quedará restringido temporalmente hasta completar
+              el envío y revisión por parte del equipo de administración.
+            </p>
+          </div>
+        </section>
+
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-zinc-500">
           <Link href="/privacidad" className="text-emerald-400 hover:underline">
             Consultar Aviso de Privacidad (LFPDPPP) →

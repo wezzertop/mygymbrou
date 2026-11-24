@@ -164,6 +164,22 @@ export default function PrivacidadPage() {
               políticas de seguridad a nivel de fila (Row Level Security — RLS) en base de
               datos para proteger el acceso a cada expediente.
             </p>
+            <div className="rounded-xl border border-white/[0.08] bg-[#060607] p-4">
+              <p className="font-semibold text-white">
+                Tratamiento de Identificación Oficial y Comprobación de Rostro (LFPDPPP)
+              </p>
+              <p className="mt-1.5 text-zinc-400">
+                Las imágenes de identificación oficial y fotografía de rostro (selfie)
+                recabadas dentro del plazo de verificación de 15 días se utilizan
+                exclusivamente para: (i) validar la identidad real del Coach, (ii) prevenir
+                fraude, suplantación de identidad y creación de múltiples cuentas
+                gratuitas, y (iii) proteger la seguridad de la plataforma. Estos archivos
+                se almacenan en un repositorio privado con acceso estrictamente
+                restringido al titular y al rol autorizado de administración, bajo
+                conservación limitada y sujetos en todo momento al ejercicio de tus{" "}
+                <strong className="text-emerald-400">Derechos ARCO</strong>.
+              </p>
+            </div>
           </div>
         </section>
 

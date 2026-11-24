@@ -13,6 +13,7 @@ import {
   Dumbbell,
   ExternalLink,
   Flag,
+  Gift,
   Landmark,
   Lock,
   RefreshCw,
@@ -34,8 +35,9 @@ import {
 } from "@/types/database";
 import { getSaasPlanById } from "@/lib/saas-plans";
 import { DEFAULT_APPROVED_GYMS, GymRecord } from "@/lib/coach-catalogs";
+import { DEFAULT_PROMO_CODES, PromoCodeRecord } from "@/lib/referrals";
 
-type AdminTab = "pagos" | "verificaciones" | "gimnasios" | "reportes" | "sanciones";
+type AdminTab = "pagos" | "verificaciones" | "gimnasios" | "codigos" | "reportes" | "sanciones";
 
 const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
   pendiente: "Pendiente",
@@ -79,6 +81,12 @@ export default function AdminDashboardPage() {
   const [dbPayments, setDbPayments] = useState<SaasPaymentRequest[]>([]);
   const [gymsList, setGymsList] = useState<GymRecord[]>(DEFAULT_APPROVED_GYMS);
   const [gymEdits, setGymEdits] = useState<Record<string, { name: string; city: string }>>({});
+  const [promoCodes, setPromoCodes] = useState<PromoCodeRecord[]>(DEFAULT_PROMO_CODES);
+  const [newPromoCode, setNewPromoCode] = useState("");
+  const [newPromoDesc, setNewPromoDesc] = useState("");
+  const [newPromoType, setNewPromoType] = useState<"percent" | "fixed_mxn">("percent");
+  const [newPromoValue, setNewPromoValue] = useState("25");
+  const [newPromoMaxUses, setNewPromoMaxUses] = useState("100");
   const [paymentFilter, setPaymentFilter] = useState<
     PaymentRequestStatus | "all"
   >("all");
@@ -117,9 +125,66 @@ export default function AdminDashboardPage() {
     }
   }, []);
 
+  const loadPromoCodes = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/promo-codes");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.codes)) setPromoCodes(data.codes);
+      }
+    } catch {
+      // keep fallback
+    }
+  }, []);
+
   useEffect(() => {
     loadGyms();
-  }, [loadGyms]);
+    loadPromoCodes();
+  }, [loadGyms, loadPromoCodes]);
+
+  const handleCreatePromo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPromoCode.trim()) return;
+    const res = await fetch("/api/admin/promo-codes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code: newPromoCode.trim().toUpperCase(),
+        description: newPromoDesc.trim() || undefined,
+        discount_type: newPromoType,
+        discount_value: Number(newPromoValue) || 25,
+        max_uses: newPromoMaxUses ? Number(newPromoMaxUses) : null,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok && data.code) {
+      setPromoCodes((prev) => [data.code, ...prev]);
+      setNewPromoCode("");
+      setNewPromoDesc("");
+      showToast(`Código promocional "${data.code.code}" creado.`);
+    } else {
+      showToast(data.error || "No se pudo crear el código.");
+    }
+  };
+
+  const handleTogglePromo = async (promo: PromoCodeRecord) => {
+    const nextActive = !promo.is_active;
+    const res = await fetch("/api/admin/promo-codes", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: promo.id, is_active: nextActive }),
+    });
+    if (res.ok) {
+      setPromoCodes((prev) =>
+        prev.map((p) => (p.id === promo.id ? { ...p, is_active: nextActive } : p))
+      );
+      showToast(
+        nextActive
+          ? `Código "${promo.code}" activado.`
+          : `Código "${promo.code}" desactivado.`
+      );
+    }
+  };
 
   const handleGymAction = async (
     gym: GymRecord,
@@ -537,6 +602,11 @@ export default function AdminDashboardPage() {
                 icon: Building2,
               },
               {
+                key: "codigos",
+                label: `Códigos (${promoCodes.filter((p) => p.is_active).length})`,
+                icon: Gift,
+              },
+              {
                 key: "reportes",
                 label: `Reportes (${reports.length})`,
                 icon: Flag,
@@ -752,17 +822,30 @@ export default function AdminDashboardPage() {
                       </p>
                     </div>
 
-                    {coach.identity_document_url && (
-                      <a
-                        href={coach.identity_document_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex h-9 items-center gap-1.5 self-start rounded-full border border-white/15 px-3.5 text-xs font-medium text-zinc-200 hover:border-white/30 hover:text-white"
-                      >
-                        Ver ID subido
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
-                    )}
+                    <div className="flex flex-wrap gap-2 self-start">
+                      {coach.identity_document_url && (
+                        <a
+                          href={coach.identity_document_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/15 px-3.5 text-xs font-medium text-zinc-200 hover:border-white/30 hover:text-white"
+                        >
+                          Ver ID oficial
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                      )}
+                      {coach.face_verification_url && (
+                        <a
+                          href={coach.face_verification_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3.5 text-xs font-medium text-emerald-300 hover:bg-emerald-500/20"
+                        >
+                          Ver Rostro / Selfie
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                      )}
+                    </div>
                   </div>
 
                   {/* Diplomas list */}
@@ -1247,6 +1330,144 @@ export default function AdminDashboardPage() {
                   </div>
                 );
               })}
+            </div>
+          </section>
+        )}
+
+        {/* TAB: CÓDIGOS PROMOCIONALES Y REFERIDOS */}
+        {tab === "codigos" && (
+          <section className="grid gap-6 lg:grid-cols-12">
+            <form
+              onSubmit={handleCreatePromo}
+              className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 lg:col-span-5"
+            >
+              <div>
+                <h2 className="text-base font-semibold text-white">
+                  Nuevo Código Promocional
+                </h2>
+                <p className="text-xs text-zinc-400">
+                  Uso único al registrarse (recomendado 25%–35% en primer mes).
+                </p>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-zinc-300">
+                  Código *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newPromoCode}
+                  onChange={(e) => setNewPromoCode(e.target.value.toUpperCase())}
+                  placeholder="Ej. COACH30"
+                  className="h-10 w-full rounded-xl border border-white/15 bg-[#060607] px-3 font-mono text-sm uppercase text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-zinc-300">
+                    Tipo
+                  </label>
+                  <select
+                    value={newPromoType}
+                    onChange={(e) =>
+                      setNewPromoType(e.target.value as "percent" | "fixed_mxn")
+                    }
+                    className="h-10 w-full rounded-xl border border-white/15 bg-[#060607] px-3 text-xs text-white"
+                  >
+                    <option value="percent">Porcentaje (%)</option>
+                    <option value="fixed_mxn">Monto fijo (MXN)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-zinc-300">
+                    Valor *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={newPromoValue}
+                    onChange={(e) => setNewPromoValue(e.target.value)}
+                    className="h-10 w-full rounded-xl border border-white/15 bg-[#060607] px-3 text-sm text-white"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-zinc-300">
+                    Límite de usos
+                  </label>
+                  <input
+                    type="number"
+                    value={newPromoMaxUses}
+                    onChange={(e) => setNewPromoMaxUses(e.target.value)}
+                    placeholder="100"
+                    className="h-10 w-full rounded-xl border border-white/15 bg-[#060607] px-3 text-sm text-white"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-zinc-300">
+                    Descripción
+                  </label>
+                  <input
+                    type="text"
+                    value={newPromoDesc}
+                    onChange={(e) => setNewPromoDesc(e.target.value)}
+                    placeholder="Ej. Campaña verano"
+                    className="h-10 w-full rounded-xl border border-white/15 bg-[#060607] px-3 text-xs text-white"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="h-10 w-full rounded-xl bg-emerald-500 text-xs font-bold text-[#0a0a0a] transition hover:bg-emerald-400"
+              >
+                Crear código promocional
+              </button>
+            </form>
+
+            <div className="space-y-3 lg:col-span-7">
+              {promoCodes.map((promo) => (
+                <div
+                  key={promo.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-sm font-bold text-emerald-400">
+                        {promo.code}
+                      </span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                          promo.is_active
+                            ? "bg-emerald-500/15 text-emerald-300"
+                            : "bg-zinc-500/15 text-zinc-400"
+                        }`}
+                      >
+                        {promo.is_active ? "Activo" : "Inactivo"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-300">
+                      {promo.discount_type === "percent"
+                        ? `${promo.discount_value}% de descuento`
+                        : `$${promo.discount_value} MXN de descuento`}{" "}
+                      · Usos: {promo.used_count}
+                      {promo.max_uses ? ` / ${promo.max_uses}` : ""}
+                    </p>
+                    {promo.description && (
+                      <p className="text-[11px] text-zinc-500">
+                        {promo.description}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleTogglePromo(promo)}
+                    className="h-9 rounded-xl border border-white/15 px-3 text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
+                  >
+                    {promo.is_active ? "Desactivar" : "Activar"}
+                  </button>
+                </div>
+              ))}
             </div>
           </section>
         )}

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { createClient } from "@/lib/supabase/client";
+import { CoachReferralsCard } from "@/components/CoachReferralsCard";
 import { CoachSubscriptionPlan, CoachingMode } from "@/types/database";
 import {
   calculatePlanChangeQuote,
@@ -551,6 +552,8 @@ function CoachPlansContent() {
           <p className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-3.5 text-center text-xs text-zinc-400">
             {PRICING_FOOTNOTE_MXN}
           </p>
+
+          <CoachReferralsCard />
         </div>
       ) : tab === "subscriptions" ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">

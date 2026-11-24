@@ -24,6 +24,7 @@ import { SmartNotificationsCenter } from "@/components/SmartNotificationsCenter"
 import { PwaInstallButton } from "@/components/PwaInstallPrompt";
 import { DemoModeBanner } from "@/components/DemoModeBanner";
 import { CoachQuickActionsFab } from "@/components/CoachQuickActionsFab";
+import { CoachVerificationGraceBanner } from "@/components/CoachVerificationGraceBanner";
 
 const COACH_NAV = [
   { href: "/coach", label: "Inicio", icon: LayoutDashboard, exact: true },
@@ -387,7 +388,7 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
         <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-safe-nav lg:px-8 lg:py-8 lg:pb-12">
           {isDemoView && <DemoModeBanner role="coach" />}
           <SanctionNoticeBanner profile={coachProfile} />
-          {children}
+          <CoachVerificationGraceBanner>{children}</CoachVerificationGraceBanner>
           {pathname !== "/coach" && (
             <FreeTierAdSlot viewerRole="coach" className="mt-8" />
           )}

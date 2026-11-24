@@ -36,7 +36,12 @@ export interface Profile {
   identity_document_url?: string;
   identity_document_name?: string;
   identity_document_type?: IdentityDocumentType;
+  face_verification_url?: string;
+  face_verification_name?: string;
+  verification_deadline_at?: string;
   verification_notes?: string;
+  referral_code?: string;
+  referred_by_code?: string;
   has_completed_onboarding?: boolean;
   onboarding_completed?: boolean;
   onboarding_completed_at?: string;
@@ -191,7 +196,12 @@ export interface CoachStudentRelation {
   identity_document_url?: string;
   identity_document_name?: string;
   identity_document_type?: IdentityDocumentType;
+  face_verification_url?: string;
+  face_verification_name?: string;
+  verification_deadline_at?: string;
   verification_notes?: string;
+  referral_code?: string;
+  referred_by_code?: string;
   created_at: string;
 }
 
