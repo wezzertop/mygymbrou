@@ -170,26 +170,20 @@ function CoachPlansContent() {
   const selectedStudent = students.find((s) => s.id === selectedRelationId);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-extrabold text-white">
-            Planes de Suscripción y Dietas
-          </h1>
-          <p className="text-sm text-zinc-400">
-            Configura tus paquetes de asesoría con duración y permisos de módulos
-            para tus alumnos.
-          </p>
-        </div>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          Planes y Dietas
+        </h1>
 
         <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#0e0f12] px-3 py-2 text-xs">
-          <span className="text-zinc-400">Alumno rápido:</span>
+          <span className="shrink-0 text-zinc-400">Alumno:</span>
           {students.length > 0 ? (
             <select
               aria-label="Seleccionar alumno para asignación rápida"
               value={selectedRelationId}
               onChange={(e) => setSelectedRelationId(e.target.value)}
-              className="bg-transparent font-bold text-emerald-400 outline-none"
+              className="min-w-0 flex-1 bg-transparent font-bold text-emerald-400 outline-none"
             >
               {students.map((s) => (
                 <option key={s.id} value={s.id} className="bg-[#0e0f12] text-white">
@@ -198,7 +192,7 @@ function CoachPlansContent() {
               ))}
             </select>
           ) : (
-            <span className="font-semibold text-zinc-500">Sin alumnos aún</span>
+            <span className="font-semibold text-zinc-500">Sin alumnos</span>
           )}
         </div>
       </div>
@@ -381,16 +375,16 @@ function CoachPlansContent() {
           {/* Creator Form */}
           <form
             onSubmit={handleCreateSubPlan}
-            className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
+            className="min-w-0 space-y-3.5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:space-y-4 sm:p-5 lg:col-span-5"
           >
             <h2 className="flex items-center gap-2 text-base font-bold text-white">
               <Plus className="h-4 w-4 text-emerald-400" />
-              Crear Nuevo Plan de Suscripción
+              Nuevo plan
             </h2>
 
             <div>
               <label className="mb-1 block text-xs text-zinc-300">
-                Nombre del Plan *
+                Nombre *
               </label>
               <input
                 type="text"
@@ -404,13 +398,13 @@ function CoachPlansContent() {
 
             <div>
               <label className="mb-1 block text-xs text-zinc-300">
-                Descripción visible para alumnos
+                Descripción
               </label>
               <textarea
                 rows={2}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ej. Incluye nutrición, rutinas guiadas y seguimiento semanal."
+                placeholder="Ej. Nutrición, rutinas y seguimiento semanal."
                 className="w-full rounded-xl border border-white/15 bg-[#060607] p-2.5 text-xs text-white"
               />
             </div>
@@ -430,24 +424,24 @@ function CoachPlansContent() {
               </div>
               <div>
                 <label className="mb-1 block text-xs text-zinc-300">
-                  Duración (días)
+                  Duración
                 </label>
                 <select
                   value={durationDays}
                   onChange={(e) => setDurationDays(e.target.value)}
                   className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
                 >
-                  <option value="7">7 días (Semanal)</option>
-                  <option value="15">15 días (Quincenal)</option>
-                  <option value="30">30 días (Mensual)</option>
-                  <option value="90">90 días (Trimestral)</option>
+                  <option value="7">7 días</option>
+                  <option value="15">15 días</option>
+                  <option value="30">30 días (Mes)</option>
+                  <option value="90">90 días (Trim.)</option>
                 </select>
               </div>
             </div>
 
             <div>
               <label className="mb-1 block text-xs text-zinc-300">
-                Modalidad de Coaching
+                Modalidad
               </label>
               <select
                 value={coachingMode}
@@ -464,7 +458,7 @@ function CoachPlansContent() {
 
             <div className="space-y-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3 text-xs">
               <p className="font-semibold text-zinc-300">
-                Módulos habilitados para el alumno:
+                Módulos incluidos:
               </p>
               <label className="flex cursor-pointer items-center gap-2.5">
                 <input
@@ -473,7 +467,7 @@ function CoachPlansContent() {
                   onChange={(e) => setIncludesNutrition(e.target.checked)}
                   className="h-4 w-4 rounded text-emerald-500"
                 />
-                <span>Incluye Plan Nutricional (Dieta)</span>
+                <span>Plan nutricional</span>
               </label>
               <label className="flex cursor-pointer items-center gap-2.5">
                 <input
@@ -482,7 +476,7 @@ function CoachPlansContent() {
                   onChange={(e) => setIncludesWorkouts(e.target.checked)}
                   className="h-4 w-4 rounded text-emerald-500"
                 />
-                <span>Incluye Rutinas Guiadas con Videos/Animaciones</span>
+                <span>Rutinas guiadas</span>
               </label>
               <label className="flex cursor-pointer items-center gap-2.5">
                 <input
@@ -491,15 +485,15 @@ function CoachPlansContent() {
                   onChange={(e) => setIncludesAssessments(e.target.checked)}
                   className="h-4 w-4 rounded text-emerald-500"
                 />
-                <span>Incluye Evaluaciones Antropométricas</span>
+                <span>Evaluaciones</span>
               </label>
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-white hover:bg-zinc-200 py-3 text-xs font-bold text-zinc-950"
+              className="w-full rounded-xl bg-white py-3 text-xs font-bold text-zinc-950 transition hover:bg-zinc-200"
             >
-              Guardar Plan de Suscripción
+              Guardar plan
             </button>
           </form>
 

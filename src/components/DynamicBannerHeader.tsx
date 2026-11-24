@@ -230,7 +230,7 @@ export function DynamicBannerHeader({
     <>
       <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#0e0f12]">
         {/* 100% Unobstructed Mobile-First Cover Photo (Zero buttons over the image) */}
-        <div className="h-32 w-full overflow-hidden bg-[#060607] sm:h-44">
+        <div className="h-28 w-full overflow-hidden bg-[#060607] sm:h-40">
           <img
             src={resolvedCover.url}
             alt="Portada motivacional de perfil"
@@ -239,28 +239,29 @@ export function DynamicBannerHeader({
         </div>
 
         {/* Clean Typographic Block Below Photo */}
-        <div className="flex flex-col justify-between gap-4 p-4 sm:flex-row sm:items-end sm:p-5">
-          <div className="min-w-0 flex-1 space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
+        <div className="flex flex-col justify-between gap-3 p-3.5 sm:flex-row sm:items-end sm:gap-4 sm:p-5">
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-400">
               {eyebrow}
             </p>
-            <h1 className="text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
+            <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
               {title}
             </h1>
 
-            {/* Dynamic Motivational Quote + Quick Controls */}
+            {/* Dynamic Motivational Quote + Compact Single-Row Controls */}
             <div className="space-y-2 pt-0.5">
-              <p className="text-xs leading-relaxed text-zinc-300 sm:text-sm">
+              <p className="line-clamp-2 text-xs leading-relaxed text-zinc-400 sm:text-sm">
                 &ldquo;{activeQuoteText}&rdquo;
               </p>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={handleRotateQuote}
-                  className="inline-flex h-7 items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 text-[11px] font-medium text-zinc-400 transition hover:border-white/25 hover:text-white"
+                  title="Cambiar frase"
+                  aria-label="Cambiar frase"
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:border-white/25 hover:text-white"
                 >
                   <RefreshCw className="h-3 w-3 text-emerald-400" />
-                  Nueva frase
                 </button>
                 <button
                   type="button"
@@ -271,7 +272,7 @@ export function DynamicBannerHeader({
                   className="inline-flex h-7 items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 text-[11px] font-medium text-zinc-400 transition hover:border-white/25 hover:text-white"
                 >
                   <PencilLine className="h-3 w-3" />
-                  Personalizar frase
+                  Frase
                 </button>
                 <button
                   type="button"
@@ -289,7 +290,7 @@ export function DynamicBannerHeader({
           </div>
 
           {actions && (
-            <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <div className="flex w-full shrink-0 items-center gap-2 pt-1 sm:w-auto sm:pt-0">
               {actions}
             </div>
           )}

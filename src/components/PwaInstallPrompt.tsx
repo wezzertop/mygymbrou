@@ -24,7 +24,7 @@ export function PwaInstallPrompt() {
 export function PwaInstallButton({
   variant = "icon",
 }: {
-  variant?: "icon" | "sidebar";
+  variant?: "icon" | "sidebar" | "menu";
 }) {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
@@ -87,6 +87,15 @@ export function PwaInstallButton({
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[13px] font-medium text-zinc-400 transition hover:bg-white/[0.04] hover:text-emerald-400"
         >
           <Download className="h-[17px] w-[17px] text-emerald-400" />
+          <span>Instalar App</span>
+        </button>
+      ) : variant === "menu" ? (
+        <button
+          type="button"
+          onClick={handleInstallClick}
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-zinc-200 transition hover:bg-white/[0.06]"
+        >
+          <Download className="h-4 w-4 text-emerald-400" />
           <span>Instalar App</span>
         </button>
       ) : (

@@ -198,14 +198,11 @@ function CoachStudentsContent() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-extrabold text-white">Mis Alumnos</h1>
-          <p className="text-sm text-zinc-400">
-            Invita alumnos por correo y accede a su expediente 360°.
-          </p>
-        </div>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          Alumnos
+        </h1>
         <button
           type="button"
           onClick={() => {
@@ -213,33 +210,33 @@ function CoachStudentsContent() {
             setInviteError(null);
             setModalOpen(true);
           }}
-          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98]"
+          className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-white px-4 text-xs font-bold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98]"
         >
           <UserPlus className="h-4 w-4" />
-          Invitar Alumno por Correo
+          Invitar alumno
         </button>
       </div>
 
       {/* Live Plan Quota & Roster Counter Bar */}
-      <div className="flex flex-col justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-3.5 sm:flex-row sm:items-center sm:p-4">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
               {currentSaasPlan.name}
             </span>
-            <span className="text-xs font-semibold text-white">
-              {activeCount} activos · {pendingCount} invitación(es) pendiente(s)
+            <span className="text-xs font-medium text-zinc-200">
+              {activeCount} activos · {pendingCount} pendientes
             </span>
           </div>
           <p className="text-[11px] text-zinc-400">
             {quota.limit === null
-              ? "Tu plan Estudio / Gym incluye cupo ilimitado de alumnos."
-              : `Cupo utilizado: ${occupiedSlots} de ${quota.limit} alumnos (${quota.remaining} disponibles).`}
+              ? "Cupo ilimitado de alumnos."
+              : `Cupo: ${occupiedSlots} de ${quota.limit} alumnos`}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3 sm:justify-end">
           {quota.limit !== null && (
-            <div className="w-32 sm:w-40">
+            <div className="flex-1 sm:w-36 sm:flex-none">
               <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
                 <div
                   className={`h-full rounded-full transition-all ${
@@ -247,7 +244,7 @@ function CoachStudentsContent() {
                       ? "bg-rose-500"
                       : occupiedSlots / quota.limit >= 0.8
                       ? "bg-amber-400"
-                      : "bg-white hover:bg-zinc-200"
+                      : "bg-emerald-400"
                   }`}
                   style={{
                     width: `${Math.min(
@@ -261,9 +258,9 @@ function CoachStudentsContent() {
           )}
           <Link
             href="/coach/plans?tab=saas"
-            className="shrink-0 rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-[11px] font-bold text-emerald-300 transition hover:border-white/25"
+            className="shrink-0 whitespace-nowrap rounded-lg border border-white/15 bg-[#060607] px-3 py-1.5 text-[11px] font-semibold text-emerald-300 transition hover:border-white/25"
           >
-            {quota.allowed ? "Ver mi plan" : "Ampliar cupo"}
+            {quota.allowed ? "Mi plan" : "Ampliar"}
           </Link>
         </div>
       </div>
@@ -347,7 +344,7 @@ function CoachStudentsContent() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar alumno por nombre o correo..."
+            placeholder="Buscar alumno..."
             className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-emerald-500/60"
           />
           {query && (
@@ -364,14 +361,11 @@ function CoachStudentsContent() {
         <div className="no-scrollbar flex max-w-full gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {(
             [
-              { key: "active", label: `Alumnos Activos (${activeCount})` },
-              {
-                key: "pending",
-                label: `Invitaciones Pendientes (${pendingCount})`,
-              },
+              { key: "active", label: `Activos (${activeCount})` },
+              { key: "pending", label: `Pendientes (${pendingCount})` },
               { key: "expiring", label: "Por vencer" },
               { key: "verified", label: "Verificados" },
-              { key: "to_verify", label: "Por verificar" },
+              { key: "to_verify", label: "Sin verificar" },
               { key: "all", label: "Todos" },
             ] as const
           ).map((tab) => (
@@ -379,7 +373,7 @@ function CoachStudentsContent() {
               key={tab.key}
               type="button"
               onClick={() => setFilter(tab.key)}
-              className={`h-9 shrink-0 rounded-lg px-3.5 text-xs font-medium transition ${
+              className={`h-9 shrink-0 whitespace-nowrap rounded-lg px-3 text-xs font-medium transition ${
                 filter === tab.key
                   ? "bg-emerald-500 text-zinc-950 font-semibold"
                   : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:border-white/25 hover:text-white"
@@ -439,7 +433,7 @@ function CoachStudentsContent() {
                 </div>
 
                 <span
-                  className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${
+                  className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-bold ${
                     isPending
                       ? "bg-amber-500/15 text-amber-300"
                       : st.subscription_status === "active"
@@ -448,16 +442,16 @@ function CoachStudentsContent() {
                   }`}
                 >
                   {isPending
-                    ? "Pendiente correo"
+                    ? "Pendiente"
                     : st.subscription_status === "active"
-                    ? "Suscripción Activa"
+                    ? "Activo"
                     : "Pago pendiente"}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between border-t border-white/[0.08] pt-3 text-xs">
-                <div>
-                  <p className="font-semibold text-zinc-200">
+              <div className="flex items-center justify-between gap-3 border-t border-white/[0.08] pt-3 text-xs">
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-zinc-200">
                     {st.subscription_plan_name}
                   </p>
                   <p className="text-[11px] text-zinc-400">
@@ -468,18 +462,18 @@ function CoachStudentsContent() {
                 {st.student_id ? (
                   <Link
                     href={`/coach/students/${st.student_id}`}
-                    className="rounded-xl bg-white/[0.06] px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-white text-zinc-950 hover:text-zinc-950"
+                    className="shrink-0 whitespace-nowrap rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500 hover:text-zinc-950"
                   >
-                    Expediente 360°
+                    Ver expediente
                   </Link>
                 ) : (
                   <Link
                     href={`/auth/activate?token=${st.invite_token}&email=${encodeURIComponent(
                       st.invited_email
                     )}&name=${encodeURIComponent(st.invited_name)}`}
-                    className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20"
+                    className="shrink-0 whitespace-nowrap rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20"
                   >
-                    Abrir Enlace Activación
+                    Enlace
                   </Link>
                 )}
               </div>

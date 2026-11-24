@@ -149,22 +149,22 @@ export default function CoachDashboardPage() {
           <>
             <Link
               href="/coach/plans?tab=saas"
-              className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-[#060607] px-4 text-xs font-medium text-zinc-300 transition hover:border-white/25 hover:text-white"
+              className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-[#060607] px-3 text-xs font-medium text-zinc-300 transition hover:border-white/25 hover:text-white sm:h-10 sm:flex-none sm:px-4"
             >
-              <span>{currentSaasPlan.name}</span>
-              <span className="h-1 w-1 rounded-full bg-zinc-600" />
-              <span className="font-semibold tabular-nums text-emerald-400">
+              <span className="truncate">{currentSaasPlan.name}</span>
+              <span className="h-1 w-1 shrink-0 rounded-full bg-zinc-600" />
+              <span className="shrink-0 font-semibold tabular-nums text-emerald-400">
                 {quota.limit === null
-                  ? `${occupiedSlots} / ∞`
-                  : `${occupiedSlots} / ${quota.limit}`}
+                  ? `${occupiedSlots}/∞`
+                  : `${occupiedSlots}/${quota.limit}`}
               </span>
             </Link>
             <Link
               href="/coach/students?invite=true"
-              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98]"
+              className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98] sm:h-10 sm:flex-none sm:px-5"
             >
-              <UserPlus className="h-3.5 w-3.5" />
-              Invitar Alumno
+              <UserPlus className="h-3.5 w-3.5 shrink-0" />
+              Invitar
             </Link>
           </>
         }

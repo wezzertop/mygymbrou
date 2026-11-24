@@ -36,6 +36,7 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const {
     coachProfile,
     students,
@@ -257,60 +258,128 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex min-h-screen w-full min-w-0 flex-1 flex-col lg:pl-64">
         {/* Mobile Top Bar */}
-        <header className="sticky top-0 z-30 flex min-h-[56px] w-full items-center justify-between border-b border-white/[0.06] bg-[#060607]/85 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-xl lg:hidden">
-          <Link href="/coach" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-zinc-950">
+        <header className="sticky top-0 z-30 flex min-h-[56px] w-full items-center justify-between gap-3 border-b border-white/[0.06] bg-[#060607]/90 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-xl lg:hidden">
+          <Link href="/coach" className="flex min-w-0 items-center gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-zinc-950">
               <Dumbbell className="h-4 w-4 stroke-[2.25]" />
             </span>
-            <span className="text-[15px] font-semibold tracking-tight text-white">
+            <span className="truncate text-[15px] font-semibold tracking-tight text-white">
               MiGym<span className="text-emerald-400">Brou</span>
             </span>
-            <span
-              className={`rounded-md border px-2 py-0.5 text-[10px] font-semibold ${
-                isDemoView
-                  ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
-                  : "border-white/10 bg-white/[0.04] text-zinc-400"
-              }`}
-            >
-              {isDemoView ? "DEMO" : "Coach"}
-            </span>
+            {isDemoView && (
+              <span className="shrink-0 rounded-md border border-amber-500/40 bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300">
+                DEMO
+              </span>
+            )}
           </Link>
 
-          <div className="flex items-center gap-1.5">
-            <PwaInstallButton variant="icon" />
+          <div className="flex shrink-0 items-center gap-2.5">
             <SmartNotificationsCenter role="coach" />
-            <button
-              type="button"
-              onClick={() => resetOnboarding("coach")}
-              aria-label="Abrir tutorial guiado"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:text-white"
-            >
-              <HelpCircle className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              disabled={signingOut}
-              onClick={handleLogout}
-              aria-label={isDemoView ? "Salir de la Demo" : "Cerrar sesión"}
-              title={isDemoView ? "Salir de la Demo" : "Cerrar sesión"}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-            <Link
-              href="/coach/profile"
-              aria-label="Perfil Coach"
-              className="rounded-full ring-1 ring-white/20"
-            >
-              <img
-                src={
-                  coachProfile.avatar_url ||
-                  "https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=128&q=80"
-                }
-                alt={coachProfile.full_name}
-                className="h-8 w-8 rounded-full object-cover"
-              />
-            </Link>
+
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setAccountMenuOpen((o) => !o)}
+                aria-label="Menú de cuenta Coach"
+                aria-expanded={accountMenuOpen}
+                className="flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-white/20 transition hover:ring-emerald-400/60"
+              >
+                <img
+                  src={
+                    coachProfile.avatar_url ||
+                    "https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=128&q=80"
+                  }
+                  alt={coachProfile.full_name}
+                  className="h-9 w-9 rounded-full object-cover"
+                />
+              </button>
+
+              {accountMenuOpen && (
+                <>
+                  <div
+                    aria-hidden="true"
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="fixed inset-0 z-40"
+                  />
+                  <div className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-xl border border-white/10 bg-[#0e0f12] p-1.5 shadow-2xl">
+                    <div className="border-b border-white/[0.06] px-3 py-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <p className="truncate text-xs font-semibold text-white">
+                          {coachProfile.full_name}
+                        </p>
+                        <VerifiedPersonBadge
+                          verified={coachProfile.is_verified_identity}
+                          compact
+                        />
+                      </div>
+                      <p className="mt-0.5 truncate text-[11px] text-zinc-400">
+                        {isDemoView ? "Demo Coach" : "Panel Coach"}
+                      </p>
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        href="/coach/profile"
+                        onClick={() => setAccountMenuOpen(false)}
+                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.06]"
+                      >
+                        <UserCircle2 className="h-4 w-4 text-emerald-400" />
+                        Perfil y Diplomas
+                      </Link>
+                      <Link
+                        href="/coach/calendar"
+                        onClick={() => setAccountMenuOpen(false)}
+                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.06]"
+                      >
+                        <CalendarDays className="h-4 w-4 text-zinc-400" />
+                        Calendario
+                      </Link>
+                      <PwaInstallButton variant="menu" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccountMenuOpen(false);
+                          resetOnboarding("coach");
+                        }}
+                        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-zinc-200 transition hover:bg-white/[0.06]"
+                      >
+                        <HelpCircle className="h-4 w-4 text-zinc-400" />
+                        Tutorial guiado
+                      </button>
+                      {isDemoMode && (
+                        <Link
+                          href="/student"
+                          onClick={() => setAccountMenuOpen(false)}
+                          className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.06]"
+                        >
+                          <Smartphone className="h-4 w-4 text-emerald-400" />
+                          Ver App Alumno
+                        </Link>
+                      )}
+                    </div>
+
+                    <div className="border-t border-white/[0.06] pt-1">
+                      <button
+                        type="button"
+                        disabled={signingOut}
+                        onClick={() => {
+                          setAccountMenuOpen(false);
+                          handleLogout();
+                        }}
+                        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-rose-300 transition hover:bg-rose-500/10 disabled:opacity-50"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        {signingOut
+                          ? "Saliendo..."
+                          : isDemoView
+                          ? "Salir de la Demo"
+                          : "Cerrar sesión"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </header>
 

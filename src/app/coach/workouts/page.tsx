@@ -319,52 +319,47 @@ export default function CoachWorkoutsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-extrabold text-white">
-            Rutinas con Secuencia Anatómica
-          </h1>
-          <p className="text-sm text-zinc-400">
-            Previsualiza secuencias de 3–4 fotogramas en Dark UI por género
-            (Mujer/Hombre) y arma rutinas en segundos.
-          </p>
-        </div>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          Rutinas
+        </h1>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2">
           {/* Gender Preview Switcher */}
           <div className="flex flex-1 rounded-lg border border-white/10 bg-[#060607] p-1 text-xs font-medium sm:flex-none">
             <button
               type="button"
               onClick={() => setPreviewGender("female")}
-              className={`flex-1 rounded-md px-3.5 py-1.5 transition sm:flex-none ${
+              className={`flex-1 whitespace-nowrap rounded-md px-3 py-1.5 transition sm:flex-none ${
                 previewGender === "female"
                   ? "bg-emerald-500 text-zinc-950 font-semibold"
                   : "text-zinc-400 hover:text-white"
               }`}
             >
-              Vista Mujer
+              Mujer
             </button>
             <button
               type="button"
               onClick={() => setPreviewGender("male")}
-              className={`flex-1 rounded-md px-3.5 py-1.5 transition sm:flex-none ${
+              className={`flex-1 whitespace-nowrap rounded-md px-3 py-1.5 transition sm:flex-none ${
                 previewGender === "male"
                   ? "bg-emerald-500 text-zinc-950 font-semibold"
                   : "text-zinc-400 hover:text-white"
               }`}
             >
-              Vista Hombre
+              Hombre
             </button>
           </div>
 
           <button
             type="button"
             onClick={() => setCustomModalOpen(true)}
-            className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-emerald-500/40 hover:text-white sm:flex-none"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-white/15 bg-[#0e0f12] px-3.5 text-xs font-medium text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
           >
             <Upload className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
-            <span className="truncate">Subir Secuencia</span>
+            <span>Subir</span>
+            <span className="hidden sm:inline">secuencia</span>
           </button>
         </div>
       </div>
@@ -377,12 +372,12 @@ export default function CoachWorkoutsPage() {
       )}
 
       {/* Clean Top Navigation Tabs + Instant Assign Trigger */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 gap-1.5">
           <button
             type="button"
             onClick={() => setViewTab("catalog")}
-            className={`inline-flex h-10 items-center rounded-lg px-4 text-xs font-medium transition ${
+            className={`inline-flex h-9 items-center whitespace-nowrap rounded-lg px-3 text-xs font-medium transition sm:h-10 sm:px-4 ${
               viewTab === "catalog"
                 ? "bg-emerald-500 text-zinc-950 font-semibold"
                 : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:text-white"
@@ -393,23 +388,23 @@ export default function CoachWorkoutsPage() {
           <button
             type="button"
             onClick={() => setViewTab("templates")}
-            className={`inline-flex h-10 items-center rounded-lg px-4 text-xs font-medium transition ${
+            className={`inline-flex h-9 items-center whitespace-nowrap rounded-lg px-3 text-xs font-medium transition sm:h-10 sm:px-4 ${
               viewTab === "templates"
                 ? "bg-emerald-500 text-zinc-950 font-semibold"
                 : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:text-white"
             }`}
           >
-            Mis Rutinas ({workouts.length})
+            Rutinas ({workouts.length})
           </button>
         </div>
 
         <button
           type="button"
           onClick={() => setBuilderModalOpen(true)}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
+          className="inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-white px-3.5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 sm:h-10 sm:px-4"
         >
           <Send className="h-3.5 w-3.5" />
-          Asignar rutina
+          <span>Asignar</span>
           {draftExercises.length > 0 && (
             <span className="flex h-5 min-w-5 items-center justify-center rounded-md bg-emerald-500 px-1.5 text-[10px] font-bold text-zinc-950">
               {draftExercises.length}
@@ -782,7 +777,7 @@ export default function CoachWorkoutsPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar ejercicio, músculo o equipo..."
+              placeholder="Buscar ejercicio o músculo..."
               className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-9 pr-9 text-xs text-white outline-none transition focus:border-emerald-500/60"
             />
             {search && (
@@ -815,20 +810,12 @@ export default function CoachWorkoutsPage() {
             ))}
           </div>
 
-          {/* Catalog Count & Live API Indicator */}
-          <div className="flex items-center justify-between text-[11px] text-zinc-400">
-            <span>
-              Catálogo en vivo:{" "}
-              <strong className="text-white">{filteredCatalog.length}</strong>{" "}
-              ejercicios en {groupFilter}
-            </span>
-            {loadingCatalog && (
-              <span className="inline-flex items-center gap-1 text-emerald-400">
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Cargando...
-              </span>
-            )}
-          </div>
+          {loadingCatalog && (
+            <div className="flex items-center gap-1.5 text-[11px] text-emerald-400">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Cargando catálogo...
+            </div>
+          )}
 
           {/* Exercise Grid */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

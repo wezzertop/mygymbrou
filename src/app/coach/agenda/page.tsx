@@ -85,21 +85,17 @@ function CoachAgendaContent() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-extrabold text-white">Agenda de Citas</h1>
-          <p className="text-sm text-zinc-400">
-            Programa evaluaciones presenciales u online. Cada cita notifica
-            automáticamente al alumno.
-          </p>
-        </div>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+          Agenda
+        </h1>
         <Link
           href="/coach/calendar"
-          className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-[#0e0f12] px-3.5 py-2 text-xs font-bold text-zinc-200 transition hover:border-white/25 hover:text-white"
+          className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-white/15 bg-[#0e0f12] px-3.5 text-xs font-semibold text-zinc-200 transition hover:border-white/25 hover:text-white"
         >
           <CalendarDays className="h-4 w-4 text-emerald-400" />
-          Ver en Calendario
+          Calendario
         </Link>
       </div>
 
@@ -114,11 +110,11 @@ function CoachAgendaContent() {
         {/* New Appointment Form */}
         <form
           onSubmit={handleSchedule}
-          className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
+          className="min-w-0 space-y-3.5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:space-y-4 sm:p-5 lg:col-span-5"
         >
           <h2 className="flex items-center gap-2 text-base font-bold text-white">
             <CalendarPlus className="h-4 w-4 text-emerald-400" />
-            Programar Nueva Cita
+            Nueva cita
           </h2>
 
           {appointmentLimitReached && (
@@ -159,14 +155,14 @@ function CoachAgendaContent() {
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-zinc-300">
-              Motivo de la cita *
+              Motivo *
             </label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ej. Toma de medidas y ajuste de dieta"
+              placeholder="Ej. Toma de medidas"
               className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
             />
           </div>
@@ -186,27 +182,27 @@ function CoachAgendaContent() {
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-zinc-300">
-              Ubicación o Enlace Online *
+              Ubicación o enlace *
             </label>
             <input
               type="text"
               required
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Consultorio o link de Google Meet / Zoom"
+              placeholder="Consultorio o enlace de Meet / Zoom"
               className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-zinc-300">
-              Indicaciones previas
+              Notas previas
             </label>
             <textarea
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Ej. Ropa deportiva ligera y 2h de ayuno."
+              placeholder="Ej. Ropa ligera y 2h de ayuno."
               className="w-full rounded-xl border border-white/15 bg-[#060607] p-3 text-xs text-white"
             />
           </div>
@@ -214,11 +210,11 @@ function CoachAgendaContent() {
           <button
             type="submit"
             disabled={activeStudents.length === 0}
-            className="min-h-[42px] w-full rounded-xl bg-white hover:bg-zinc-200 py-3 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98] disabled:opacity-40"
+            className="min-h-[42px] w-full rounded-xl bg-white py-3 text-xs font-bold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-40"
           >
             {activeStudents.length === 0
-              ? "Activa un alumno primero para agendar"
-              : "Agendar y Notificar Alumno"}
+              ? "Activa un alumno primero"
+              : "Agendar cita"}
           </button>
         </form>
 
