@@ -100,20 +100,55 @@ export default function TerminosPage() {
                 Pesos Mexicanos (MXN) con IVA incluido
               </strong>
               . El plan <em>Inicio / Free</em> (hasta 5 alumnos activos) incluye espacios
-              publicitarios discretos en la app; los planes de pago (<em>Coach Base</em>,{" "}
-              <em>Coach Pro</em> y <em>Estudio / Gym</em>) ofrecen experiencia{" "}
-              <strong className="text-emerald-400">0% publicidad</strong> para el Coach y
-              sus alumnos vinculados.
+              publicitarios discretos en la app; los planes de pago (<em>Coach Base</em>{" "}
+              hasta 15 alumnos, <em>Coach Pro</em> hasta 50 alumnos y{" "}
+              <em>Estudio / Gym</em> hasta 150 alumnos y 5 coaches base) ofrecen
+              experiencia <strong className="text-emerald-400">0% publicidad</strong> para
+              el Coach y sus alumnos vinculados.
             </p>
           </div>
         </section>
 
-        {/* 2. Independencia del Convenio */}
+        {/* 2. Modificación de Precios, Planes y Funcionalidades */}
+        <section className="space-y-3 rounded-xl border border-emerald-500/25 bg-[#0e0f12] p-6 sm:p-8">
+          <div className="flex items-center gap-2.5">
+            <Scale className="h-5 w-5 shrink-0 text-emerald-400" />
+            <h2 className="text-lg font-semibold text-white sm:text-xl">
+              2. Modificación de Precios, Planes y Funcionalidades
+            </h2>
+          </div>
+          <div className="space-y-3 text-xs leading-relaxed text-zinc-400 sm:text-sm">
+            <p>
+              Los precios, tarifas en MXN, límites de cupo, estructura de planes y
+              funcionalidades disponibles dentro de{" "}
+              <strong className="text-zinc-200">MiGymBrou</strong> están sujetos a las
+              reglas comerciales y criterios operativos de la plataforma. MiGymBrou se
+              reserva el derecho de ajustar precios, actualizar características, añadir o
+              retirar módulos y redefinir las condiciones de cada plan en cualquier
+              momento conforme a la evolución tecnológica y operativa del servicio.
+            </p>
+            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-4 text-zinc-200">
+              <strong className="text-emerald-400">
+                Garantía de respeto al corte vigente:
+              </strong>{" "}
+              si ya contrataste y pagaste un plan mensual y durante tu periodo activo se
+              modifican las tarifas o las reglas de dicho plan,{" "}
+              <strong>
+                MiGymBrou respetará íntegramente tu precio y tus beneficios contratados
+                hasta la fecha de término de tu ciclo mensual en curso (tu corte)
+              </strong>
+              . Cualquier cambio de tarifa o condiciones aplicará únicamente a partir de
+              la siguiente renovación.
+            </div>
+          </div>
+        </section>
+
+        {/* 3. Independencia del Convenio */}
         <section className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8">
           <div className="flex items-center gap-2.5">
             <Scale className="h-5 w-5 shrink-0 text-emerald-400" />
             <h2 className="text-lg font-semibold text-white sm:text-xl">
-              2. Independencia del Convenio entre Coach y Alumno
+              3. Independencia del Convenio entre Coach y Alumno
             </h2>
           </div>
           <div className="space-y-3 text-xs leading-relaxed text-zinc-400 sm:text-sm">
@@ -136,12 +171,12 @@ export default function TerminosPage() {
           </div>
         </section>
 
-        {/* 3. Titularidad vs Vinculación */}
+        {/* 4. Titularidad vs Vinculación */}
         <section className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8">
           <div className="flex items-center gap-2.5">
             <UserCheck className="h-5 w-5 shrink-0 text-emerald-400" />
             <h2 className="text-lg font-semibold text-white sm:text-xl">
-              3. Titularidad de Cuenta vs. Vinculación Activa
+              4. Titularidad de Cuenta vs. Vinculación Activa
             </h2>
           </div>
           <div className="space-y-3 text-xs leading-relaxed text-zinc-400 sm:text-sm">
@@ -162,12 +197,12 @@ export default function TerminosPage() {
           </div>
         </section>
 
-        {/* 4. Deslinde Médico */}
+        {/* 5. Deslinde Médico */}
         <section className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8">
           <div className="flex items-center gap-2.5">
             <ShieldAlert className="h-5 w-5 shrink-0 text-emerald-400" />
             <h2 className="text-lg font-semibold text-white sm:text-xl">
-              4. Deslinde de Responsabilidad Física y Médica
+              5. Deslinde de Responsabilidad Física y Médica
             </h2>
           </div>
           <div className="space-y-3 text-xs leading-relaxed text-zinc-400 sm:text-sm">
@@ -189,12 +224,12 @@ export default function TerminosPage() {
           </div>
         </section>
 
-        {/* 5. Propiedad Intelectual y Sanciones */}
+        {/* 6. Propiedad Intelectual y Sanciones */}
         <section className="space-y-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-8">
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-400" />
             <h2 className="text-lg font-semibold text-white sm:text-xl">
-              5. Propiedad Intelectual, Uso Aceptable y Sanciones
+              6. Propiedad Intelectual, Uso Aceptable y Sanciones
             </h2>
           </div>
           <div className="space-y-3 text-xs leading-relaxed text-zinc-400 sm:text-sm">

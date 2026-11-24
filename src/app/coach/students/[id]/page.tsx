@@ -14,8 +14,10 @@ import {
   CreditCard,
   Dumbbell,
   Eye,
+  FileDown,
   Plus,
   Save,
+  Share2,
   ShieldCheck,
   Target,
   UserMinus,
@@ -30,6 +32,11 @@ import {
   VerificationStatusPill,
   VerifiedPersonBadge,
 } from "@/components/VerificationBadge";
+import {
+  buildFriendlyShareSummary,
+  exportStudentPdf,
+  PdfExportSection,
+} from "@/lib/pdf-export";
 
 type TabKey = "assessment" | "workout" | "diet" | "subscription";
 
@@ -77,6 +84,7 @@ export default function Student360Page() {
     studentGoals,
     subscriptionPlans,
     assessments,
+    appointments,
     workouts,
     nutritionPlans,
     addAssessment,
@@ -89,6 +97,7 @@ export default function Student360Page() {
   } = useApp();
 
   const [showIdPreview, setShowIdPreview] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
   const [endModalOpen, setEndModalOpen] = useState(false);
   const [endReason, setEndReason] = useState("");
 
@@ -132,6 +141,59 @@ export default function Student360Page() {
     (n) => n.student_id === studentId && n.is_active
   );
   const dietTemplates = nutritionPlans.filter((n) => n.is_template);
+  const studentAppointments = useMemo(
+    () => appointments.filter((a) => a.student_id === studentId),
+    [appointments, studentId]
+  );
+
+  const handleExportPdf = (section: PdfExportSection) => {
+    if (!student) return;
+    exportStudentPdf({
+      section,
+      coach: coachProfile,
+      student,
+      workout: activeWorkout,
+      diet: activeDiet,
+      assessments: studentAssessments,
+      appointments: studentAppointments,
+    });
+    setExportModalOpen(false);
+    showToast("Documento PDF listo para guardar o compartir.");
+  };
+
+  const handleShareFriendly = async (viaWhatsApp = false) => {
+    if (!student) return;
+    const text = buildFriendlyShareSummary({
+      section: "full",
+      coach: coachProfile,
+      student,
+      workout: activeWorkout,
+      diet: activeDiet,
+      assessments: studentAssessments,
+      appointments: studentAppointments,
+    });
+    if (viaWhatsApp) {
+      window.open(
+        `https://wa.me/?text=${encodeURIComponent(text)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+      return;
+    }
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: `Resumen de ${student.invited_name} — MiGymBrou`,
+          text,
+        });
+        return;
+      } catch {
+        // user cancelled or fallback to clipboard
+      }
+    }
+    navigator.clipboard?.writeText(text);
+    showToast("Resumen copiado. Ya puedes pegarlo y enviarlo a tu alumno.");
+  };
 
   // Assessment form state
   const [form, setForm] = useState({
@@ -276,6 +338,14 @@ export default function Student360Page() {
           </div>
 
           <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setExportModalOpen(true)}
+              className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl border border-emerald-500/35 bg-emerald-500/15 px-3.5 py-2.5 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500 hover:text-[#0a0a0a] active:scale-[0.98]"
+            >
+              <FileDown className="h-4 w-4" />
+              Exportar PDF
+            </button>
             <Link
               href={`/coach/agenda?student=${studentId}`}
               className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-[#060607] px-4 py-2.5 text-xs font-bold text-zinc-200 transition hover:border-white/25 hover:text-white active:scale-[0.98]"
@@ -310,6 +380,120 @@ export default function Student360Page() {
               )}
           </div>
         </div>
+
+        {/* Export PDF & Friendly Share Modal */}
+        {exportModalOpen && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Exportar PDF del alumno"
+            onClick={() => setExportModalOpen(false)}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md space-y-4 rounded-xl border border-white/10 bg-[#0e0f12] p-5 shadow-2xl"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-white">
+                    Exportar y compartir PDF
+                  </h2>
+                  <p className="mt-0.5 text-xs text-zinc-400">
+                    Genera documentos profesionales de{" "}
+                    <strong className="text-white">{student.invited_name}</strong>{" "}
+                    con tu marca de Coach.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setExportModalOpen(false)}
+                  aria-label="Cerrar"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => handleExportPdf("full")}
+                  className="flex w-full items-center justify-between rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-left transition hover:bg-emerald-500/20"
+                >
+                  <div>
+                    <p className="text-xs font-bold text-emerald-300">
+                      Expediente Completo 360° (PDF)
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      Progreso, rutina, dieta y citas en un solo reporte
+                    </p>
+                  </div>
+                  <FileDown className="h-4 w-4 shrink-0 text-emerald-400" />
+                </button>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleExportPdf("workout")}
+                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
+                  >
+                    <Dumbbell className="h-4 w-4 shrink-0 text-emerald-400" />
+                    Solo Rutina
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExportPdf("diet")}
+                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
+                  >
+                    <Utensils className="h-4 w-4 shrink-0 text-emerald-400" />
+                    Solo Dieta
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExportPdf("progress")}
+                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
+                  >
+                    <Activity className="h-4 w-4 shrink-0 text-emerald-400" />
+                    Solo Progreso
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExportPdf("appointments")}
+                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
+                  >
+                    <Calendar className="h-4 w-4 shrink-0 text-emerald-400" />
+                    Solo Citas
+                  </button>
+                </div>
+              </div>
+
+              <div className="border-t border-white/[0.08] pt-3">
+                <p className="mb-2 text-[11px] font-medium text-zinc-400">
+                  Compartir resumen rápido con el alumno:
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleShareFriendly(true)}
+                    className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-emerald-500 text-xs font-bold text-[#0a0a0a] transition hover:bg-emerald-400"
+                  >
+                    <Share2 className="h-3.5 w-3.5" />
+                    WhatsApp
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleShareFriendly(false)}
+                    className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/[0.04] text-xs font-semibold text-zinc-200 transition hover:border-white/30 hover:text-white"
+                  >
+                    <Share2 className="h-3.5 w-3.5 text-emerald-400" />
+                    Compartir / Copiar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Confirm End Coaching Modal */}
         {endModalOpen && (
