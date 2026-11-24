@@ -183,7 +183,7 @@ function AuthLoginContent() {
                   type="button"
                   onClick={handleResendConfirmation}
                   disabled={resending}
-                  className="font-bold text-cyan-300 underline hover:text-cyan-200 disabled:opacity-60"
+                  className="font-bold text-emerald-400 underline hover:text-emerald-300 disabled:opacity-60"
                 >
                   {resending
                     ? "Reenviando correo..."
@@ -223,7 +223,7 @@ function AuthLoginContent() {
                 </label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-xs font-medium text-cyan-400 hover:text-cyan-300"
+                  className="text-xs font-medium text-emerald-400 transition hover:text-emerald-300"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
@@ -256,7 +256,7 @@ function AuthLoginContent() {
             <button
               type="submit"
               disabled={loading}
-              className="h-12 w-full rounded-full bg-white text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-60"
+              className="h-12 w-full rounded-full bg-emerald-500 text-sm font-bold text-[#0a0a0a] transition hover:bg-emerald-400 disabled:opacity-60"
             >
               {loading
                 ? "Ingresando..."
@@ -273,7 +273,7 @@ function AuthLoginContent() {
                 ¿Eres entrenador y aún no tienes cuenta?{" "}
                 <Link
                   href="/auth/register-coach"
-                  className="font-bold text-cyan-400 hover:underline"
+                  className="font-bold text-emerald-400 transition hover:text-emerald-300 hover:underline"
                 >
                   Registrarme como Coach
                 </Link>
@@ -305,7 +305,7 @@ function AuthLoginContent() {
         </div>
 
         <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-zinc-500">
-          <ShieldCheck className="h-3.5 w-3.5 text-cyan-500" />
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
           {isSupabaseConfigured()
             ? "Autenticación protegida por Supabase Auth + RLS"
             : "Modo Demo local activo — Puedes entrar directamente con las credenciales precargadas"}

@@ -11,6 +11,7 @@ import {
   Mail,
   Search,
   Send,
+  UserMinus,
   UserPlus,
   X,
 } from "lucide-react";
@@ -30,7 +31,8 @@ type FilterStatus =
   | "pending"
   | "expiring"
   | "verified"
-  | "to_verify";
+  | "to_verify"
+  | "ended";
 
 function CoachStudentsContent() {
   const searchParams = useSearchParams();
@@ -40,6 +42,7 @@ function CoachStudentsContent() {
     coachProfile,
     coachInquiries,
     inviteStudent,
+    endStudentCoaching,
     respondToCoachInquiry,
   } = useApp();
 
@@ -76,9 +79,18 @@ function CoachStudentsContent() {
     message?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [endingRelation, setEndingRelation] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [endReason, setEndReason] = useState("");
+  const [statusToast, setStatusToast] = useState<string | null>(null);
 
   const activeCount = students.filter((s) => s.invite_status === "active").length;
   const pendingCount = students.filter((s) => s.invite_status === "pending").length;
+  const endedCount = students.filter(
+    (s) => s.invite_status === "finalizado" || s.invite_status === "inactive"
+  ).length;
   const occupiedSlots = activeCount + pendingCount;
   const currentSaasPlan = getSaasPlanById(coachProfile.saas_plan_tier);
   const quota = canInviteMoreStudents(
@@ -123,6 +135,8 @@ function CoachStudentsContent() {
       return s.invite_status === "active" && Boolean(s.is_verified_identity);
     if (filter === "to_verify")
       return s.invite_status === "active" && !s.is_verified_identity;
+    if (filter === "ended")
+      return s.invite_status === "finalizado" || s.invite_status === "inactive";
     return true;
   });
 
@@ -336,6 +350,13 @@ function CoachStudentsContent() {
         </section>
       )}
 
+      {statusToast && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          {statusToast}
+        </div>
+      )}
+
       {/* Search & Filter */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
@@ -366,6 +387,7 @@ function CoachStudentsContent() {
               { key: "expiring", label: "Por vencer" },
               { key: "verified", label: "Verificados" },
               { key: "to_verify", label: "Sin verificar" },
+              { key: "ended", label: `Finalizados (${endedCount})` },
               { key: "all", label: "Todos" },
             ] as const
           ).map((tab) => (
@@ -389,6 +411,8 @@ function CoachStudentsContent() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {filtered.map((st) => {
           const isPending = st.invite_status === "pending";
+          const isEnded =
+            st.invite_status === "finalizado" || st.invite_status === "inactive";
           return (
             <div
               key={st.id}
@@ -434,14 +458,18 @@ function CoachStudentsContent() {
 
                 <span
                   className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-bold ${
-                    isPending
+                    isEnded
+                      ? "bg-zinc-500/15 text-zinc-400"
+                      : isPending
                       ? "bg-amber-500/15 text-amber-300"
                       : st.subscription_status === "active"
                       ? "bg-emerald-500/15 text-emerald-300"
                       : "bg-rose-500/15 text-rose-300"
                   }`}
                 >
-                  {isPending
+                  {isEnded
+                    ? "Finalizado"
+                    : isPending
                     ? "Pendiente"
                     : st.subscription_status === "active"
                     ? "Activo"
@@ -449,33 +477,51 @@ function CoachStudentsContent() {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between gap-3 border-t border-white/[0.08] pt-3 text-xs">
+              <div className="flex items-center justify-between gap-2 border-t border-white/[0.08] pt-3 text-xs">
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-zinc-200">
                     {st.subscription_plan_name}
                   </p>
                   <p className="text-[11px] text-zinc-400">
-                    ${st.subscription_price}/mes · Corte: {st.next_billing_date}
+                    {isEnded && st.ended_at
+                      ? `Finalizado el ${st.ended_at.split("T")[0]}`
+                      : `$${st.subscription_price}/mes · Corte: ${st.next_billing_date}`}
                   </p>
                 </div>
 
-                {st.student_id ? (
-                  <Link
-                    href={`/coach/students/${st.student_id}`}
-                    className="shrink-0 whitespace-nowrap rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-2 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500 hover:text-zinc-950"
-                  >
-                    Ver expediente
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/auth/activate?token=${st.invite_token}&email=${encodeURIComponent(
-                      st.invited_email
-                    )}&name=${encodeURIComponent(st.invited_name)}`}
-                    className="shrink-0 whitespace-nowrap rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20"
-                  >
-                    Enlace
-                  </Link>
-                )}
+                <div className="flex shrink-0 items-center gap-1.5">
+                  {!isEnded && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEndReason("");
+                        setEndingRelation({ id: st.id, name: st.invited_name });
+                      }}
+                      title="Finalizar asesoramiento"
+                      aria-label={`Finalizar asesoramiento de ${st.invited_name}`}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300"
+                    >
+                      <UserMinus className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  {st.student_id ? (
+                    <Link
+                      href={`/coach/students/${st.student_id}`}
+                      className="shrink-0 whitespace-nowrap rounded-xl border border-emerald-500/30 bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500 hover:text-zinc-950"
+                    >
+                      Ver expediente
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/auth/activate?token=${st.invite_token}&email=${encodeURIComponent(
+                        st.invited_email
+                      )}&name=${encodeURIComponent(st.invited_name)}`}
+                      className="shrink-0 whitespace-nowrap rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-500/20"
+                    >
+                      Enlace
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -724,6 +770,90 @@ function CoachStudentsContent() {
                 </button>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Confirm End Coaching Modal */}
+      {endingRelation && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Finalizar asesoramiento"
+          onClick={() => setEndingRelation(null)}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md space-y-4 rounded-xl border border-white/10 bg-[#0e0f12] p-5 shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-base font-bold text-white">
+                  Finalizar asesoramiento
+                </h2>
+                <p className="mt-1 text-xs text-zinc-400">
+                  Se cerrará el seguimiento activo con{" "}
+                  <strong className="text-white">{endingRelation.name}</strong>.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEndingRelation(null)}
+                aria-label="Cerrar"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-3 text-xs text-zinc-300">
+              <p>
+                • <strong className="text-emerald-400">Libera 1 cupo</strong> en tu
+                plan inmediatamente para invitar a otro alumno.
+              </p>
+              <p>
+                • <strong className="text-white">Historial íntegro:</strong> el alumno
+                conservará sus medidas, evaluaciones y registros en su cuenta personal.
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-medium text-zinc-300">
+                Motivo (opcional)
+              </label>
+              <input
+                type="text"
+                value={endReason}
+                onChange={(e) => setEndReason(e.target.value)}
+                placeholder="Ej. Concluyó su objetivo, pausa temporal..."
+                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
+              />
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setEndingRelation(null)}
+                className="h-10 flex-1 rounded-xl border border-white/15 text-xs font-semibold text-zinc-300 transition hover:text-white"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  endStudentCoaching(endingRelation.id, endReason);
+                  setStatusToast(
+                    `Asesoramiento de ${endingRelation.name} finalizado. Se liberó 1 cupo en tu plan.`
+                  );
+                  setTimeout(() => setStatusToast(null), 4000);
+                  setEndingRelation(null);
+                }}
+                className="h-10 flex-1 rounded-xl bg-rose-500 text-xs font-bold text-white transition hover:bg-rose-400"
+              >
+                Confirmar baja
+              </button>
+            </div>
           </div>
         </div>
       )}

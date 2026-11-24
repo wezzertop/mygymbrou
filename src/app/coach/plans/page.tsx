@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   CreditCard,
   Crown,
+  Pencil,
   Plus,
   Trash2,
   UserCheck,
@@ -13,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
-import { CoachingMode } from "@/types/database";
+import { CoachSubscriptionPlan, CoachingMode } from "@/types/database";
 import {
   canInviteMoreStudents,
   getPlanCapabilities,
@@ -44,6 +45,7 @@ function CoachPlansContent() {
     subscriptionPlans,
     nutritionPlans,
     addSubscriptionPlan,
+    updateSubscriptionPlan,
     deleteSubscriptionPlan,
     assignSubscriptionPlanToStudent,
     addNutritionPlan,
@@ -62,10 +64,48 @@ function CoachPlansContent() {
     coachProfile.saas_student_limit
   );
   const [selectedRelationId, setSelectedRelationId] = useState(
-    students[0]?.id || ""
+    students.find((s) => s.invite_status === "active")?.id || students[0]?.id || ""
   );
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [editingPlan, setEditingPlan] = useState<CoachSubscriptionPlan | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editPrice, setEditPrice] = useState("1200");
+  const [editDurationDays, setEditDurationDays] = useState("30");
+  const [editCoachingMode, setEditCoachingMode] = useState<CoachingMode>("intermittent");
+  const [editNutrition, setEditNutrition] = useState(true);
+  const [editWorkouts, setEditWorkouts] = useState(true);
+  const [editAssessments, setEditAssessments] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+
+  const openEditPlan = (plan: CoachSubscriptionPlan) => {
+    setEditingPlan(plan);
+    setEditName(plan.name);
+    setEditDescription(plan.description || "");
+    setEditPrice(String(plan.price));
+    setEditDurationDays(String(plan.duration_days));
+    setEditCoachingMode(plan.coaching_mode);
+    setEditNutrition(plan.includes_nutrition);
+    setEditWorkouts(plan.includes_workouts);
+    setEditAssessments(plan.includes_assessments);
+  };
+
+  const handleSaveEditPlan = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPlan || !editName.trim()) return;
+    updateSubscriptionPlan(editingPlan.id, {
+      name: editName.trim(),
+      description: editDescription.trim() || "Paquete personalizado diseñado por tu entrenador.",
+      price: Number(editPrice) || 0,
+      duration_days: Number(editDurationDays) || 30,
+      coaching_mode: editCoachingMode,
+      includes_nutrition: editNutrition,
+      includes_workouts: editWorkouts,
+      includes_assessments: editAssessments,
+    });
+    setEditingPlan(null);
+    notify(`Plan "${editName.trim()}" actualizado correctamente.`);
+  };
 
   // New Subscription Plan Form
   const [name, setName] = useState("");
@@ -536,14 +576,26 @@ function CoachPlansContent() {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={() => setConfirmDeleteId(plan.id)}
-                        aria-label={`Eliminar ${plan.name}`}
-                        className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-white/[0.06] hover:text-rose-400"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openEditPlan(plan)}
+                          aria-label={`Editar ${plan.name}`}
+                          title="Editar plan"
+                          className="rounded-lg p-1.5 text-zinc-400 transition hover:bg-white/[0.06] hover:text-emerald-400"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(plan.id)}
+                          aria-label={`Eliminar ${plan.name}`}
+                          title="Eliminar plan"
+                          className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-white/[0.06] hover:text-rose-400"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -597,7 +649,7 @@ function CoachPlansContent() {
                       `Asignado "${plan.name}" a ${selectedStudent.invited_name}. Fecha de vencimiento calculada automáticamente.`
                     );
                   }}
-                  className="inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-xl bg-white/[0.06] py-2.5 text-xs font-bold text-emerald-300 transition hover:bg-white text-zinc-950 hover:text-zinc-950 active:scale-[0.98] disabled:opacity-40"
+                  className="inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/15 py-2.5 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500 hover:text-zinc-950 active:scale-[0.98] disabled:opacity-40"
                 >
                   <UserCheck className="h-3.5 w-3.5" />
                   {selectedStudent
@@ -741,6 +793,149 @@ function CoachPlansContent() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Modal: Editar Plan del Coach */}
+      {editingPlan && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Editar plan"
+          onClick={() => setEditingPlan(null)}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+        >
+          <form
+            onSubmit={handleSaveEditPlan}
+            onClick={(e) => e.stopPropagation()}
+            className="flex max-h-[88vh] w-full max-w-md flex-col overflow-hidden rounded-xl border border-white/10 bg-[#0e0f12] shadow-2xl"
+          >
+            <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
+              <div>
+                <h2 className="text-base font-semibold text-white">Editar plan</h2>
+                <p className="text-[11px] text-zinc-400">
+                  Los cambios aplican a nuevas asignaciones sin afectar historial.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingPlan(null)}
+                aria-label="Cerrar"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 space-y-3.5 overflow-y-auto p-5">
+              <div>
+                <label className="mb-1 block text-xs text-zinc-300">Nombre *</label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs text-zinc-300">Descripción</label>
+                <textarea
+                  rows={2}
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] p-2.5 text-xs text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-xs text-zinc-300">Precio ($)</label>
+                  <input
+                    type="number"
+                    required
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-zinc-300">Duración</label>
+                  <select
+                    value={editDurationDays}
+                    onChange={(e) => setEditDurationDays(e.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
+                  >
+                    <option value="7">7 días</option>
+                    <option value="15">15 días</option>
+                    <option value="30">30 días (Mes)</option>
+                    <option value="90">90 días (Trim.)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs text-zinc-300">Modalidad</label>
+                <select
+                  value={editCoachingMode}
+                  onChange={(e) => setEditCoachingMode(e.target.value as CoachingMode)}
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-emerald-500"
+                >
+                  <option value="none">Sin sesiones 1:1 (Solo app)</option>
+                  <option value="intermittent">Coach Online Intermitente</option>
+                  <option value="in_person">Coach Presencial</option>
+                </select>
+              </div>
+
+              <div className="space-y-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3 text-xs">
+                <p className="font-semibold text-zinc-300">Módulos incluidos:</p>
+                <label className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={editNutrition}
+                    onChange={(e) => setEditNutrition(e.target.checked)}
+                    className="h-4 w-4 rounded accent-emerald-500"
+                  />
+                  <span>Plan nutricional</span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={editWorkouts}
+                    onChange={(e) => setEditWorkouts(e.target.checked)}
+                    className="h-4 w-4 rounded accent-emerald-500"
+                  />
+                  <span>Rutinas guiadas</span>
+                </label>
+                <label className="flex cursor-pointer items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={editAssessments}
+                    onChange={(e) => setEditAssessments(e.target.checked)}
+                    className="h-4 w-4 rounded accent-emerald-500"
+                  />
+                  <span>Evaluaciones</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex gap-2 border-t border-white/[0.08] p-4">
+              <button
+                type="button"
+                onClick={() => setEditingPlan(null)}
+                className="h-10 flex-1 rounded-xl border border-white/15 text-xs font-semibold text-zinc-300 transition hover:text-white"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="h-10 flex-1 rounded-xl bg-emerald-500 text-xs font-bold text-[#0a0a0a] transition hover:bg-emerald-400"
+              >
+                Guardar cambios
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>

@@ -148,7 +148,7 @@ function RegisterCoachContent() {
               </h1>
               <p className="text-sm leading-relaxed text-zinc-300">
                 Enviamos un enlace de confirmación a{" "}
-                <span className="font-semibold text-cyan-400">{email}</span>.
+                <span className="font-semibold text-emerald-400">{email}</span>.
                 Verifica tu cuenta mediante Supabase Email Confirmation para
                 activar tu panel al 100%.
               </p>
@@ -180,7 +180,7 @@ function RegisterCoachContent() {
           ) : (
             <>
               <div className="mb-6">
-                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
+                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-400">
                   Registro Profesional
                 </span>
                 <h1 className="mt-3 text-2xl font-extrabold text-white">
@@ -348,17 +348,25 @@ function RegisterCoachContent() {
                     type="checkbox"
                     checked={acceptedTerms}
                     onChange={(e) => setAcceptedTerms(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-[#0e0f12] text-cyan-500 focus:ring-cyan-500"
+                    className="mt-0.5 h-4 w-4 rounded border-zinc-600 bg-[#0e0f12] accent-emerald-500 focus:ring-emerald-500"
                   />
                   <span className="text-xs leading-relaxed text-zinc-300">
                     Acepto obligatoriamente los{" "}
-                    <span className="font-semibold text-cyan-400">
+                    <Link
+                      href="/terminos"
+                      target="_blank"
+                      className="font-semibold text-emerald-400 underline hover:text-emerald-300"
+                    >
                       Términos y Condiciones
-                    </span>{" "}
-                    y la{" "}
-                    <span className="font-semibold text-cyan-400">
-                      Política de Privacidad
-                    </span>{" "}
+                    </Link>{" "}
+                    y el{" "}
+                    <Link
+                      href="/privacidad"
+                      target="_blank"
+                      className="font-semibold text-emerald-400 underline hover:text-emerald-300"
+                    >
+                      Aviso de Privacidad (LFPDPPP)
+                    </Link>{" "}
                     de MiGymBrou. Autorizo guardar la fecha y hora de mi
                     aceptación.
                   </span>
@@ -367,7 +375,7 @@ function RegisterCoachContent() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-12 w-full rounded-full bg-white text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-60"
+                  className="h-12 w-full rounded-full bg-emerald-500 text-sm font-bold text-[#0a0a0a] transition hover:bg-emerald-400 disabled:opacity-60"
                 >
                   {loading ? "Creando cuenta..." : "Crear Cuenta de Coach"}
                 </button>
@@ -377,7 +385,7 @@ function RegisterCoachContent() {
                 ¿Ya tienes cuenta?{" "}
                 <Link
                   href="/auth"
-                  className="font-bold text-cyan-400 hover:underline"
+                  className="font-bold text-emerald-400 transition hover:text-emerald-300 hover:underline"
                 >
                   Iniciar sesión
                 </Link>

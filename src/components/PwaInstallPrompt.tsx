@@ -29,17 +29,19 @@ export function PwaInstallButton({
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isIosSafari, setIsIosSafari] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const [canInstall, setCanInstall] = useState(false);
-  const [showIosGuide, setShowIosGuide] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const isStandalone =
+    const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as Navigator & { standalone?: boolean }).standalone ===
         true;
-    if (isStandalone) return;
+    setIsStandalone(standalone);
+    if (standalone) return;
 
     const ua = window.navigator.userAgent.toLowerCase();
     const isIos = /iphone|ipad|ipod/.test(ua);
@@ -63,20 +65,21 @@ export function PwaInstallButton({
   }, []);
 
   const handleInstallClick = async () => {
-    if (isIosSafari) {
-      setShowIosGuide(true);
+    if (deferredPrompt) {
+      await deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice.outcome === "accepted") {
+        setCanInstall(false);
+        setIsStandalone(true);
+      }
+      setDeferredPrompt(null);
       return;
     }
-    if (!deferredPrompt) return;
-    await deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    if (choice.outcome === "accepted") {
-      setCanInstall(false);
-    }
-    setDeferredPrompt(null);
+    setShowGuide(true);
   };
 
-  if (!canInstall) return null;
+  if (isStandalone) return null;
+  if (variant !== "menu" && variant !== "sidebar" && !canInstall) return null;
 
   return (
     <>
@@ -111,12 +114,12 @@ export function PwaInstallButton({
         </button>
       )}
 
-      {showIosGuide && (
+      {showGuide && (
         <div
           role="dialog"
           aria-modal="true"
-          onClick={() => setShowIosGuide(false)}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center"
+          onClick={() => setShowGuide(false)}
+          className="fixed inset-0 z-[70] flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -124,11 +127,11 @@ export function PwaInstallButton({
           >
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-white">
-                Instalar en iPhone / iPad
+                {isIosSafari ? "Instalar en iPhone / iPad" : "Instalar MiGymBrou App"}
               </h3>
               <button
                 type="button"
-                onClick={() => setShowIosGuide(false)}
+                onClick={() => setShowGuide(false)}
                 aria-label="Cerrar"
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/[0.06] hover:text-white"
               >
@@ -136,26 +139,46 @@ export function PwaInstallButton({
               </button>
             </div>
             <p className="text-xs leading-relaxed text-zinc-400">
-              Agrega MiGymBrou a tu pantalla de inicio en 2 pasos sin usar App Store:
+              Agrega MiGymBrou a tu pantalla de inicio para usarla a pantalla completa sin App Store:
             </p>
             <ol className="space-y-2 text-xs text-zinc-200">
-              <li className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-[#060607] p-3">
-                <Share className="h-4 w-4 shrink-0 text-emerald-400" />
-                <span>
-                  1. Toca el botón <strong>Compartir</strong> en la barra de Safari.
-                </span>
-              </li>
-              <li className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-[#060607] p-3">
-                <Smartphone className="h-4 w-4 shrink-0 text-emerald-400" />
-                <span>
-                  2. Selecciona <strong>Agregar a pantalla de inicio</strong>.
-                </span>
-              </li>
+              {isIosSafari ? (
+                <>
+                  <li className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-[#060607] p-3">
+                    <Share className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <span>
+                      1. Toca el botón <strong>Compartir</strong> en la barra de Safari.
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-[#060607] p-3">
+                    <Smartphone className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <span>
+                      2. Selecciona <strong>Agregar a pantalla de inicio</strong>.
+                    </span>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-[#060607] p-3">
+                    <Smartphone className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <span>
+                      1. Toca el menú del navegador (<strong>⋮</strong> arriba a la derecha).
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-[#060607] p-3">
+                    <Download className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <span>
+                      2. Elige <strong>Instalar aplicación</strong> o{" "}
+                      <strong>Agregar a pantalla principal</strong>.
+                    </span>
+                  </li>
+                </>
+              )}
             </ol>
             <button
               type="button"
-              onClick={() => setShowIosGuide(false)}
-              className="h-10 w-full rounded-lg bg-emerald-500 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-400"
+              onClick={() => setShowGuide(false)}
+              className="h-10 w-full rounded-lg bg-emerald-500 text-xs font-bold text-[#0a0a0a] transition hover:bg-emerald-400"
             >
               Entendido
             </button>

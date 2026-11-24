@@ -18,7 +18,9 @@ import {
   Save,
   ShieldCheck,
   Target,
+  UserMinus,
   Utensils,
+  X,
   XCircle,
 } from "lucide-react";
 import { getDaysRemaining, useApp } from "@/context/AppContext";
@@ -82,10 +84,13 @@ export default function Student360Page() {
     assignNutritionToStudent,
     assignSubscriptionPlanToStudent,
     updateStudentSubscription,
+    endStudentCoaching,
     reviewStudentVerification,
   } = useApp();
 
   const [showIdPreview, setShowIdPreview] = useState(false);
+  const [endModalOpen, setEndModalOpen] = useState(false);
+  const [endReason, setEndReason] = useState("");
 
   const initialTab = (searchParams.get("tab") as TabKey) || "assessment";
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
@@ -284,13 +289,107 @@ export default function Student360Page() {
                 setActiveTab("assessment");
                 setShowNewForm(true);
               }}
-              className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2.5 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98]"
+              className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98]"
             >
               <Plus className="h-4 w-4" />
               Nueva Medición
             </button>
+            {student.invite_status !== "finalizado" &&
+              student.invite_status !== "inactive" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEndReason("");
+                    setEndModalOpen(true);
+                  }}
+                  className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2.5 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20"
+                >
+                  <UserMinus className="h-4 w-4" />
+                  Finalizar
+                </button>
+              )}
           </div>
         </div>
+
+        {/* Confirm End Coaching Modal */}
+        {endModalOpen && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Finalizar asesoramiento"
+            onClick={() => setEndModalOpen(false)}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md space-y-4 rounded-xl border border-white/10 bg-[#0e0f12] p-5 shadow-2xl"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-white">
+                    Finalizar asesoramiento
+                  </h2>
+                  <p className="mt-1 text-xs text-zinc-400">
+                    Se cerrará el seguimiento activo con{" "}
+                    <strong className="text-white">{student.invited_name}</strong>.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEndModalOpen(false)}
+                  aria-label="Cerrar"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="space-y-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-3 text-xs text-zinc-300">
+                <p>
+                  • <strong className="text-emerald-400">Libera 1 cupo</strong> en tu
+                  plan inmediatamente.
+                </p>
+                <p>
+                  • <strong className="text-white">Historial íntegro:</strong> el alumno
+                  conserva todas sus medidas, evaluaciones y registros en su cuenta.
+                </p>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-zinc-300">
+                  Motivo (opcional)
+                </label>
+                <input
+                  type="text"
+                  value={endReason}
+                  onChange={(e) => setEndReason(e.target.value)}
+                  placeholder="Ej. Concluyó su objetivo, pausa temporal..."
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-500"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEndModalOpen(false)}
+                  className="h-10 flex-1 rounded-xl border border-white/15 text-xs font-semibold text-zinc-300 hover:text-white"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    endStudentCoaching(student.id, endReason);
+                    setEndModalOpen(false);
+                    showToast(
+                      "Asesoramiento finalizado. Se liberó 1 cupo en tu plan."
+                    );
+                  }}
+                  className="h-10 flex-1 rounded-xl bg-rose-500 text-xs font-bold text-white hover:bg-rose-400"
+                >
+                  Confirmar baja
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Identity Verification Review Panel for Coach */}
         {(student.verification_status === "pending" ||

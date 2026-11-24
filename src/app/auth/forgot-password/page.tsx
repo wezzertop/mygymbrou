@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
         <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl sm:p-8">
           {sent ? (
             <div className="space-y-4 py-4 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-cyan-400">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <h1 className="text-xl font-bold text-white">
@@ -63,12 +63,12 @@ export default function ForgotPasswordPage() {
               </h1>
               <p className="text-sm text-zinc-300">
                 Si existe una cuenta asociada a{" "}
-                <span className="font-semibold text-cyan-400">{email}</span>,
+                <span className="font-semibold text-emerald-400">{email}</span>,
                 recibirás un correo para definir una nueva contraseña.
               </p>
               <Link
                 href={demoMode ? "/auth/reset-password" : "/auth"}
-                className="inline-block rounded-xl bg-cyan-500 px-5 py-2.5 text-xs font-bold text-zinc-950 transition hover:bg-cyan-400"
+                className="inline-block rounded-xl bg-emerald-500 px-5 py-2.5 text-xs font-bold text-[#0a0a0a] transition hover:bg-emerald-400"
               >
                 {demoMode ? "Simular apertura de enlace (Demo)" : "Volver a Iniciar Sesión"}
               </Link>

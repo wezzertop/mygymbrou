@@ -232,7 +232,12 @@ interface AppContextValue extends AppState {
   addSubscriptionPlan: (
     plan: Omit<CoachSubscriptionPlan, "id" | "created_at">
   ) => CoachSubscriptionPlan;
+  updateSubscriptionPlan: (
+    planId: string,
+    patch: Partial<Omit<CoachSubscriptionPlan, "id" | "coach_id" | "created_at">>
+  ) => void;
   deleteSubscriptionPlan: (planId: string) => void;
+  endStudentCoaching: (relationId: string, reason?: string) => void;
   requestPlanUpgrade: (studentId: string, targetPlan: CoachSubscriptionPlan) => void;
   updateStudentGoal: (goal: Omit<StudentGoal, "updated_at">) => void;
   addExerciseToLibrary: (
@@ -490,7 +495,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         invited_name: row.invited_name,
         invited_email: row.invited_email,
         invite_token: row.invite_token || "",
-        invite_status: row.invite_status,
+        invite_status:
+          row.invite_status === "inactive" ||
+          row.invite_status === "finalizado" ||
+          Boolean(row.ended_at)
+            ? "finalizado"
+            : row.invite_status,
+        ended_at: row.ended_at || null,
+        end_reason: row.end_reason || null,
         subscription_status: row.subscription_status,
         subscription_plan_name: row.subscription_plan_name,
         subscription_price: Number(row.subscription_price || 0),
@@ -837,6 +849,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return created;
   };
 
+  const updateSubscriptionPlan: AppContextValue["updateSubscriptionPlan"] = (
+    planId,
+    patch
+  ) => {
+    setState((prev) => ({
+      ...prev,
+      subscriptionPlans: prev.subscriptionPlans.map((p) =>
+        p.id === planId ? { ...p, ...patch } : p
+      ),
+      directoryCoaches: prev.directoryCoaches.map((c) => ({
+        ...c,
+        plans: c.plans.map((p) => (p.id === planId ? { ...p, ...patch } : p)),
+      })),
+    }));
+
+    if (!isDemoMode) {
+      const supabase = createClient();
+      supabase
+        .from("coach_subscription_plans")
+        .update(patch)
+        .eq("id", planId)
+        .then(() => {});
+    }
+  };
+
   const deleteSubscriptionPlan = (planId: string) => {
     setState((prev) => ({
       ...prev,
@@ -845,6 +882,66 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!isDemoMode) {
       const supabase = createClient();
       supabase.from("coach_subscription_plans").delete().eq("id", planId);
+    }
+  };
+
+  const endStudentCoaching: AppContextValue["endStudentCoaching"] = (
+    relationId,
+    reason
+  ) => {
+    const endedAt = new Date().toISOString();
+    const trimmedReason = reason?.trim() || null;
+    const target = state.students.find((s) => s.id === relationId);
+
+    setState((prev) => ({
+      ...prev,
+      students: prev.students.map((s) =>
+        s.id === relationId
+          ? {
+              ...s,
+              invite_status: "finalizado",
+              subscription_status: "expired",
+              ended_at: endedAt,
+              end_reason: trimmedReason,
+            }
+          : s
+      ),
+    }));
+
+    if (target?.student_id) {
+      pushNotification({
+        user_id: target.student_id,
+        title: "Asesoramiento finalizado",
+        message:
+          "Tu Coach cerró el seguimiento activo. Tu cuenta y todo tu historial de medidas y progreso siguen intactos en tu perfil.",
+        type: "subscription",
+      });
+    }
+
+    if (!isDemoMode) {
+      const supabase = createClient();
+      supabase
+        .from("coach_students")
+        .update({
+          invite_status: "finalizado",
+          subscription_status: "expired",
+          ended_at: endedAt,
+          end_reason: trimmedReason,
+        })
+        .eq("id", relationId)
+        .then(({ error }) => {
+          if (error) {
+            // Fallback si la migración SQL de 'finalizado'/ended_at aún no se ejecuta
+            supabase
+              .from("coach_students")
+              .update({
+                invite_status: "inactive",
+                subscription_status: "expired",
+              })
+              .eq("id", relationId)
+              .then(() => {});
+          }
+        });
     }
   };
 
@@ -1759,7 +1856,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateStudentSubscription,
         assignSubscriptionPlanToStudent,
         addSubscriptionPlan,
+        updateSubscriptionPlan,
         deleteSubscriptionPlan,
+        endStudentCoaching,
         requestPlanUpgrade,
         updateStudentGoal,
         addExerciseToLibrary,

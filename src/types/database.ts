@@ -159,7 +159,7 @@ export interface CoachSubscriptionPlan {
   created_at: string;
 }
 
-export type InviteStatus = "pending" | "active" | "inactive";
+export type InviteStatus = "pending" | "active" | "inactive" | "finalizado";
 export type SubscriptionStatus = "active" | "trial" | "expired" | "pending_payment";
 
 export interface CoachStudentRelation {
@@ -172,6 +172,8 @@ export interface CoachStudentRelation {
   invited_email: string;
   invite_token: string;
   invite_status: InviteStatus;
+  ended_at?: string | null;
+  end_reason?: string | null;
   subscription_status: SubscriptionStatus;
   subscription_plan_name: string;
   subscription_price: number;

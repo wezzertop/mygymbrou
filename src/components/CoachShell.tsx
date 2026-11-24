@@ -23,6 +23,7 @@ import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
 import { SmartNotificationsCenter } from "@/components/SmartNotificationsCenter";
 import { PwaInstallButton } from "@/components/PwaInstallPrompt";
 import { DemoModeBanner } from "@/components/DemoModeBanner";
+import { CoachQuickActionsFab } from "@/components/CoachQuickActionsFab";
 
 const COACH_NAV = [
   { href: "/coach", label: "Inicio", icon: LayoutDashboard, exact: true },
@@ -244,11 +245,11 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
               : "Cerrar sesión"}
           </button>
           <div className="flex items-center justify-center gap-3 pt-1 text-[10px] text-zinc-500">
-            <Link href="/legal" className="transition hover:text-zinc-300">
+            <Link href="/terminos" className="transition hover:text-zinc-300">
               Términos
             </Link>
             <span>·</span>
-            <Link href="/legal#privacidad" className="transition hover:text-zinc-300">
+            <Link href="/privacidad" className="transition hover:text-zinc-300">
               Privacidad
             </Link>
           </div>
@@ -391,6 +392,9 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
             <FreeTierAdSlot viewerRole="coach" className="mt-8" />
           )}
         </main>
+
+        {/* Global High-Impact Coach Floating Action Button */}
+        <CoachQuickActionsFab />
 
         {/* Mobile Fixed Bottom Navigation Bar */}
         <nav

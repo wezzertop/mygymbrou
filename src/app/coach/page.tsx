@@ -37,7 +37,6 @@ export default function CoachDashboardPage() {
     assignSubscriptionPlanToStudent,
   } = useApp();
 
-  const [fabOpen, setFabOpen] = useState(false);
   const [rosterFilter, setRosterFilter] = useState<RosterFilter>("all");
   const [quickModal, setQuickModal] = useState<QuickModal>(null);
   const [targetStudentId, setTargetStudentId] = useState<string>("");
@@ -588,59 +587,7 @@ export default function CoachDashboardPage() {
         </div>
       )}
 
-      {/* Minimalist Mobile FAB */}
-      {fabOpen && (
-        <div
-          aria-hidden="true"
-          onClick={() => setFabOpen(false)}
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[2px] lg:hidden"
-        />
-      )}
-      <div className="fixed bottom-24 right-4 z-40 flex flex-col items-end gap-2 lg:hidden">
-        {fabOpen && (
-          <div className="flex flex-col items-end gap-2">
-            <Link
-              href="/coach/students?invite=true"
-              onClick={() => setFabOpen(false)}
-              className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-white shadow-xl"
-            >
-              <UserPlus className="h-3.5 w-3.5 text-emerald-400" />
-              Invitar Alumno
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                setFabOpen(false);
-                openQuickModal("workout");
-              }}
-              className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-white shadow-xl"
-            >
-              <Dumbbell className="h-3.5 w-3.5 text-emerald-400" />
-              Asignar Rutina
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setFabOpen(false);
-                openQuickModal("renew");
-              }}
-              className="flex h-10 items-center gap-2 rounded-full border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-white shadow-xl"
-            >
-              <RefreshCw className="h-3.5 w-3.5 text-emerald-400" />
-              Renovar Plan
-            </button>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={() => setFabOpen((o) => !o)}
-          aria-expanded={fabOpen}
-          aria-label={fabOpen ? "Cerrar acciones rápidas" : "Abrir acciones rápidas"}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-zinc-950 shadow-2xl transition hover:bg-zinc-200 active:scale-95"
-        >
-          {fabOpen ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-        </button>
-      </div>
+      {/* Global FAB is now rendered in CoachShell across high-impact coach sections */}
     </div>
   );
 }

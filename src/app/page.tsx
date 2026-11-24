@@ -573,10 +573,10 @@ export default function LandingPage() {
             >
               Registro Coach
             </Link>
-            <Link href="/legal" className="transition hover:text-zinc-200">
+            <Link href="/terminos" className="transition hover:text-zinc-200">
               Términos y Condiciones
             </Link>
-            <Link href="/legal#privacidad" className="transition hover:text-zinc-200">
+            <Link href="/privacidad" className="transition hover:text-zinc-200">
               Privacidad
             </Link>
           </div>

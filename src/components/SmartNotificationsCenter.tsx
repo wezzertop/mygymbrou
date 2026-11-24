@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Activity,
@@ -40,8 +40,23 @@ export function SmartNotificationsCenter({
   } = useApp();
 
   const [open, setOpen] = useState(false);
+  const [seenAlertIds, setSeenAlertIds] = useState<string[]>([]);
 
   const userId = role === "coach" ? coachProfile.id : studentProfile.id;
+  const seenStorageKey = `migymbrou_seen_alerts_${role}_${userId}`;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(seenStorageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setSeenAlertIds(parsed);
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [seenStorageKey]);
   const userDbNotifications = useMemo(
     () => notifications.filter((n) => n.user_id === userId),
     [notifications, userId]
@@ -205,7 +220,7 @@ export function SmartNotificationsCenter({
           kind: "payment",
           title: "Plan Inicio / Free activo",
           message:
-            "Actualiza a Coach Base ($309 MXN) para quitar anuncios y desbloquear citas y plantillas ilimitadas.",
+            "Actualiza a Coach Base ($449 MXN) para quitar anuncios y desbloquear citas y plantillas ilimitadas.",
           href: "/coach/plans?tab=saas",
           isSmart: true,
         });
@@ -224,7 +239,31 @@ export function SmartNotificationsCenter({
   ]);
 
   const unreadDbCount = userDbNotifications.filter((n) => !n.is_read).length;
-  const totalBadge = unreadDbCount + smartAlerts.length;
+  const unreadSmartCount = smartAlerts.filter(
+    (a) => !seenAlertIds.includes(a.id)
+  ).length;
+  const totalBadge = unreadDbCount + unreadSmartCount;
+
+  const handleToggleOpen = () => {
+    const nextOpen = !open;
+    setOpen(nextOpen);
+    if (nextOpen) {
+      if (unreadDbCount > 0) {
+        markAllNotificationsRead(userId);
+      }
+      if (smartAlerts.length > 0) {
+        const merged = Array.from(
+          new Set([...seenAlertIds, ...smartAlerts.map((a) => a.id)])
+        );
+        setSeenAlertIds(merged);
+        try {
+          window.localStorage.setItem(seenStorageKey, JSON.stringify(merged));
+        } catch {
+          // ignore storage errors
+        }
+      }
+    }
+  };
 
   const renderIcon = (kind: SmartAlert["kind"]) => {
     if (kind === "payment")
@@ -240,7 +279,7 @@ export function SmartNotificationsCenter({
     <div className="relative">
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={handleToggleOpen}
         aria-label="Centro de notificaciones"
         aria-expanded={open}
         className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-300 transition hover:border-white/25 hover:text-white"

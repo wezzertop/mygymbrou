@@ -42,10 +42,10 @@ export default function PublicCoachesDirectoryPage() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-xs text-zinc-500 sm:flex-row sm:px-6 lg:px-8">
           <span>MiGymBrou · Directorio de Coaches Certificados</span>
           <div className="flex items-center gap-5">
-            <Link href="/legal" className="transition hover:text-zinc-200">
+            <Link href="/terminos" className="transition hover:text-zinc-200">
               Términos y Condiciones
             </Link>
-            <Link href="/legal#privacidad" className="transition hover:text-zinc-200">
+            <Link href="/privacidad" className="transition hover:text-zinc-200">
               Privacidad
             </Link>
           </div>
