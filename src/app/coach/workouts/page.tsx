@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   CheckCircle2,
   Dumbbell,
   Layers,
   Loader2,
+  Lock,
   Plus,
   Search,
   Send,
@@ -15,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { getPlanCapabilities } from "@/lib/saas-plans";
 import { ExerciseVisualDemo } from "@/components/ExerciseVisualDemo";
 import { loadLiveExerciseCatalog } from "@/lib/live-exercise-catalog";
 import {
@@ -59,6 +62,7 @@ export default function CoachWorkoutsPage() {
   } = useApp();
 
   const activeStudents = students.filter((s) => s.student_id);
+  const capabilities = getPlanCapabilities(coachProfile.saas_plan_tier);
   const [viewTab, setViewTab] = useState<"catalog" | "templates">("catalog");
   const [builderModalOpen, setBuilderModalOpen] = useState(false);
   const [saveAsTemplate, setSaveAsTemplate] = useState(false);
@@ -571,16 +575,39 @@ export default function CoachWorkoutsPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSaveAsTemplate(true)}
-                  className={`h-9 rounded-full text-xs font-medium transition ${
-                    saveAsTemplate
+                  onClick={() => {
+                    if (!capabilities.canUseReusableTemplates) return;
+                    setSaveAsTemplate(true);
+                  }}
+                  className={`inline-flex h-9 items-center justify-center gap-1 rounded-full text-xs font-medium transition ${
+                    !capabilities.canUseReusableTemplates
+                      ? "cursor-not-allowed text-zinc-600"
+                      : saveAsTemplate
                       ? "bg-white text-zinc-950"
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
+                  {!capabilities.canUseReusableTemplates && (
+                    <Lock className="h-3 w-3" />
+                  )}
                   Guardar plantilla
                 </button>
               </div>
+
+              {!capabilities.canUseReusableTemplates && (
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#060607] px-3.5 py-2.5 text-[11px] text-zinc-400">
+                  <span>
+                    Plantillas reutilizables disponibles desde{" "}
+                    <strong className="text-white">Coach Base</strong>.
+                  </span>
+                  <Link
+                    href="/coach/plans?tab=saas"
+                    className="shrink-0 font-semibold text-emerald-400 hover:underline"
+                  >
+                    Mejorar →
+                  </Link>
+                </div>
+              )}
 
               {!saveAsTemplate && (
                 <div>

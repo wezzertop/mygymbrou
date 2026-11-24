@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Camera,
@@ -404,7 +405,11 @@ export default function StudentProfilePage() {
                 {new Date(studentProfile.terms_accepted_at).toLocaleDateString(
                   "es-MX"
                 )}
-              </span>
+              </span>{" "}
+              ·{" "}
+              <Link href="/legal" className="text-emerald-400 hover:underline">
+                Leer Términos y Privacidad
+              </Link>
             </p>
           </div>
 

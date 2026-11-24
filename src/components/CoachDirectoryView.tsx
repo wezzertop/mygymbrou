@@ -113,31 +113,30 @@ export function CoachDirectoryView({
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-7">
+      {/* Editorial Header Banner */}
+      <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-7">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="max-w-2xl space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/35 bg-sky-500/15 px-3 py-1 text-[11px] font-bold text-sky-300">
+            <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
               <ShieldCheck className="h-3.5 w-3.5" />
-              Directorio con Identidad Verificada y Diplomas Comprobables
-            </div>
-            <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
+              Directorio Certificado
+            </p>
+            <h1 className="text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
               Encuentra a tu Coach Certificado
             </h1>
-            <p className="text-sm leading-relaxed text-zinc-300">
+            <p className="text-xs leading-relaxed text-zinc-400 sm:text-sm">
               Explora entrenadores reales verificados, revisa sus diplomas y
-              certificaciones directamente en archivo antes de elegir, y envía
-              tu solicitud en segundos.
+              certificaciones antes de elegir y envía tu solicitud en segundos.
             </p>
           </div>
 
           {mode === "student" && !studentProfile.is_verified_identity && (
             <Link
               href="/student/profile"
-              className="inline-flex shrink-0 items-center gap-2 rounded-2xl border border-sky-400/40 bg-sky-500/15 px-4 py-3 text-xs font-bold text-sky-200 transition hover:bg-sky-500/25"
+              className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-full border border-white/15 bg-white/[0.04] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/30 hover:text-white"
             >
-              <BadgeCheck className="h-4 w-4 text-sky-400" />
-              Verifica tu identidad para destacar
+              <BadgeCheck className="h-4 w-4 text-emerald-400" />
+              Verificar mi identidad
             </Link>
           )}
         </div>
@@ -150,15 +149,15 @@ export function CoachDirectoryView({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por nombre, especialidad, ciudad o diploma (ej. ISAK, Nutrición, Fuerza)..."
-              className="w-full rounded-xl border border-white/15 bg-[#060607] py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-cyan-500"
+              placeholder="Buscar por nombre, especialidad, ciudad o diploma..."
+              className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] pl-10 pr-9 text-sm text-white outline-none transition focus:border-emerald-500/60"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="Limpiar búsqueda"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-zinc-400 hover:bg-white/[0.06] hover:text-white"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -169,13 +168,13 @@ export function CoachDirectoryView({
             <button
               type="button"
               onClick={() => setOnlyVerified((v) => !v)}
-              className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs font-bold transition ${
+              className={`inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-xs font-medium transition ${
                 onlyVerified
-                  ? "border border-sky-400/50 bg-sky-500/20 text-sky-200"
-                  : "border border-white/15 bg-[#060607] text-zinc-300 hover:border-sky-500/40"
+                  ? "bg-white text-zinc-950"
+                  : "border border-white/10 bg-[#060607] text-zinc-400 hover:border-white/25 hover:text-white"
               }`}
             >
-              <BadgeCheck className="h-3.5 w-3.5 text-sky-400" />
+              <BadgeCheck className="h-3.5 w-3.5" />
               Solo Verificados
             </button>
             <button

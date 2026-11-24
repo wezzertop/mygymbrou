@@ -15,6 +15,7 @@ import { useApp } from "@/context/AppContext";
 import { CoachingMode } from "@/types/database";
 import {
   canInviteMoreStudents,
+  getPlanCapabilities,
   getSaasPlanById,
   PRICING_FOOTNOTE_MXN,
   SAAS_PLANS_MXN,
@@ -93,6 +94,17 @@ function CoachPlansContent() {
   const handleCreateSubPlan = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
+    const caps = getPlanCapabilities(coachProfile.saas_plan_tier);
+    if (
+      caps.maxSubscriptionPackages !== null &&
+      subscriptionPlans.length >= caps.maxSubscriptionPackages
+    ) {
+      notify(
+        "El plan Inicio / Free permite 1 paquete. Mejora a Coach Base para crear paquetes ilimitados sin publicidad."
+      );
+      setTab("saas");
+      return;
+    }
     addSubscriptionPlan({
       coach_id: coachProfile.id,
       name,
@@ -114,6 +126,14 @@ function CoachPlansContent() {
   const handleCreateDietTemplate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!dTitle.trim()) return;
+    const caps = getPlanCapabilities(coachProfile.saas_plan_tier);
+    if (!caps.canUseReusableTemplates) {
+      notify(
+        "Las plantillas reutilizables de dieta se desbloquean desde el plan Coach Base."
+      );
+      setTab("saas");
+      return;
+    }
     addNutritionPlan({
       coach_id: coachProfile.id,
       student_id: null,

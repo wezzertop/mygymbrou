@@ -8,10 +8,12 @@ import {
   CalendarPlus,
   CheckCircle2,
   Clock,
+  Lock,
   MapPin,
   XCircle,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { getPlanCapabilities } from "@/lib/saas-plans";
 
 function CoachAgendaContent() {
   const searchParams = useSearchParams();
@@ -26,6 +28,11 @@ function CoachAgendaContent() {
   } = useApp();
 
   const activeStudents = students.filter((s) => s.student_id);
+  const capabilities = getPlanCapabilities(coachProfile.saas_plan_tier);
+  const scheduledCount = appointments.filter((a) => a.status === "scheduled").length;
+  const appointmentLimitReached =
+    capabilities.maxActiveAppointments !== null &&
+    scheduledCount >= capabilities.maxActiveAppointments;
 
   const [studentId, setStudentId] = useState(
     preselectedStudent || activeStudents[0]?.student_id || ""
@@ -45,6 +52,13 @@ function CoachAgendaContent() {
 
   const handleSchedule = (e: React.FormEvent) => {
     e.preventDefault();
+    if (appointmentLimitReached) {
+      setToast(
+        "Alcanzaste el límite de 2 citas activas del plan Free. Mejora a Coach Base para agendar sin límites."
+      );
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
     const st = activeStudents.find((s) => s.student_id === studentId);
     if (!st || !st.student_id) return;
 
@@ -103,9 +117,28 @@ function CoachAgendaContent() {
           className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
         >
           <h2 className="flex items-center gap-2 text-base font-bold text-white">
-            <CalendarPlus className="h-4 w-4 text-cyan-400" />
+            <CalendarPlus className="h-4 w-4 text-emerald-400" />
             Programar Nueva Cita
           </h2>
+
+          {appointmentLimitReached && (
+            <div className="space-y-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-200">
+              <p className="flex items-center gap-1.5 font-semibold text-amber-300">
+                <Lock className="h-3.5 w-3.5" />
+                Límite del plan Inicio / Free ({scheduledCount}/
+                {capabilities.maxActiveAppointments} citas activas)
+              </p>
+              <p className="text-amber-200/80">
+                Mejora a <strong>Coach Base</strong> para agendar citas ilimitadas y eliminar la publicidad.
+              </p>
+              <Link
+                href="/coach/plans?tab=saas"
+                className="inline-flex h-8 items-center rounded-full bg-white px-3.5 text-[11px] font-semibold text-zinc-950"
+              >
+                Ver planes en MXN →
+              </Link>
+            </div>
+          )}
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-zinc-300">

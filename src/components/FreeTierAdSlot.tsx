@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
+import { getPlanCapabilities } from "@/lib/saas-plans";
 
 interface FreeTierAdSlotProps {
   viewerRole?: "coach" | "student";
@@ -52,9 +53,9 @@ export function FreeTierAdSlot({
 }: FreeTierAdSlotProps) {
   const { hydrated, coachProfile } = useApp();
 
-  const isFreePlan = (coachProfile.saas_plan_tier || "free") === "free";
+  const { hasAds } = getPlanCapabilities(coachProfile.saas_plan_tier);
 
-  if (!hydrated || !isFreePlan) {
+  if (!hydrated || !hasAds) {
     return null;
   }
 

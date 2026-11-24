@@ -551,11 +551,11 @@ export default function LandingPage() {
             >
               Registro Coach
             </Link>
-            <Link
-              href="/auth/forgot-password"
-              className="transition hover:text-zinc-200"
-            >
-              Recuperar contraseña
+            <Link href="/legal" className="transition hover:text-zinc-200">
+              Términos y Condiciones
+            </Link>
+            <Link href="/legal#privacidad" className="transition hover:text-zinc-200">
+              Privacidad
             </Link>
           </div>
         </div>

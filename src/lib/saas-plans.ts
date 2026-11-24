@@ -141,3 +141,35 @@ export function canInviteMoreStudents(
 export function formatMxn(amount: number): string {
   return `$${amount.toLocaleString("es-MX")} MXN`;
 }
+
+export interface PlanCapabilities {
+  canUseReusableTemplates: boolean;
+  canScheduleUnlimitedAppointments: boolean;
+  maxActiveAppointments: number | null;
+  maxSubscriptionPackages: number | null;
+  hasAds: boolean;
+}
+
+export function getPlanCapabilities(
+  tier?: SaasPlanTier | string | null
+): PlanCapabilities {
+  const normalized = (tier || "free") as SaasPlanTier;
+  if (normalized === "free") {
+    return {
+      canUseReusableTemplates: false,
+      canScheduleUnlimitedAppointments: false,
+      maxActiveAppointments: 2,
+      maxSubscriptionPackages: 1,
+      hasAds: true,
+    };
+  }
+  // Coach Base, Coach Pro y Estudio / Gym: sin publicidad y funciones desbloqueadas
+  return {
+    canUseReusableTemplates: true,
+    canScheduleUnlimitedAppointments: true,
+    maxActiveAppointments: null,
+    maxSubscriptionPackages: null,
+    hasAds: false,
+  };
+}
+

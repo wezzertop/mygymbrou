@@ -311,7 +311,11 @@ export default function CoachProfilePage() {
                 {new Date(coachProfile.terms_accepted_at).toLocaleDateString(
                   "es-MX"
                 )}
-              </span>
+              </span>{" "}
+              ·{" "}
+              <Link href="/legal" className="text-emerald-400 hover:underline">
+                Leer Términos y Privacidad
+              </Link>
             </p>
           </div>
 

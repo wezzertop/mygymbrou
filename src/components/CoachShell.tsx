@@ -203,6 +203,15 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
               </p>
             </div>
           </Link>
+          <div className="flex items-center justify-center gap-3 pt-1 text-[10px] text-zinc-500">
+            <Link href="/legal" className="transition hover:text-zinc-300">
+              Términos
+            </Link>
+            <span>·</span>
+            <Link href="/legal#privacidad" className="transition hover:text-zinc-300">
+              Privacidad
+            </Link>
+          </div>
         </div>
       </aside>
 
