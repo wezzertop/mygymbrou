@@ -48,7 +48,7 @@ function CoachStudentsContent() {
   );
 
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<FilterStatus>("all");
+  const [filter, setFilter] = useState<FilterStatus>("active");
   const [modalOpen, setModalOpen] = useState(
     searchParams.get("invite") === "true"
   );
@@ -110,15 +110,19 @@ function CoachStudentsContent() {
       s.invited_name.toLowerCase().includes(query.toLowerCase()) ||
       s.invited_email.toLowerCase().includes(query.toLowerCase());
     if (!matchesQuery) return false;
-    if (filter === "active") return s.invite_status === "active";
+    if (filter === "active")
+      return s.invite_status === "active" && Boolean(s.student_id);
     if (filter === "pending") return s.invite_status === "pending";
     if (filter === "expiring")
       return (
-        s.subscription_status === "pending_payment" ||
-        s.subscription_status === "expired"
+        s.invite_status === "active" &&
+        (s.subscription_status === "pending_payment" ||
+          s.subscription_status === "expired")
       );
-    if (filter === "verified") return Boolean(s.is_verified_identity);
-    if (filter === "to_verify") return !s.is_verified_identity;
+    if (filter === "verified")
+      return s.invite_status === "active" && Boolean(s.is_verified_identity);
+    if (filter === "to_verify")
+      return s.invite_status === "active" && !s.is_verified_identity;
     return true;
   });
 
@@ -220,7 +224,7 @@ function CoachStudentsContent() {
       <div className="flex flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold text-cyan-300">
+            <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
               {currentSaasPlan.name}
             </span>
             <span className="text-xs font-semibold text-white">
@@ -257,7 +261,7 @@ function CoachStudentsContent() {
           )}
           <Link
             href="/coach/plans?tab=saas"
-            className="shrink-0 rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-[11px] font-bold text-cyan-300 transition hover:border-cyan-500/50"
+            className="shrink-0 rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-[11px] font-bold text-emerald-300 transition hover:border-white/25"
           >
             {quota.allowed ? "Ver mi plan" : "Ampliar cupo"}
           </Link>
@@ -298,7 +302,7 @@ function CoachStudentsContent() {
                     </p>
                     <VerifiedPersonBadge verified={inq.student_is_verified} />
                     {inq.preferred_plan_name && (
-                      <span className="rounded-full border border-white/[0.08] bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold text-cyan-300">
+                      <span className="rounded-full border border-white/[0.08] bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
                         {inq.preferred_plan_name}
                       </span>
                     )}
@@ -344,7 +348,7 @@ function CoachStudentsContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar alumno por nombre o correo..."
-            className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-cyan-500"
+            className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-10 pr-9 text-sm text-white outline-none transition focus:border-emerald-500/60"
           />
           {query && (
             <button
@@ -360,22 +364,25 @@ function CoachStudentsContent() {
         <div className="no-scrollbar flex max-w-full gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {(
             [
-              { key: "all", label: "Todos" },
-              { key: "active", label: "Activos" },
+              { key: "active", label: `Alumnos Activos (${activeCount})` },
+              {
+                key: "pending",
+                label: `Invitaciones Pendientes (${pendingCount})`,
+              },
+              { key: "expiring", label: "Por vencer" },
               { key: "verified", label: "Verificados" },
               { key: "to_verify", label: "Por verificar" },
-              { key: "pending", label: "Pendientes" },
-              { key: "expiring", label: "Por vencer" },
+              { key: "all", label: "Todos" },
             ] as const
           ).map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setFilter(tab.key)}
-              className={`shrink-0 rounded-xl px-3.5 py-2 text-xs font-semibold transition ${
+              className={`h-9 shrink-0 rounded-full px-4 text-xs font-medium transition ${
                 filter === tab.key
-                  ? "bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-500/40"
-                  : "border border-white/[0.08] bg-[#0e0f12] text-zinc-400 hover:text-white"
+                  ? "bg-white text-zinc-950 font-semibold"
+                  : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:border-white/25 hover:text-white"
               }`}
             >
               {tab.label}
@@ -402,7 +409,7 @@ function CoachStudentsContent() {
                       className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-slate-700"
                     />
                   ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-sm font-bold text-cyan-400">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-sm font-bold text-emerald-400">
                       {st.invited_name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
@@ -417,7 +424,7 @@ function CoachStudentsContent() {
                       />
                     </div>
                     <p className="truncate text-xs text-zinc-400">{st.invited_email}</p>
-                    <p className="mt-0.5 truncate text-[11px] text-cyan-400">
+                    <p className="mt-0.5 truncate text-[11px] text-emerald-400">
                       {st.fitness_goal || "Objetivo general"}
                     </p>
                     <div className="mt-1.5">
@@ -461,7 +468,7 @@ function CoachStudentsContent() {
                 {st.student_id ? (
                   <Link
                     href={`/coach/students/${st.student_id}`}
-                    className="rounded-xl bg-white/[0.06] px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500 hover:text-zinc-950"
+                    className="rounded-xl bg-white/[0.06] px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-white text-zinc-950 hover:text-zinc-950"
                   >
                     Expediente 360°
                   </Link>
@@ -622,7 +629,7 @@ function CoachStudentsContent() {
                     <p>{inviteError}</p>
                     <Link
                       href="/coach/plans?tab=saas"
-                      className="mt-1.5 inline-block font-bold text-cyan-300 underline"
+                      className="mt-1.5 inline-block font-bold text-emerald-300 underline"
                     >
                       Ver planes disponibles en MXN →
                     </Link>
@@ -638,7 +645,7 @@ function CoachStudentsContent() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ej. Andrea López"
-                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-cyan-500"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500/60"
                   />
                 </div>
                 <div>
@@ -653,7 +660,7 @@ function CoachStudentsContent() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="andrea@correo.com"
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-2.5 pl-9 pr-3.5 text-sm text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-2.5 pl-9 pr-3.5 text-sm text-white outline-none focus:border-emerald-500/60"
                     />
                   </div>
                 </div>
@@ -665,7 +672,7 @@ function CoachStudentsContent() {
                     <select
                       value={selectedPlanId}
                       onChange={(e) => handlePlanPresetChange(e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-emerald-500/60"
                     >
                       {subscriptionPlans.map((p) => (
                         <option key={p.id} value={p.id}>
@@ -685,7 +692,7 @@ function CoachStudentsContent() {
                       type="text"
                       value={planName}
                       onChange={(e) => setPlanName(e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-emerald-500/60"
                     />
                   </div>
                   <div>
@@ -697,7 +704,7 @@ function CoachStudentsContent() {
                       min={0}
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-emerald-500/60"
                     />
                   </div>
                 </div>
@@ -710,7 +717,7 @@ function CoachStudentsContent() {
                     value={goal}
                     onChange={(e) => setGoal(e.target.value)}
                     placeholder="Hipertrofia, Definición, Recomposición..."
-                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-cyan-500"
+                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500/60"
                   />
                 </div>
                 <button

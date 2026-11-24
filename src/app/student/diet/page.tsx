@@ -183,7 +183,7 @@ export default function StudentDietPage() {
         <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
           <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-2.5 sm:p-3">
             <p className="truncate text-[10px] text-zinc-400 sm:text-[11px]">Proteínas</p>
-            <p className="mt-0.5 truncate text-base font-black text-cyan-400 sm:text-lg">
+            <p className="mt-0.5 truncate text-base font-black text-emerald-400 sm:text-lg">
               {consumedProtein}
               <span className="text-[11px] font-semibold text-zinc-500 sm:text-xs">
                 /{plan.protein_g}g
@@ -298,7 +298,7 @@ export default function StudentDietPage() {
                   </p>
                   {meal.exchange_options && (
                     <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-zinc-300">
-                      <p className="mb-1 flex items-center gap-1.5 font-semibold text-cyan-300">
+                      <p className="mb-1 flex items-center gap-1.5 font-semibold text-emerald-300">
                         <Repeat2 className="h-3.5 w-3.5" />
                         Opciones de Intercambio
                       </p>

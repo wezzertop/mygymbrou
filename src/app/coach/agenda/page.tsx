@@ -96,9 +96,9 @@ function CoachAgendaContent() {
         </div>
         <Link
           href="/coach/calendar"
-          className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-[#0e0f12] px-3.5 py-2 text-xs font-bold text-zinc-200 transition hover:border-cyan-500/50 hover:text-white"
+          className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-[#0e0f12] px-3.5 py-2 text-xs font-bold text-zinc-200 transition hover:border-white/25 hover:text-white"
         >
-          <CalendarDays className="h-4 w-4 text-cyan-400" />
+          <CalendarDays className="h-4 w-4 text-emerald-400" />
           Ver en Calendario
         </Link>
       </div>
@@ -242,7 +242,7 @@ function CoachAgendaContent() {
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold text-cyan-300">
+                    <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
                       {apt.student_name}
                     </span>
                     <span
@@ -263,7 +263,7 @@ function CoachAgendaContent() {
                   </div>
                   <h3 className="text-base font-bold text-white">{apt.title}</h3>
                   <p className="flex items-center gap-1.5 text-xs text-zinc-400">
-                    <Clock className="h-3.5 w-3.5 text-cyan-400" />
+                    <Clock className="h-3.5 w-3.5 text-emerald-400" />
                     {new Date(apt.scheduled_at).toLocaleString("es-MX", {
                       dateStyle: "full",
                       timeStyle: "short",

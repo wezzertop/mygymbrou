@@ -170,7 +170,7 @@ export default function CoachCalendarPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/coach/agenda"
-            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-cyan-500/20"
           >
             <Calendar className="h-3.5 w-3.5" />
             Agenda de Citas
@@ -179,7 +179,7 @@ export default function CoachCalendarPage() {
             aria-label="Filtrar por alumno"
             value={selectedStudentId}
             onChange={(e) => setSelectedStudentId(e.target.value)}
-            className="min-h-[38px] rounded-xl border border-white/[0.08] bg-[#0e0f12] px-3 py-2 text-xs font-semibold text-white outline-none focus:border-cyan-500"
+            className="min-h-[38px] rounded-xl border border-white/[0.08] bg-[#0e0f12] px-3 py-2 text-xs font-semibold text-white outline-none focus:border-emerald-500/60"
           >
             <option value="all">Todos los alumnos</option>
             {activeStudents.map((s) => (
@@ -195,7 +195,7 @@ export default function CoachCalendarPage() {
               onClick={() => setViewMode("month")}
               className={`rounded-lg px-3 py-1 ${
                 viewMode === "month"
-                  ? "bg-cyan-500 text-zinc-950"
+                  ? "bg-white text-zinc-950 text-zinc-950"
                   : "text-zinc-400"
               }`}
             >
@@ -206,7 +206,7 @@ export default function CoachCalendarPage() {
               onClick={() => setViewMode("week")}
               className={`rounded-lg px-3 py-1 ${
                 viewMode === "week"
-                  ? "bg-cyan-500 text-zinc-950"
+                  ? "bg-white text-zinc-950 text-zinc-950"
                   : "text-zinc-400"
               }`}
             >
@@ -258,7 +258,7 @@ export default function CoachCalendarPage() {
               <button
                 type="button"
                 onClick={handleJumpToday}
-                className="h-8 rounded-lg border border-white/[0.08] bg-[#060607] px-2.5 text-[11px] font-bold text-cyan-300 transition hover:border-cyan-500 hover:bg-[#0e0f12]"
+                className="h-8 rounded-lg border border-white/[0.08] bg-[#060607] px-2.5 text-[11px] font-bold text-emerald-300 transition hover:border-cyan-500 hover:bg-[#0e0f12]"
               >
                 Hoy
               </button>
@@ -343,7 +343,7 @@ export default function CoachCalendarPage() {
         <aside className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-4">
           <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
             <div>
-              <p className="text-[11px] font-semibold uppercase text-cyan-400">
+              <p className="text-[11px] font-semibold uppercase text-emerald-400">
                 Detalle del Día
               </p>
               <h3 className="text-base font-bold capitalize text-white">
@@ -355,7 +355,7 @@ export default function CoachCalendarPage() {
             </div>
             <Link
               href="/coach/agenda"
-              className="rounded-lg bg-white/[0.06] px-2.5 py-1.5 text-[11px] font-bold text-cyan-300 hover:bg-white/[0.12]"
+              className="rounded-lg bg-white/[0.06] px-2.5 py-1.5 text-[11px] font-bold text-emerald-300 hover:bg-white/[0.12]"
             >
               + Cita
             </Link>
@@ -386,7 +386,7 @@ export default function CoachCalendarPage() {
           {/* Appointments */}
           {selectedDetails.dayApts.length > 0 && (
             <div className="space-y-2">
-              <p className="flex items-center gap-1.5 text-xs font-bold text-cyan-400">
+              <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
                 <Calendar className="h-3.5 w-3.5" />
                 Citas Programadas
               </p>
@@ -420,7 +420,7 @@ export default function CoachCalendarPage() {
                 <Link
                   key={`${item.studentId}-${item.dayTitle}`}
                   href={`/coach/students/${item.studentId}`}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3 text-xs transition hover:border-cyan-500/40"
+                  className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3 text-xs transition hover:border-white/25"
                 >
                   <div className="min-w-0">
                     <p className="font-bold text-white">{item.name}</p>

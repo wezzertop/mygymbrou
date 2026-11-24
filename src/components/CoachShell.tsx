@@ -19,6 +19,7 @@ import { VerifiedPersonBadge } from "@/components/VerificationBadge";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { SanctionNoticeBanner } from "@/components/SanctionNoticeBanner";
 import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
+import { SmartNotificationsCenter } from "@/components/SmartNotificationsCenter";
 
 const COACH_NAV = [
   { href: "/coach", label: "Inicio", icon: LayoutDashboard, exact: true },
@@ -79,6 +80,7 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
               </span>
             </div>
           </Link>
+          <SmartNotificationsCenter role="coach" />
         </div>
 
         <nav aria-label="Menú principal Coach" className="flex-1 space-y-1 px-3 py-5">
@@ -240,6 +242,7 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
                 Alumno
               </Link>
             )}
+            <SmartNotificationsCenter role="coach" />
             <button
               type="button"
               onClick={() => resetOnboarding("coach")}

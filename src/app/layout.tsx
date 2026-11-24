@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 
 export const metadata: Metadata = {
   title: "MiGymBrou — Plataforma SaaS para Coaches y Alumnos Fitness",
@@ -33,7 +34,10 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <body className="min-h-screen bg-[#060607] text-zinc-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
-        <AppProvider>{children}</AppProvider>
+        <AppProvider>
+          {children}
+          <PwaInstallPrompt />
+        </AppProvider>
       </body>
     </html>
   );

@@ -149,7 +149,7 @@ export default function StudentCalendarPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/student/appointments"
-            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-cyan-500/20"
           >
             <CalendarDays className="h-3.5 w-3.5" />
             Mis Citas
@@ -271,7 +271,7 @@ export default function StudentCalendarPage() {
                 <div className="flex w-full items-center justify-between">
                   <span
                     className={`text-xs font-bold ${
-                      isToday ? "text-cyan-400" : "text-zinc-200"
+                      isToday ? "text-emerald-400" : "text-zinc-200"
                     }`}
                   >
                     {dayObj.getDate()}
@@ -368,12 +368,12 @@ export default function StudentCalendarPage() {
             key={apt.id}
             className="rounded-xl border border-white/[0.08] bg-cyan-500/10 p-4 text-xs"
           >
-            <p className="flex items-center gap-1.5 font-bold text-cyan-300">
+            <p className="flex items-center gap-1.5 font-bold text-emerald-300">
               <CalendarDays className="h-4 w-4" />
               Cita con tu Coach: {apt.title}
             </p>
             <p className="mt-1 flex items-center gap-1.5 text-zinc-200">
-              <Clock className="h-3.5 w-3.5 text-cyan-400" />
+              <Clock className="h-3.5 w-3.5 text-emerald-400" />
               {new Date(apt.scheduled_at).toLocaleTimeString("es-MX", {
                 timeStyle: "short",
               })}

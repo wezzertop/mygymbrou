@@ -22,6 +22,7 @@ import { VerifiedPersonBadge } from "@/components/VerificationBadge";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { SanctionNoticeBanner } from "@/components/SanctionNoticeBanner";
 import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
+import { SmartNotificationsCenter } from "@/components/SmartNotificationsCenter";
 
 const STUDENT_NAV = [
   { href: "/student", label: "Inicio", icon: Home, exact: true },
@@ -301,18 +302,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
               <HelpCircle className="h-4 w-4" />
             </button>
 
-            <Link
-              href="/student/notifications"
-              aria-label="Notificaciones"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-300 transition hover:border-white/25 hover:text-white"
-            >
-              <Bell className="h-4 w-4" />
-              {unreadCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-bold text-zinc-950">
-                  {unreadCount}
-                </span>
-              )}
-            </Link>
+            <SmartNotificationsCenter role="student" />
 
             <Link
               href="/student/profile"

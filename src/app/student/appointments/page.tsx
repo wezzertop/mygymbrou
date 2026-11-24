@@ -24,7 +24,7 @@ export default function StudentAppointmentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
           Seguimiento con tu Coach
         </span>
         <h1 className="text-2xl font-extrabold text-white">Mis Citas</h1>
@@ -35,9 +35,9 @@ export default function StudentAppointmentsPage() {
 
       {/* Featured Next Appointment */}
       {nextApt ? (
-        <section className="rounded-3xl border border-cyan-500/40 bg-[#0e0f12] p-6 shadow-xl">
+        <section className="rounded-3xl border border-white/15 bg-[#0e0f12] p-6 shadow-xl">
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
               <CalendarDays className="h-3.5 w-3.5" />
               Próxima Cita Agendada
             </span>
@@ -52,7 +52,7 @@ export default function StudentAppointmentsPage() {
 
           <div className="mt-4 space-y-2 text-sm text-zinc-200">
             <p className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-cyan-400" />
+              <Clock className="h-4 w-4 text-emerald-400" />
               {new Date(nextApt.scheduled_at).toLocaleString("es-MX", {
                 dateStyle: "full",
                 timeStyle: "short",
@@ -65,7 +65,7 @@ export default function StudentAppointmentsPage() {
                   href={nextApt.location_or_link}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-cyan-400 hover:underline"
+                  className="inline-flex items-center gap-1 text-emerald-400 hover:underline"
                 >
                   Unirse a la videollamada
                   <ExternalLink className="h-3.5 w-3.5" />

@@ -1,11 +1,11 @@
 {
-  "name": "MiGymBrou — Plataforma para Coaches y Alumnos",
+  "name": "MiGymBrou — Entrenamiento y Nutrición",
   "short_name": "MiGymBrou",
-  "description": "Plataforma SaaS Mobile-First para entrenadores personales y sus alumnos: antropometría, rutinas guiadas, dietas, citas y suscripciones.",
+  "description": "Plataforma fitness para Coaches y Alumnos: rutinas, nutrición, antropometría y citas.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#06b6d4",
+  "background_color": "#060607",
+  "theme_color": "#060607",
   "orientation": "portrait-primary",
   "icons": [
     {

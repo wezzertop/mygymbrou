@@ -333,13 +333,13 @@ export default function CoachWorkoutsPage() {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Gender Preview Switcher */}
-          <div className="flex flex-1 rounded-xl border border-white/[0.08] bg-[#060607] p-1 text-xs font-bold sm:flex-none">
+          <div className="flex flex-1 rounded-full border border-white/10 bg-[#060607] p-1 text-xs font-medium sm:flex-none">
             <button
               type="button"
               onClick={() => setPreviewGender("female")}
-              className={`flex-1 rounded-lg px-3 py-1.5 transition sm:flex-none ${
+              className={`flex-1 rounded-full px-3.5 py-1.5 transition sm:flex-none ${
                 previewGender === "female"
-                  ? "bg-rose-500/20 text-rose-300"
+                  ? "bg-white text-zinc-950 font-semibold"
                   : "text-zinc-400 hover:text-white"
               }`}
             >
@@ -348,9 +348,9 @@ export default function CoachWorkoutsPage() {
             <button
               type="button"
               onClick={() => setPreviewGender("male")}
-              className={`flex-1 rounded-lg px-3 py-1.5 transition sm:flex-none ${
+              className={`flex-1 rounded-full px-3.5 py-1.5 transition sm:flex-none ${
                 previewGender === "male"
-                  ? "bg-cyan-500/20 text-cyan-300"
+                  ? "bg-white text-zinc-950 font-semibold"
                   : "text-zinc-400 hover:text-white"
               }`}
             >
@@ -361,9 +361,9 @@ export default function CoachWorkoutsPage() {
           <button
             type="button"
             onClick={() => setCustomModalOpen(true)}
-            className="inline-flex min-h-[38px] flex-1 items-center justify-center gap-2 rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20 sm:flex-none"
+            className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border border-white/15 bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/30 hover:text-white sm:flex-none"
           >
-            <Upload className="h-4 w-4 shrink-0" />
+            <Upload className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
             <span className="truncate">Subir Secuencia</span>
           </button>
         </div>
@@ -785,7 +785,7 @@ export default function CoachWorkoutsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar ejercicio, músculo o equipo..."
-              className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-9 pr-9 text-xs text-white outline-none transition focus:border-cyan-500"
+              className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-9 pr-9 text-xs text-white outline-none transition focus:border-emerald-500/60"
             />
             {search && (
               <button
@@ -806,10 +806,10 @@ export default function CoachWorkoutsPage() {
                 key={g}
                 type="button"
                 onClick={() => setGroupFilter(g)}
-                className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+                className={`h-8 shrink-0 rounded-full px-3.5 text-xs font-medium transition ${
                   groupFilter === g
-                    ? "bg-cyan-500 text-zinc-950"
-                    : "border border-white/[0.08] bg-[#0e0f12] text-zinc-400 hover:text-white"
+                    ? "bg-white text-zinc-950 font-semibold"
+                    : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:border-white/25 hover:text-white"
                 }`}
               >
                 {g}
@@ -820,13 +820,13 @@ export default function CoachWorkoutsPage() {
           {/* Catalog Count & Live API Indicator */}
           <div className="flex items-center justify-between text-[11px] text-zinc-400">
             <span className="inline-flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
+              <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
               Catálogo en vivo:{" "}
               <strong className="text-white">{filteredCatalog.length}</strong>{" "}
               ejercicios animados en {groupFilter}
             </span>
             {loadingCatalog && (
-              <span className="inline-flex items-center gap-1 text-cyan-400">
+              <span className="inline-flex items-center gap-1 text-emerald-400">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 Cargando GIFs...
               </span>
@@ -838,7 +838,7 @@ export default function CoachWorkoutsPage() {
             {filteredCatalog.map((item) => (
               <div
                 key={item.id}
-                className="flex min-w-0 flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3.5 transition hover:border-cyan-500/40"
+                className="flex min-w-0 flex-col justify-between gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-3.5 transition hover:border-white/20"
               >
                 <div className="flex min-w-0 gap-3">
                   <ExerciseVisualDemo
@@ -854,17 +854,17 @@ export default function CoachWorkoutsPage() {
                     compact
                   />
                   <div className="min-w-0 flex-1">
-                    <span className="rounded bg-rose-500/15 px-1.5 py-0.5 text-[10px] font-bold text-rose-300">
+                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-emerald-400">
                       {item.muscle_group}
                     </span>
-                    <h3 className="mt-1 text-xs font-bold text-white">
+                    <h3 className="mt-1.5 text-xs font-semibold text-white">
                       {item.name}
                     </h3>
                     <p className="mt-0.5 text-[11px] text-zinc-400">
                       {item.equipment}
                     </p>
                     {item.primary_muscles && item.primary_muscles.length > 0 && (
-                      <p className="mt-1 truncate text-[10px] font-semibold text-rose-400">
+                      <p className="mt-1 truncate text-[10px] font-medium text-zinc-400">
                         ● {item.primary_muscles.join(" · ")}
                       </p>
                     )}
@@ -873,7 +873,7 @@ export default function CoachWorkoutsPage() {
                 <button
                   type="button"
                   onClick={() => handleAddFromCatalog(item)}
-                  className="inline-flex min-h-[38px] w-full items-center justify-center gap-1.5 rounded-xl bg-white/[0.06] py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500 hover:text-zinc-950 active:scale-[0.98]"
+                  className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] text-xs font-medium text-white transition hover:bg-white hover:text-zinc-950 active:scale-[0.98]"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Agregar a la Rutina
@@ -980,7 +980,7 @@ export default function CoachWorkoutsPage() {
                     onClick={() => toggleWeekday(wd.num)}
                     className={`rounded-lg py-1.5 text-[11px] font-bold transition ${
                       active
-                        ? "bg-cyan-500 text-zinc-950"
+                        ? "bg-white text-zinc-950 text-zinc-950"
                         : "border border-white/[0.08] bg-[#060607] text-zinc-400 hover:text-white"
                     }`}
                   >
@@ -1209,7 +1209,7 @@ export default function CoachWorkoutsPage() {
               </div>
 
               <div className="space-y-2 rounded-2xl border border-white/[0.08] bg-[#060607] p-3">
-                <p className="text-[11px] font-bold text-cyan-400">
+                <p className="text-[11px] font-bold text-emerald-400">
                   Secuencia de Fotogramas (URLs de Supabase Storage o local)
                 </p>
                 <input

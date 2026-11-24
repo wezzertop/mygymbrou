@@ -52,7 +52,7 @@ export default function StudentNotificationsPage() {
           <button
             type="button"
             onClick={() => markAllNotificationsRead(studentProfile.id)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 hover:bg-cyan-500/20"
           >
             <CheckCheck className="h-4 w-4" />
             Marcar todas como leídas
@@ -71,14 +71,14 @@ export default function StudentNotificationsPage() {
               className={`flex w-full items-start gap-3.5 rounded-2xl border p-4 text-left transition ${
                 n.is_read
                   ? "border-white/[0.08] bg-[#0e0f12] opacity-80"
-                  : "border-cyan-500/40 bg-[#0e0f12] shadow-lg shadow-cyan-950/20"
+                  : "border-white/15 bg-[#0e0f12] shadow-lg shadow-cyan-950/20"
               }`}
             >
               <div
                 className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
                   n.is_read
                     ? "bg-white/[0.06] text-zinc-400"
-                    : "bg-cyan-500/15 text-cyan-400"
+                    : "bg-cyan-500/15 text-emerald-400"
                 }`}
               >
                 <Icon className="h-5 w-5" />

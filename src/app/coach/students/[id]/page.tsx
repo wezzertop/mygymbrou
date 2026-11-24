@@ -174,7 +174,7 @@ export default function Student360Page() {
         <p className="text-zinc-400">No encontramos este expediente.</p>
         <Link
           href="/coach/students"
-          className="inline-block rounded-xl bg-cyan-500 px-4 py-2 text-xs font-bold text-zinc-950"
+          className="inline-block rounded-xl bg-white text-zinc-950 px-4 py-2 text-xs font-bold text-zinc-950"
         >
           Volver a Alumnos
         </Link>
@@ -247,7 +247,7 @@ export default function Student360Page() {
                 className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-cyan-500/50"
               />
             ) : (
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-lg font-bold text-cyan-400">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-lg font-bold text-emerald-400">
                 {student.invited_name.slice(0, 2).toUpperCase()}
               </div>
             )}
@@ -264,7 +264,7 @@ export default function Student360Page() {
                 )}
               </div>
               <p className="truncate text-xs text-zinc-400">{student.invited_email}</p>
-              <span className="mt-1 inline-block rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-300">
+              <span className="mt-1 inline-block rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
                 {student.fitness_goal || "Plan Personalizado"}
               </span>
             </div>
@@ -273,9 +273,9 @@ export default function Student360Page() {
           <div className="flex flex-wrap gap-2">
             <Link
               href={`/coach/agenda?student=${studentId}`}
-              className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-[#060607] px-4 py-2.5 text-xs font-bold text-zinc-200 transition hover:border-cyan-500/50 hover:text-white active:scale-[0.98]"
+              className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl border border-white/15 bg-[#060607] px-4 py-2.5 text-xs font-bold text-zinc-200 transition hover:border-white/25 hover:text-white active:scale-[0.98]"
             >
-              <Calendar className="h-4 w-4 text-cyan-400" />
+              <Calendar className="h-4 w-4 text-emerald-400" />
               Agendar Cita
             </Link>
             <button
@@ -447,7 +447,7 @@ export default function Student360Page() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition ${
                 active
-                  ? "bg-cyan-500 text-zinc-950 shadow"
+                  ? "bg-white text-zinc-950 text-zinc-950 shadow"
                   : "text-zinc-400 hover:bg-[#0e0f12] hover:text-white"
               }`}
             >
@@ -464,7 +464,7 @@ export default function Student360Page() {
           {showNewForm && (
             <form
               onSubmit={handleSaveAssessment}
-              className="space-y-4 rounded-2xl border border-cyan-500/40 bg-[#0e0f12] p-5"
+              className="space-y-4 rounded-2xl border border-white/15 bg-[#0e0f12] p-5"
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-bold text-white">
@@ -539,7 +539,7 @@ export default function Student360Page() {
                 </div>
               </div>
 
-              <p className="text-xs font-semibold text-cyan-400">
+              <p className="text-xs font-semibold text-emerald-400">
                 Perímetros Corporales (cm)
               </p>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -584,7 +584,7 @@ export default function Student360Page() {
                     setForm({ ...form, coach_analysis_notes: e.target.value })
                   }
                   placeholder="Ej. Excelente reducción abdominal manteniendo masa magra. Ajustaremos cargas en tren superior..."
-                  className="w-full rounded-xl border border-white/15 bg-[#060607] p-3 text-sm text-white outline-none focus:border-cyan-500"
+                  className="w-full rounded-xl border border-white/15 bg-[#060607] p-3 text-sm text-white outline-none focus:border-emerald-500/60"
                 />
               </div>
 
@@ -603,7 +603,7 @@ export default function Student360Page() {
             <div className="space-y-4">
               <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
+                  <span className="rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
                     Último Análisis — {latest.assessment_date}
                   </span>
                   {latest.goal_tag && (
@@ -726,7 +726,7 @@ export default function Student360Page() {
                     key={day.id}
                     className="rounded-xl border border-white/[0.08] bg-[#060607] p-4"
                   >
-                    <h3 className="text-sm font-bold text-cyan-300">
+                    <h3 className="text-sm font-bold text-emerald-300">
                       {day.title}
                     </h3>
                     <div className="mt-2.5 divide-y divide-white/[0.06]/70">
@@ -780,7 +780,7 @@ export default function Student360Page() {
                       assignWorkoutToStudent(tpl.id, studentId);
                       showToast("Rutina asignada y alumno notificado.");
                     }}
-                    className="rounded-lg bg-cyan-500 px-3 py-1.5 text-xs font-bold text-zinc-950 hover:bg-cyan-400"
+                    className="rounded-lg bg-white text-zinc-950 px-3 py-1.5 text-xs font-bold text-zinc-950 hover:bg-zinc-200"
                   >
                     Asignar
                   </button>
@@ -814,7 +814,7 @@ export default function Student360Page() {
                 </div>
                 <div className="rounded-xl bg-[#060607] p-3 text-center">
                   <p className="text-[10px] text-zinc-400">Proteína</p>
-                  <p className="text-base font-black text-cyan-400">
+                  <p className="text-base font-black text-emerald-400">
                     {activeDiet.protein_g}g
                   </p>
                 </div>
@@ -919,7 +919,7 @@ export default function Student360Page() {
               <p className="mt-0.5 text-sm font-bold text-white">
                 {student.subscription_plan_name} — ${student.subscription_price}
               </p>
-              <p className="mt-1 flex items-center gap-1.5 text-[11px] text-cyan-300">
+              <p className="mt-1 flex items-center gap-1.5 text-[11px] text-emerald-300">
                 <Calendar className="h-3.5 w-3.5" />
                 Vence el: {student.expires_at || student.next_billing_date}
               </p>

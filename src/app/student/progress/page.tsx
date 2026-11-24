@@ -291,7 +291,7 @@ export default function StudentProgressPage() {
                 className="h-10 w-10 rounded-full object-cover ring-2 ring-cyan-500/50"
               />
               <div>
-                <p className="flex items-center gap-1.5 text-xs font-bold text-cyan-300">
+                <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
                   <Sparkles className="h-3.5 w-3.5" />
                   Último Análisis del Coach
                 </p>

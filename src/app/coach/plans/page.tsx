@@ -189,7 +189,7 @@ function CoachPlansContent() {
               aria-label="Seleccionar alumno para asignación rápida"
               value={selectedRelationId}
               onChange={(e) => setSelectedRelationId(e.target.value)}
-              className="bg-transparent font-bold text-cyan-400 outline-none"
+              className="bg-transparent font-bold text-emerald-400 outline-none"
             >
               {students.map((s) => (
                 <option key={s.id} value={s.id} className="bg-[#0e0f12] text-white">
@@ -217,7 +217,7 @@ function CoachPlansContent() {
           onClick={() => setTab("subscriptions")}
           className={`flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition ${
             tab === "subscriptions"
-              ? "bg-cyan-500 text-zinc-950"
+              ? "bg-white text-zinc-950 text-zinc-950"
               : "text-zinc-400 hover:text-white"
           }`}
         >
@@ -254,7 +254,7 @@ function CoachPlansContent() {
         <div className="space-y-6">
           <div className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:flex-row sm:items-center">
             <div className="space-y-1">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
                 <Crown className="h-3.5 w-3.5" />
                 Plan actual: {currentSaasPlan.name} ({currentSaasPlan.priceLabel}{" "}
                 {currentSaasPlan.period})
@@ -301,7 +301,7 @@ function CoachPlansContent() {
                     isCurrent
                       ? "border-emerald-500 bg-[#0e0f12] ring-1 ring-emerald-500/40"
                       : plan.featured
-                      ? "border-cyan-500/50 bg-[#0e0f12]"
+                      ? "border-white/15 bg-[#0e0f12]"
                       : "border-white/[0.08] bg-[#0e0f12]/80"
                   }`}
                 >
@@ -321,7 +321,7 @@ function CoachPlansContent() {
                       {plan.period}
                     </span>
                   </div>
-                  <p className="mb-3 rounded-lg bg-[#060607] px-2.5 py-1.5 text-[11px] font-bold text-cyan-300">
+                  <p className="mb-3 rounded-lg bg-[#060607] px-2.5 py-1.5 text-[11px] font-bold text-emerald-300">
                     {plan.studentLimitLabel}
                   </p>
                   <div className="mb-5 flex-1 space-y-3">
@@ -384,7 +384,7 @@ function CoachPlansContent() {
             className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
           >
             <h2 className="flex items-center gap-2 text-base font-bold text-white">
-              <Plus className="h-4 w-4 text-cyan-400" />
+              <Plus className="h-4 w-4 text-emerald-400" />
               Crear Nuevo Plan de Suscripción
             </h2>
 
@@ -508,12 +508,12 @@ function CoachPlansContent() {
             {subscriptionPlans.map((plan) => (
               <div
                 key={plan.id}
-                className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12]/75 p-5 transition hover:border-cyan-500/40"
+                className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12]/75 p-5 transition hover:border-white/25"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[10px] font-bold text-cyan-300">
+                      <span className="rounded-full bg-cyan-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
                         {plan.duration_days} días
                       </span>
                       <h3 className="mt-1.5 text-lg font-extrabold text-white">
@@ -578,7 +578,7 @@ function CoachPlansContent() {
                     <span
                       className={`rounded-md px-2 py-0.5 ${
                         plan.includes_workouts
-                          ? "bg-cyan-500/15 text-cyan-300"
+                          ? "bg-cyan-500/15 text-emerald-300"
                           : "bg-white/[0.06] text-zinc-500 line-through"
                       }`}
                     >
@@ -603,7 +603,7 @@ function CoachPlansContent() {
                       `Asignado "${plan.name}" a ${selectedStudent.invited_name}. Fecha de vencimiento calculada automáticamente.`
                     );
                   }}
-                  className="inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-xl bg-white/[0.06] py-2.5 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500 hover:text-zinc-950 active:scale-[0.98] disabled:opacity-40"
+                  className="inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-xl bg-white/[0.06] py-2.5 text-xs font-bold text-emerald-300 transition hover:bg-white text-zinc-950 hover:text-zinc-950 active:scale-[0.98] disabled:opacity-40"
                 >
                   <UserCheck className="h-3.5 w-3.5" />
                   {selectedStudent

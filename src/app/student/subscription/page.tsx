@@ -114,7 +114,7 @@ export default function StudentSubscriptionPage() {
               <h2 className="text-xl font-black text-white">
                 {relation?.subscription_plan_name || "Plan Oro"}
               </h2>
-              <p className="text-xs font-medium text-cyan-400">
+              <p className="text-xs font-medium text-emerald-400">
                 {coachProfile.brand_name}
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -147,7 +147,7 @@ export default function StudentSubscriptionPage() {
               </span>
             )}
             {currentPlan.includes_workouts && (
-              <span className="inline-flex items-center gap-1 rounded-xl bg-cyan-500/15 px-3 py-1.5 text-cyan-300">
+              <span className="inline-flex items-center gap-1 rounded-xl bg-cyan-500/15 px-3 py-1.5 text-emerald-300">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 Rutinas Visuales
               </span>
@@ -178,14 +178,14 @@ export default function StudentSubscriptionPage() {
               Vencimiento Exacto
             </p>
             <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-white">
-              <Calendar className="h-4 w-4 text-cyan-400" />
+              <Calendar className="h-4 w-4 text-emerald-400" />
               {expiresAt || "2026-12-05"}
             </p>
           </div>
           <div className="flex items-center sm:justify-end">
             <Link
               href="/student/calendar"
-              className="inline-flex items-center gap-1 text-xs font-bold text-cyan-400 hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 hover:underline"
             >
               Ver corte en Calendario
               <ArrowUpRight className="h-3.5 w-3.5" />
@@ -216,7 +216,7 @@ export default function StudentSubscriptionPage() {
 
           <Link
             href="/student/coaches"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-cyan-500/20"
           >
             <Search className="h-3.5 w-3.5" />
             Explorar Otros Coaches
@@ -243,7 +243,7 @@ export default function StudentSubscriptionPage() {
                       {cert.file_type === "pdf" ? "PDF" : "Diploma"} ·{" "}
                       {cert.issue_year}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400">
                       <Eye className="h-3.5 w-3.5" />
                       Ver archivo
                     </span>
@@ -275,7 +275,7 @@ export default function StudentSubscriptionPage() {
       <section className="space-y-4">
         <div>
           <h2 className="flex items-center gap-2 text-base font-extrabold text-white">
-            <Sparkles className="h-4 w-4 text-cyan-400" />
+            <Sparkles className="h-4 w-4 text-emerald-400" />
             Planes Disponibles de {coachProfile.full_name}
           </h2>
           <p className="text-xs text-zinc-400">
@@ -293,7 +293,7 @@ export default function StudentSubscriptionPage() {
                 className={`flex flex-col justify-between gap-4 rounded-2xl border p-5 transition ${
                   isCurrent
                     ? "border-emerald-500/50 bg-emerald-950/20"
-                    : "border-white/[0.08] bg-[#0e0f12]/75 hover:border-cyan-500/40"
+                    : "border-white/[0.08] bg-[#0e0f12]/75 hover:border-white/25"
                 }`}
               >
                 <div className="space-y-2">
@@ -345,7 +345,7 @@ export default function StudentSubscriptionPage() {
                       <CheckCircle2
                         className={`h-3.5 w-3.5 ${
                           plan.includes_workouts
-                            ? "text-cyan-400"
+                            ? "text-emerald-400"
                             : "text-slate-600"
                         }`}
                       />

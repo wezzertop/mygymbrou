@@ -44,7 +44,7 @@ function StudentWorkoutsContent() {
     return (
       <div className="space-y-6">
         <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-7 text-center shadow-2xl">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-400">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-emerald-400">
             <Lock className="h-7 w-7" />
           </div>
           <span className="mt-4 inline-block rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-bold text-amber-300">
@@ -194,7 +194,7 @@ function StudentWorkoutsContent() {
       <div className="sticky top-14 z-20 rounded-2xl border border-white/[0.08] bg-[#060607]/95 p-3.5 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-emerald-400">
               <Timer className="h-5 w-5" />
             </div>
             <div>
@@ -224,7 +224,7 @@ function StudentWorkoutsContent() {
                 onClick={() => startRest(preset)}
                 className={`min-h-[36px] rounded-lg border px-2.5 py-1.5 text-[11px] font-bold transition active:scale-95 ${
                   selectedPreset === preset
-                    ? "border-cyan-500 bg-cyan-500/20 text-cyan-300"
+                    ? "border-cyan-500 bg-cyan-500/20 text-emerald-300"
                     : "border-white/15 bg-[#0e0f12] text-zinc-200 hover:border-cyan-500/60"
                 }`}
               >
@@ -235,7 +235,7 @@ function StudentWorkoutsContent() {
               type="button"
               onClick={() => setTimerRunning((r) => !r)}
               aria-label={timerRunning ? "Pausar temporizador" : "Iniciar temporizador"}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500 text-zinc-950 transition hover:bg-cyan-400 active:scale-95"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-zinc-950 text-zinc-950 transition hover:bg-zinc-200 active:scale-95"
             >
               {timerRunning ? (
                 <Pause className="h-4 w-4" />
@@ -323,7 +323,7 @@ function StudentWorkoutsContent() {
                 <div className="flex min-w-0 flex-col justify-between space-y-3 sm:col-span-7">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                         Ejercicio {index + 1} · {ex.muscle_group}
                       </span>
                       <h3
@@ -355,7 +355,7 @@ function StudentWorkoutsContent() {
                       {ex.sets} series × {ex.reps}
                     </span>
                     {ex.target_weight_or_rpe && (
-                      <span className="rounded-lg bg-cyan-500/15 px-2.5 py-1 font-semibold text-cyan-300">
+                      <span className="rounded-lg bg-cyan-500/15 px-2.5 py-1 font-semibold text-emerald-300">
                         {ex.target_weight_or_rpe}
                       </span>
                     )}
@@ -371,7 +371,7 @@ function StudentWorkoutsContent() {
 
                   {ex.coach_notes && (
                     <p className="rounded-xl bg-[#060607] p-2.5 text-xs text-zinc-300">
-                      <span className="font-semibold text-cyan-400">
+                      <span className="font-semibold text-emerald-400">
                         Nota del Coach:{" "}
                       </span>
                       {ex.coach_notes}
