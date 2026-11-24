@@ -52,7 +52,7 @@ export default function StudentNotificationsPage() {
           <button
             type="button"
             onClick={() => markAllNotificationsRead(studentProfile.id)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/20"
           >
             <CheckCheck className="h-4 w-4" />
             Marcar todas como leídas

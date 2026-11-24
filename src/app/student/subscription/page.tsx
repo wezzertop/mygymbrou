@@ -98,7 +98,7 @@ export default function StudentSubscriptionPage() {
       </div>
 
       {/* Active Plan Strategic Card */}
-      <section className="relative overflow-hidden rounded-3xl border border-emerald-500/35 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 p-6 shadow-2xl">
+      <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <img
@@ -216,7 +216,7 @@ export default function StudentSubscriptionPage() {
 
           <Link
             href="/student/coaches"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-500/35 bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
           >
             <Search className="h-3.5 w-3.5" />
             Explorar Otros Coaches

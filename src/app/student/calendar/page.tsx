@@ -149,7 +149,7 @@ export default function StudentCalendarPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/student/appointments"
-            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-cyan-500/35 bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
           >
             <CalendarDays className="h-3.5 w-3.5" />
             Mis Citas
@@ -366,7 +366,7 @@ export default function StudentCalendarPage() {
         {selInfo.dayApts.map((apt) => (
           <div
             key={apt.id}
-            className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-xs"
+            className="rounded-xl border border-white/[0.08] bg-cyan-500/10 p-4 text-xs"
           >
             <p className="flex items-center gap-1.5 font-bold text-cyan-300">
               <CalendarDays className="h-4 w-4" />

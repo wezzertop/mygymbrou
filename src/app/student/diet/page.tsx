@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { NonIntrusiveAdBanner } from "@/components/NonIntrusiveAdBanner";
+import { SectionVisualHeader } from "@/components/SectionVisualHeader";
 
 export default function StudentDietPage() {
   const {
@@ -42,7 +43,7 @@ export default function StudentDietPage() {
   if (activePlan && !activePlan.includes_nutrition) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30 p-7 text-center shadow-2xl">
+        <div className="rounded-3xl border border-emerald-500/30 bg-[#0e0f12] p-7 text-center shadow-2xl">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400">
             <Lock className="h-7 w-7" />
           </div>
@@ -108,17 +109,13 @@ export default function StudentDietPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
-          Plan Nutricional
-        </span>
-        <h1 className="text-2xl font-extrabold text-white">{plan.title}</h1>
-        {plan.notes && (
-          <p className="mt-1 text-xs leading-relaxed text-zinc-400">
-            {plan.notes}
-          </p>
-        )}
-      </div>
+      <SectionVisualHeader
+        imageSrc="/images/landing/nutrition-editorial.jpg"
+        imageAlt="Plan nutricional saludable"
+        eyebrow="Plan Nutricional"
+        title={plan.title}
+        subtitle={plan.notes || "Control diario de comidas, macros e hidratación."}
+      />
 
       {/* Macros & Calories Summary Card */}
       <section className="rounded-3xl border border-white/[0.08] bg-gradient-to-br from-slate-900 to-slate-950 p-5">

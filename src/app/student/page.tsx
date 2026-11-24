@@ -19,6 +19,7 @@ import {
   Utensils,
 } from "lucide-react";
 import { getDaysRemaining, useApp } from "@/context/AppContext";
+import { SectionVisualHeader } from "@/components/SectionVisualHeader";
 
 export default function StudentDailyHomePage() {
   const {
@@ -197,44 +198,40 @@ export default function StudentDailyHomePage() {
 
   return (
     <div className="space-y-6">
-      {/* Editorial Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
-            Resumen de hoy
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
-            Hola, {firstName}
-          </h1>
-          <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
-            {studentProfile.fitness_goal || "Constancia diaria hacia tu meta"}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setShowWeightForm((v) => !v)}
-            className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-[#0e0f12] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/25 hover:text-white"
-          >
-            <Scale className="h-3.5 w-3.5 text-emerald-400" />
-            <span className="tabular-nums">
-              {latestAssessment ? `${latestAssessment.weight_kg} kg` : "Registrar peso"}
-            </span>
-          </button>
-          {relation && (
-            <Link
-              href="/student/subscription"
-              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 text-xs font-medium text-emerald-300"
+      {/* Editorial Visual Header (mobile-adapted photo, zero text over photo) */}
+      <SectionVisualHeader
+        imageSrc="/images/landing/hero-athlete.jpg"
+        imageAlt="Entrenamiento diario de alto rendimiento"
+        imagePosition="object-[center_30%]"
+        eyebrow="Resumen de hoy"
+        title={`Hola, ${firstName}`}
+        subtitle={studentProfile.fitness_goal || "Constancia diaria hacia tu meta"}
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => setShowWeightForm((v) => !v)}
+              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-[#060607] px-4 text-xs font-medium text-zinc-200 transition hover:border-white/25 hover:text-white"
             >
-              <span>{relation.subscription_plan_name}</span>
-              {daysLeft > 0 && (
-                <span className="tabular-nums text-zinc-400">· {daysLeft}d</span>
-              )}
-            </Link>
-          )}
-        </div>
-      </div>
+              <Scale className="h-3.5 w-3.5 text-emerald-400" />
+              <span className="tabular-nums">
+                {latestAssessment ? `${latestAssessment.weight_kg} kg` : "Registrar peso"}
+              </span>
+            </button>
+            {relation && (
+              <Link
+                href="/student/subscription"
+                className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 text-xs font-medium text-emerald-300"
+              >
+                <span>{relation.subscription_plan_name}</span>
+                {daysLeft > 0 && (
+                  <span className="tabular-nums text-zinc-400">· {daysLeft}d</span>
+                )}
+              </Link>
+            )}
+          </>
+        }
+      />
 
       {/* Toast */}
       {toast && (

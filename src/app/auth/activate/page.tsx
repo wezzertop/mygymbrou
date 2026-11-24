@@ -346,7 +346,7 @@ function ActivateAccountContent() {
             </div>
           ) : inviteMeta?.has_existing_account && !isDemoMode ? (
             <div className="space-y-5 text-center">
-              <div className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-left text-xs text-zinc-300">
+              <div className="rounded-2xl border border-white/[0.08] bg-cyan-500/10 p-4 text-left text-xs text-zinc-300">
                 <p className="flex items-center gap-1.5 font-bold text-cyan-300">
                   <UserCheck className="h-4 w-4" />
                   ¡Ya tienes una cuenta en MiGymBrou!

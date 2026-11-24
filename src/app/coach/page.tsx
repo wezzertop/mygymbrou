@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { getDaysRemaining, useApp } from "@/context/AppContext";
 import { canInviteMoreStudents, getSaasPlanById } from "@/lib/saas-plans";
+import { SectionVisualHeader } from "@/components/SectionVisualHeader";
 
 type RosterFilter = "all" | "active" | "expiring" | "expired" | "pending";
 type QuickModal = "workout" | "diet" | "renew" | null;
@@ -138,42 +139,38 @@ export default function CoachDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Editorial Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
-            {coachProfile.brand_name || "Panel Coach"}
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-white sm:text-3xl">
-            Hola, {coachProfile.full_name.split(" ")[0]}
-          </h1>
-          <p className="mt-1 text-xs text-zinc-400 sm:text-sm">
-            Resumen diario de tu cartera, citas y accesos rápidos.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2.5">
-          <Link
-            href="/coach/plans?tab=saas"
-            className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-[#0e0f12] px-4 text-xs font-medium text-zinc-300 transition hover:border-white/25 hover:text-white"
-          >
-            <span>{currentSaasPlan.name}</span>
-            <span className="h-1 w-1 rounded-full bg-zinc-600" />
-            <span className="font-semibold tabular-nums text-emerald-400">
-              {quota.limit === null
-                ? `${occupiedSlots} / ∞`
-                : `${occupiedSlots} / ${quota.limit}`}
-            </span>
-          </Link>
-          <Link
-            href="/coach/students?invite=true"
-            className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98]"
-          >
-            <UserPlus className="h-3.5 w-3.5" />
-            Invitar Alumno
-          </Link>
-        </div>
-      </div>
+      {/* Editorial Visual Header (mobile-adapted photo, zero text over photo) */}
+      <SectionVisualHeader
+        imageSrc="/images/landing/coach-session.jpg"
+        imageAlt="Sesión de entrenamiento personalizado"
+        imagePosition="object-[center_25%]"
+        eyebrow={coachProfile.brand_name || "Panel Coach"}
+        title={`Hola, ${coachProfile.full_name.split(" ")[0]}`}
+        subtitle="Resumen diario de tu cartera, citas y accesos rápidos."
+        actions={
+          <>
+            <Link
+              href="/coach/plans?tab=saas"
+              className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-[#060607] px-4 text-xs font-medium text-zinc-300 transition hover:border-white/25 hover:text-white"
+            >
+              <span>{currentSaasPlan.name}</span>
+              <span className="h-1 w-1 rounded-full bg-zinc-600" />
+              <span className="font-semibold tabular-nums text-emerald-400">
+                {quota.limit === null
+                  ? `${occupiedSlots} / ∞`
+                  : `${occupiedSlots} / ${quota.limit}`}
+              </span>
+            </Link>
+            <Link
+              href="/coach/students?invite=true"
+              className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98]"
+            >
+              <UserPlus className="h-3.5 w-3.5" />
+              Invitar Alumno
+            </Link>
+          </>
+        }
+      />
 
       {/* Toast Feedback */}
       {toast && (

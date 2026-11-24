@@ -170,7 +170,7 @@ export default function CoachCalendarPage() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/coach/agenda"
-            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-cyan-500/35 bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+            className="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 transition hover:bg-cyan-500/20"
           >
             <Calendar className="h-3.5 w-3.5" />
             Agenda de Citas
@@ -393,7 +393,7 @@ export default function CoachCalendarPage() {
               {selectedDetails.dayApts.map((apt) => (
                 <div
                   key={apt.id}
-                  className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3 text-xs"
+                  className="rounded-xl border border-white/[0.08] bg-cyan-500/10 p-3 text-xs"
                 >
                   <p className="font-bold text-white">{apt.student_name}</p>
                   <p className="text-cyan-200">{apt.title}</p>

@@ -230,7 +230,7 @@ function CoachPlansContent() {
 
       {tab === "saas" ? (
         <div className="space-y-6">
-          <div className="flex flex-col justify-between gap-4 rounded-2xl border border-cyan-500/30 bg-[#0e0f12] p-5 sm:flex-row sm:items-center">
+          <div className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:flex-row sm:items-center">
             <div className="space-y-1">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
                 <Crown className="h-3.5 w-3.5" />

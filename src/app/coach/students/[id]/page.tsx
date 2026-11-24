@@ -295,7 +295,7 @@ export default function Student360Page() {
         {/* Identity Verification Review Panel for Coach */}
         {(student.verification_status === "pending" ||
           student.identity_document_url) && (
-          <div className="rounded-2xl border border-sky-500/35 bg-gradient-to-r from-slate-900 via-slate-900 to-sky-950/30 p-4">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div className="space-y-1">
                 <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-400">
@@ -380,7 +380,7 @@ export default function Student360Page() {
 
         {/* Metas Activas y Limitaciones del Alumno (Sincronizadas en vivo) */}
         {studentGoal && (
-          <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-slate-900 via-slate-900/95 to-emerald-950/25 p-4">
+          <div className="rounded-2xl border border-emerald-500/30 bg-[#0e0f12] p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
                 <Target className="h-4 w-4" />
@@ -601,7 +601,7 @@ export default function Student360Page() {
           {/* Latest Comparison Grid */}
           {latest && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-slate-900 to-cyan-950/30 p-5">
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
                     Último Análisis — {latest.assessment_date}
@@ -902,7 +902,7 @@ export default function Student360Page() {
       {activeTab === "subscription" && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Quick Assign Coach Plan */}
-          <div className="min-w-0 space-y-4 rounded-2xl border border-cyan-500/30 bg-[#0e0f12] p-4 sm:p-6 lg:col-span-6">
+          <div className="min-w-0 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-6 lg:col-span-6">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-white">
                 Asignar o Renovar Plan del Coach

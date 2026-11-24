@@ -43,7 +43,7 @@ function StudentWorkoutsContent() {
   if (activePlan && !activePlan.includes_workouts) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/30 p-7 text-center shadow-2xl">
+        <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-7 text-center shadow-2xl">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-400">
             <Lock className="h-7 w-7" />
           </div>
@@ -191,7 +191,7 @@ function StudentWorkoutsContent() {
       </div>
 
       {/* Integrated Rest Timer Bar */}
-      <div className="sticky top-14 z-20 rounded-2xl border border-cyan-500/30 bg-[#060607]/95 p-3.5 shadow-xl backdrop-blur-md">
+      <div className="sticky top-14 z-20 rounded-2xl border border-white/[0.08] bg-[#060607]/95 p-3.5 shadow-xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400">

@@ -35,7 +35,7 @@ export default function StudentAppointmentsPage() {
 
       {/* Featured Next Appointment */}
       {nextApt ? (
-        <section className="rounded-3xl border border-cyan-500/40 bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 p-6 shadow-xl">
+        <section className="rounded-3xl border border-cyan-500/40 bg-[#0e0f12] p-6 shadow-xl">
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300">
               <CalendarDays className="h-3.5 w-3.5" />

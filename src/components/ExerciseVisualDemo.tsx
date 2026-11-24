@@ -91,7 +91,7 @@ export function ExerciseVisualDemo({
   if (mediaType === "video" && mediaUrl && activeFrames.length === 0) {
     return (
       <div
-        className={`relative overflow-hidden rounded-2xl border border-slate-800/80 bg-[#0b1117] ${
+        className={`relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b1117] ${
           compact ? "h-20 w-24 shrink-0 sm:h-24 sm:w-32" : "aspect-[16/10] w-full"
         }`}
       >
@@ -118,7 +118,7 @@ export function ExerciseVisualDemo({
       <>
         <div
           onClick={() => setModalOpen(true)}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-800/80 bg-[#0b1117] ${
+          className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b1117] ${
             compact ? "h-20 w-24 shrink-0 sm:h-24 sm:w-32" : "aspect-[16/10] w-full"
           }`}
         >
@@ -135,7 +135,7 @@ export function ExerciseVisualDemo({
               setModalOpen(true);
             }}
             aria-label="Ampliar ejercicio"
-            className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-lg bg-slate-950/65 text-slate-300 opacity-70 backdrop-blur-sm transition hover:bg-slate-900 hover:text-white hover:opacity-100"
+            className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-lg bg-[#060607] text-zinc-300 opacity-70 backdrop-blur-sm transition hover:bg-[#0e0f12] hover:text-white hover:opacity-100"
           >
             <Maximize2 className="h-3 w-3" />
           </button>
@@ -166,7 +166,7 @@ export function ExerciseVisualDemo({
       <>
         <div
           onClick={() => hasFrames && setModalOpen(true)}
-          className="group relative h-20 w-24 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-slate-800/80 bg-[#0b1117] sm:h-24 sm:w-32"
+          className="group relative h-20 w-24 shrink-0 cursor-pointer overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b1117] sm:h-24 sm:w-32"
         >
           {hasFrames ? (
             <>
@@ -187,13 +187,13 @@ export function ExerciseVisualDemo({
                   setModalOpen(true);
                 }}
                 aria-label="Ampliar ejercicio"
-                className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-lg bg-slate-950/65 text-slate-300 opacity-75 backdrop-blur-sm transition hover:bg-slate-900 hover:text-white hover:opacity-100"
+                className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-lg bg-[#060607] text-zinc-300 opacity-75 backdrop-blur-sm transition hover:bg-[#0e0f12] hover:text-white hover:opacity-100"
               >
                 <Maximize2 className="h-3 w-3" />
               </button>
             </>
           ) : (
-            <div className="flex h-full items-center justify-center text-[10px] text-slate-500">
+            <div className="flex h-full items-center justify-center text-[10px] text-zinc-500">
               Sin imagen
             </div>
           )}
@@ -218,7 +218,7 @@ export function ExerciseVisualDemo({
   // Clean Full Card Player for Student Workouts (NO text, NO bars, NO prev/pause/next overlays)
   return (
     <div className="space-y-2">
-      <div className="group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-[#0b1117]">
+      <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b1117]">
         <div
           onClick={() => hasFrames && setModalOpen(true)}
           className="relative flex aspect-[16/10] w-full cursor-pointer items-center justify-center bg-[#0b1117] p-2"
@@ -237,7 +237,7 @@ export function ExerciseVisualDemo({
               ))}
             </>
           ) : (
-            <p className="text-xs text-slate-500">Ilustración pendiente</p>
+            <p className="text-xs text-zinc-500">Ilustración pendiente</p>
           )}
 
           {/* Single discreet expand icon in top-right corner */}
@@ -249,7 +249,7 @@ export function ExerciseVisualDemo({
                 setModalOpen(true);
               }}
               aria-label="Ampliar ilustración"
-              className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg bg-slate-950/65 text-slate-300 opacity-70 backdrop-blur-sm transition hover:bg-slate-900 hover:text-white hover:opacity-100"
+              className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg bg-[#060607] text-zinc-300 opacity-70 backdrop-blur-sm transition hover:bg-[#0e0f12] hover:text-white hover:opacity-100"
             >
               <Maximize2 className="h-3.5 w-3.5" />
             </button>
@@ -272,7 +272,7 @@ export function ExerciseVisualDemo({
           {secondaryMuscles.map((m) => (
             <span
               key={m}
-              className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-900/90 px-2 py-0.5 font-medium text-slate-400"
+              className="inline-flex items-center gap-1 rounded-md border border-white/[0.08] bg-[#0e0f12] px-2 py-0.5 font-medium text-zinc-400"
             >
               {m}
             </span>
@@ -323,22 +323,22 @@ function CleanExerciseModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl overflow-hidden rounded-3xl border border-slate-800 bg-[#0b1117] shadow-2xl"
+        className="w-full max-w-xl overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0b1117] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between gap-3 border-b border-slate-800/80 px-5 py-3.5">
+        <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] px-5 py-3.5">
           <h3 className="truncate text-base font-extrabold text-white">
             {name}
           </h3>
           <div className="flex items-center gap-2">
-            <div className="flex rounded-lg border border-slate-800 bg-slate-900 p-0.5 text-[11px] font-bold">
+            <div className="flex rounded-lg border border-white/[0.08] bg-[#0e0f12] p-0.5 text-[11px] font-bold">
               <button
                 type="button"
                 onClick={() => setActiveGender("female")}
                 className={`rounded-md px-2.5 py-1 transition ${
                   activeGender === "female"
                     ? "bg-rose-500/20 text-rose-300"
-                    : "text-slate-400 hover:text-white"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
                 Mujer
@@ -349,7 +349,7 @@ function CleanExerciseModal({
                 className={`rounded-md px-2.5 py-1 transition ${
                   activeGender === "male"
                     ? "bg-cyan-500/20 text-cyan-300"
-                    : "text-slate-400 hover:text-white"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
                 Hombre
@@ -359,7 +359,7 @@ function CleanExerciseModal({
               type="button"
               onClick={onClose}
               aria-label="Cerrar"
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+              className="rounded-lg p-1.5 text-zinc-400 hover:bg-slate-800 hover:text-white"
             >
               <X className="h-5 w-5" />
             </button>
@@ -380,7 +380,7 @@ function CleanExerciseModal({
         </div>
 
         {(primaryMuscles.length > 0 || instructions) && (
-          <div className="space-y-2.5 border-t border-slate-800/80 bg-slate-950/80 px-5 py-4">
+          <div className="space-y-2.5 border-t border-white/[0.08] bg-[#060607] px-5 py-4">
             {primaryMuscles.length > 0 && (
               <div className="flex flex-wrap gap-1.5 text-[11px]">
                 {primaryMuscles.map((m) => (
@@ -395,7 +395,7 @@ function CleanExerciseModal({
                 {secondaryMuscles.map((m) => (
                   <span
                     key={m}
-                    className="rounded-md bg-slate-800 px-2 py-0.5 font-medium text-slate-300"
+                    className="rounded-md bg-slate-800 px-2 py-0.5 font-medium text-zinc-300"
                   >
                     {m}
                   </span>
@@ -403,7 +403,7 @@ function CleanExerciseModal({
               </div>
             )}
             {instructions && (
-              <p className="text-xs leading-relaxed text-slate-300">
+              <p className="text-xs leading-relaxed text-zinc-300">
                 {instructions}
               </p>
             )}

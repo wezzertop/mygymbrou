@@ -227,41 +227,41 @@ export default function StudentProgressPage() {
       <div className="grid gap-3 sm:grid-cols-2">
         <Link
           href="/student/subscription"
-          className="flex flex-col justify-between gap-2 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-slate-900 to-emerald-950/30 p-4 transition hover:border-emerald-400/60"
+          className="flex flex-col justify-between gap-2 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-400">
+            <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
               <CreditCard className="h-3.5 w-3.5" />
-              {relation?.subscription_plan_name || "Plan Activo"}
+              {relation?.subscription_plan_name || "Sin plan asignado"}
             </span>
-            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
-              {daysLeft > 0 ? `${daysLeft} días restantes` : "Por renovar"}
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-medium text-zinc-300">
+              {daysLeft > 0 ? `${daysLeft} días restantes` : "Por activar"}
             </span>
           </div>
-          <div className="flex flex-wrap gap-1.5 text-[10px] font-semibold text-zinc-300">
+          <div className="flex flex-wrap gap-1.5 text-[10px] font-medium text-zinc-400">
             {activePlan?.includes_nutrition && (
-              <span className="rounded bg-white/[0.06] px-2 py-0.5">Nutrición</span>
+              <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-zinc-300">Nutrición</span>
             )}
             {activePlan?.includes_workouts && (
-              <span className="rounded bg-white/[0.06] px-2 py-0.5">Rutinas</span>
+              <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-zinc-300">Rutinas</span>
             )}
-            <span className="inline-flex items-center gap-1 text-zinc-400">
-              <Calendar className="h-3 w-3 text-cyan-400" />
-              Vence: {expiresAt}
+            <span className="inline-flex items-center gap-1">
+              <Calendar className="h-3 w-3 text-emerald-400" />
+              {expiresAt ? `Vence: ${expiresAt}` : "Sin fecha de corte asignada"}
             </span>
           </div>
         </Link>
 
         <Link
           href="/student/profile"
-          className="flex flex-col justify-between gap-2 rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-slate-900 to-cyan-950/25 p-4 transition hover:border-cyan-400/60"
+          className="flex flex-col justify-between gap-2 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/20"
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-cyan-400">
+            <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
               <Target className="h-3.5 w-3.5" />
               Mi Meta Actual
             </span>
-            <span className="text-[10px] font-semibold text-zinc-400">
+            <span className="text-[10px] font-medium text-zinc-400">
               Editar →
             </span>
           </div>
@@ -279,7 +279,7 @@ export default function StudentProgressPage() {
 
       {/* Featured Coach Analysis Card */}
       {latest && (
-        <section className="rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-slate-900 via-slate-900/95 to-cyan-950/40 p-5 shadow-xl shadow-cyan-950/20">
+        <section className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 shadow-xl shadow-cyan-950/20">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
               <img

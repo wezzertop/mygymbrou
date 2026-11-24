@@ -153,7 +153,7 @@ export function CoachCertificationsManager() {
   };
 
   return (
-    <section className="space-y-4 rounded-2xl border border-emerald-500/35 bg-[#0e0f12] p-6">
+    <section className="space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -353,7 +353,7 @@ export function CoachCertificationsManager() {
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
                     <BadgeCheck className="h-3 w-3" />
                     {cert.file_type === "pdf" ? "PDF Certificado" : "Imagen Diploma"}
                   </span>
@@ -399,7 +399,7 @@ export function CoachCertificationsManager() {
                 <button
                   type="button"
                   onClick={() => setViewingCert(cert)}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-cyan-500/35 bg-cyan-500/10 px-3 py-1.5 text-[11px] font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-white/[0.08] bg-cyan-500/10 px-3 py-1.5 text-[11px] font-bold text-cyan-300 transition hover:bg-cyan-500/20"
                 >
                   <Eye className="h-3.5 w-3.5" />
                   Ver Archivo

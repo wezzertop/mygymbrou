@@ -40,7 +40,7 @@ export function ProgressCharts({ assessments }: ProgressChartsProps) {
 
   if (chartData.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-center text-sm text-slate-400">
+      <div className="rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-6 text-center text-sm text-zinc-400">
         Aún no hay evaluaciones suficientes para graficar evolución.
       </div>
     );
@@ -49,13 +49,13 @@ export function ProgressCharts({ assessments }: ProgressChartsProps) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {/* Peso y Masa Muscular */}
-      <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800/90 bg-slate-900/70 p-4">
+      <div className="min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4">
         <div className="mb-3 flex items-center justify-between">
           <div>
             <h3 className="text-sm font-semibold text-white">
               Evolución de Peso (kg)
             </h3>
-            <p className="text-xs text-slate-400">Tendencia por evaluación</p>
+            <p className="text-xs text-zinc-400">Tendencia por evaluación</p>
           </div>
           <span className="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-400">
             Peso corporal
@@ -96,13 +96,13 @@ export function ProgressCharts({ assessments }: ProgressChartsProps) {
       </div>
 
       {/* Perímetros Clave */}
-      <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-800/90 bg-slate-900/70 p-4">
+      <div className="min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4">
         <div className="mb-3 flex items-center justify-between">
           <div>
             <h3 className="text-sm font-semibold text-white">
               Perímetros Clave (cm)
             </h3>
-            <p className="text-xs text-slate-400">Abdomen, Cintura y Bíceps</p>
+            <p className="text-xs text-zinc-400">Abdomen, Cintura y Bíceps</p>
           </div>
           <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
             Antropometría

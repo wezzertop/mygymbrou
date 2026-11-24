@@ -272,7 +272,7 @@ function CoachStudentsContent() {
 
       {/* Incoming Coaching Inquiries from Directory */}
       {pendingInquiries.length > 0 && (
-        <section className="space-y-3 rounded-2xl border border-emerald-500/35 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/25 p-5">
+        <section className="space-y-3 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Inbox className="h-4 w-4 text-emerald-400" />
@@ -298,7 +298,7 @@ function CoachStudentsContent() {
                     </p>
                     <VerifiedPersonBadge verified={inq.student_is_verified} />
                     {inq.preferred_plan_name && (
-                      <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold text-cyan-300">
+                      <span className="rounded-full border border-white/[0.08] bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold text-cyan-300">
                         {inq.preferred_plan_name}
                       </span>
                     )}
@@ -391,7 +391,7 @@ function CoachStudentsContent() {
           return (
             <div
               key={st.id}
-              className="flex min-w-0 flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-cyan-500/30"
+              className="flex min-w-0 flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 transition hover:border-white/[0.08]"
             >
               <div className="flex min-w-0 items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">

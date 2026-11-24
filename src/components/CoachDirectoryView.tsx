@@ -114,7 +114,7 @@ export function CoachDirectoryView({
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 p-6 sm:p-7">
+      <div className="rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-6 sm:p-7">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="max-w-2xl space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/35 bg-sky-500/15 px-3 py-1 text-[11px] font-bold text-sky-300">
@@ -455,7 +455,7 @@ export function CoachDirectoryView({
             ) : (
               <form onSubmit={handleSendInquiry} className="space-y-3.5">
                 {mode === "student" && studentProfile.is_verified_identity && (
-                  <div className="flex items-center gap-2 rounded-xl border border-sky-500/35 bg-sky-500/10 px-3 py-2 text-xs text-sky-200">
+                  <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-sky-500/10 px-3 py-2 text-xs text-sky-200">
                     <BadgeCheck className="h-4 w-4 shrink-0 text-sky-400" />
                     Tu solicitud incluirá tu insignia de{" "}
                     <strong>Persona Real Verificada</strong>.

@@ -109,8 +109,8 @@ export function VerificationStatusPill({
   }
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800/80 px-2.5 py-0.5 text-[10px] font-semibold text-slate-400">
-      <ShieldQuestion className="h-3 w-3 text-slate-500" />
+    <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-slate-800/80 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-400">
+      <ShieldQuestion className="h-3 w-3 text-zinc-500" />
       Sin verificar
     </span>
   );
