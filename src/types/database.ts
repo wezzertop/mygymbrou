@@ -50,6 +50,8 @@ export interface Profile {
   suspended_until?: string;
   saas_plan_tier?: SaasPlanTier;
   saas_student_limit?: number | null;
+  saas_period_end?: string | null;
+  scheduled_downgrade_plan_tier?: SaasPlanTier | null;
   terms_accepted_at: string;
   created_at: string;
 }

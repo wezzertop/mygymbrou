@@ -522,7 +522,7 @@ export default function LandingPage() {
                   ) : (
                     <div className="border-t border-white/[0.06] pt-3.5">
                       <p className="text-[11px] font-medium text-emerald-400">
-                        Sin limitaciones · Acceso completo
+                        {plan.coachLimitLabel || "Plan empresarial completo"}
                       </p>
                     </div>
                   )}

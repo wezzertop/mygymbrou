@@ -60,9 +60,21 @@ function SpeiCheckoutContent() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [acceptedBillingTerms, setAcceptedBillingTerms] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const plan = getSaasPlanById(selectedTier);
+
+  const rawNetParam = Number(searchParams.get("net"));
+  const rawCreditParam = Number(searchParams.get("credit"));
+  const rawDaysParam = Number(searchParams.get("days"));
+  const hasUpgradeCredit =
+    selectedTier === initialPlan &&
+    !Number.isNaN(rawCreditParam) &&
+    rawCreditParam > 0 &&
+    !Number.isNaN(rawNetParam) &&
+    rawNetParam >= 0;
+  const payableAmountMxn = hasUpgradeCredit ? rawNetParam : plan.priceMxn;
 
   const handleCopyClabe = () => {
     const cleanClabe = SPEI_CLABE.replace(/\s+/g, "");
@@ -276,11 +288,18 @@ function SpeiCheckoutContent() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-zinc-500">Monto exacto</span>
+                  <span className="text-zinc-500">
+                    {hasUpgradeCredit ? "Monto neto hoy (con equivalencia)" : "Monto exacto"}
+                  </span>
                   <span className="font-semibold tabular-nums text-emerald-400">
-                    {plan.priceLabel} MXN (IVA inc.)
+                    ${payableAmountMxn.toLocaleString("es-MX", { minimumFractionDigits: hasUpgradeCredit ? 2 : 0 })} MXN (IVA inc.)
                   </span>
                 </div>
+                {hasUpgradeCredit && (
+                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] p-2.5 text-[11px] text-emerald-200">
+                    Precio {plan.name}: ${plan.priceMxn.toLocaleString("es-MX")} MXN · Crédito aplicado ({rawDaysParam} días restantes): -${rawCreditParam.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN.
+                  </div>
+                )}
                 <div className="border-t border-white/[0.06] pt-2.5">
                   <p className="text-[10px] uppercase tracking-wider text-zinc-500">
                     CLABE Interbancaria (18 dígitos)
@@ -440,14 +459,36 @@ function SpeiCheckoutContent() {
               />
             </div>
 
+            <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-white/[0.08] bg-[#060607] p-3">
+              <input
+                type="checkbox"
+                required
+                checked={acceptedBillingTerms}
+                onChange={(e) => setAcceptedBillingTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded accent-emerald-500"
+              />
+              <span className="text-[11px] leading-relaxed text-zinc-300">
+                Acepto los{" "}
+                <Link
+                  href="/terminos"
+                  target="_blank"
+                  className="font-semibold text-emerald-400 underline"
+                >
+                  Términos y Condiciones
+                </Link>
+                , incluyendo las reglas de equivalencia de días en upgrades y
+                cambios al cierre de corte sin devolución en downgrades.
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={submitting}
-              className="h-12 w-full rounded-full bg-white text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-50"
+              disabled={submitting || !acceptedBillingTerms}
+              className="h-12 w-full rounded-full bg-emerald-500 text-sm font-bold text-[#0a0a0a] transition hover:bg-emerald-400 disabled:opacity-50"
             >
               {submitting
                 ? "Enviando comprobante..."
-                : `Enviar comprobante (${plan.priceLabel} MXN)`}
+                : `Enviar comprobante ($${payableAmountMxn.toLocaleString("es-MX", { minimumFractionDigits: hasUpgradeCredit ? 2 : 0 })} MXN)`}
             </button>
           </form>
         </div>

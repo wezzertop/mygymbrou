@@ -140,6 +140,32 @@ export default function TerminosPage() {
               . Cualquier cambio de tarifa o condiciones aplicará únicamente a partir de
               la siguiente renovación.
             </div>
+            <div className="space-y-2 rounded-xl border border-white/[0.08] bg-[#060607] p-4">
+              <p className="font-semibold text-white">
+                Reglas de Cambio de Plan (Upgrades y Downgrades):
+              </p>
+              <ul className="list-disc space-y-1.5 pl-5 text-zinc-400">
+                <li>
+                  <strong className="text-zinc-200">
+                    Upgrades (subir de plan con equivalencia de días):
+                  </strong>{" "}
+                  al migrar a un plan superior antes de concluir tu mes, calculamos el
+                  valor diario de tu plan actual (tarifa mensual ÷ 30 días) multiplicado
+                  por los días restantes no disfrutados de tu corte y descontamos ese
+                  crédito directamente del precio del nuevo plan. El cambio y nuevo ciclo
+                  se activan al completarse el pago neto.
+                </li>
+                <li>
+                  <strong className="text-zinc-200">
+                    Downgrades (bajar de plan sin devolución en efectivo):
+                  </strong>{" "}
+                  los cambios a un plan inferior o a Inicio / Free no generan reembolsos
+                  ni devoluciones de dinero en efectivo. Conservarás los beneficios y
+                  límites de tu plan actual hasta la fecha exacta de término de tu corte
+                  vigente, momento en el cual se aplicará automáticamente el nuevo plan.
+                </li>
+              </ul>
+            </div>
           </div>
         </section>
 
