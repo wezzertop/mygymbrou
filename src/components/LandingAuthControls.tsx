@@ -3,12 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  ArrowRight,
-  Dumbbell,
-  LogOut,
-  Smartphone,
-} from "lucide-react";
+import { ArrowRight, LogOut } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export function LandingHeaderAuth() {
@@ -28,16 +23,17 @@ export function LandingHeaderAuth() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
         <Link
           href="/auth?role=student"
-          className="inline-flex min-h-[40px] items-center justify-center rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:border-emerald-500/50 hover:bg-slate-800 sm:text-sm"
+          className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full px-3 text-[13px] font-medium text-zinc-300 transition hover:bg-white/[0.06] hover:text-white"
         >
-          Iniciar Sesión
+          <span className="sm:hidden">Entrar</span>
+          <span className="hidden sm:inline">Iniciar sesión</span>
         </Link>
         <Link
           href="/auth/register-coach"
-          className="inline-flex min-h-[40px] items-center justify-center rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-3.5 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110 sm:text-sm"
+          className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full bg-white px-4 text-[13px] font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98]"
         >
           Soy Coach
         </Link>
@@ -65,50 +61,31 @@ export function LandingHeaderAuth() {
   };
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
-      <div className="hidden items-center gap-2.5 rounded-xl border border-slate-800 bg-slate-900/90 px-2.5 py-1.5 sm:flex">
+    <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+      <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1 pl-1.5 pr-3 sm:flex">
         {activeProfile.avatar_url ? (
           <img
             src={activeProfile.avatar_url}
             alt={activeProfile.full_name}
-            className="h-7 w-7 rounded-full object-cover ring-2 ring-cyan-500/40"
+            className="h-6 w-6 rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500/25 to-emerald-500/25 text-[11px] font-bold text-cyan-300 ring-1 ring-cyan-500/40">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-[10px] font-bold text-emerald-300">
             {initials}
           </div>
         )}
-        <div className="min-w-0 leading-tight">
-          <p className="max-w-[120px] truncate text-xs font-bold text-white">
-            {activeProfile.full_name}
-          </p>
-          <span
-            className={`inline-block text-[10px] font-semibold ${
-              isCoach ? "text-cyan-400" : "text-emerald-400"
-            }`}
-          >
-            {roleLabel} activo
-          </span>
-        </div>
+        <span className="max-w-[110px] truncate text-xs font-medium text-zinc-200">
+          {activeProfile.full_name.split(" ")[0]}
+        </span>
+        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" title={roleLabel} />
       </div>
 
       <Link
         href={targetHref}
-        className={`inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-950 shadow-lg transition hover:brightness-110 sm:text-sm ${
-          isCoach
-            ? "bg-gradient-to-r from-cyan-500 to-emerald-500 shadow-cyan-500/20"
-            : "bg-gradient-to-r from-emerald-500 to-cyan-500 shadow-emerald-500/20"
-        }`}
+        className="inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full bg-emerald-500 px-3.5 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-400 active:scale-[0.98] sm:px-4 sm:text-[13px]"
       >
-        {isCoach ? (
-          <Dumbbell className="h-4 w-4 shrink-0" />
-        ) : (
-          <Smartphone className="h-4 w-4 shrink-0" />
-        )}
-        <span className="hidden xs:inline sm:inline">{targetLabel}</span>
-        <span className="xs:hidden sm:hidden">
-          {isCoach ? "Mi Panel" : "Mi App"}
-        </span>
+        <span className="sm:hidden">{isCoach ? "Mi Panel" : "Mi App"}</span>
+        <span className="hidden sm:inline">{targetLabel}</span>
       </Link>
 
       <button
@@ -117,12 +94,9 @@ export function LandingHeaderAuth() {
         disabled={signingOut}
         aria-label="Cerrar sesión"
         title="Cerrar sesión"
-        className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900/90 px-2.5 text-xs font-semibold text-slate-300 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300 disabled:opacity-50"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-400 transition hover:border-white/25 hover:text-white disabled:opacity-50"
       >
-        <LogOut className="h-4 w-4" />
-        <span className="hidden md:inline">
-          {signingOut ? "Saliendo..." : "Salir"}
-        </span>
+        <LogOut className="h-3.5 w-3.5" />
       </button>
     </div>
   );
@@ -146,25 +120,23 @@ export function LandingHeroAuthActions() {
     const firstName = activeProfile.full_name?.split(" ")[0] || "de nuevo";
 
     return (
-      <div className="space-y-3 pt-2">
-        <div className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-semibold text-emerald-300">
-          Sesión iniciada como{" "}
-          <span className="font-bold text-white">{activeProfile.full_name}</span>{" "}
-          ({isCoach ? "Coach" : "Alumno"})
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="space-y-4 pt-2">
+        <p className="text-xs font-medium text-emerald-400">
+          Sesión activa · {activeProfile.full_name} ({isCoach ? "Coach" : "Alumno"})
+        </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Link
             href={isCoach ? "/coach" : "/student"}
-            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-emerald-500/20 transition hover:brightness-110"
+            className="inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-7 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.99]"
           >
             {isCoach
-              ? `Continuar a mi Panel Coach, ${firstName}`
-              : `Continuar a mi App Alumno, ${firstName}`}
+              ? `Ir a mi Panel Coach, ${firstName}`
+              : `Ir a mi App Alumno, ${firstName}`}
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href={isCoach ? "/coach/students?invite=true" : "/student/workouts"}
-            className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-900/90 px-6 py-3.5 text-sm font-bold text-white transition hover:border-cyan-500/50 hover:bg-slate-800"
+            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full border border-white/15 bg-white/[0.03] px-7 text-sm font-medium text-zinc-200 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white"
           >
             {isCoach ? "Invitar Alumno" : "Mi Entrenamiento de Hoy"}
           </Link>
@@ -174,19 +146,19 @@ export function LandingHeroAuthActions() {
   }
 
   return (
-    <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+    <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
       <Link
-        href="/auth?role=student"
-        className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-emerald-500/20 transition hover:brightness-110"
+        href="/auth/register-coach"
+        className="inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-7 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.99]"
       >
-        Soy Alumno (Iniciar Sesión)
+        Empezar gratis como Coach
         <ArrowRight className="h-4 w-4" />
       </Link>
       <Link
-        href="/auth/register-coach"
-        className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-900/90 px-6 py-3.5 text-sm font-bold text-white transition hover:border-cyan-500/50 hover:bg-slate-800"
+        href="/auth?role=student"
+        className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full border border-white/15 bg-white/[0.03] px-7 text-sm font-medium text-zinc-200 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white"
       >
-        Soy Coach (Crear Cuenta Gratis)
+        Soy Alumno · Iniciar sesión
       </Link>
     </div>
   );
