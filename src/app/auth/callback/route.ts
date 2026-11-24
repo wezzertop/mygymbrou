@@ -16,7 +16,13 @@ export async function GET(request: Request) {
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = sanitizeNextPath(searchParams.get("next"));
 
-  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/+$/, "");
+  const envUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    ""
+  )
+    .trim()
+    .replace(/\/+$/, "");
   const forwardedHost = request.headers
     .get("x-forwarded-host")
     ?.split(",")[0]
@@ -31,13 +37,13 @@ export async function GET(request: Request) {
     u.includes("0.0.0.0");
 
   const appOrigin =
-    envUrl && !isLocal(envUrl)
-      ? envUrl
-      : forwardedHost && !isLocal(forwardedHost)
+    forwardedHost && !isLocal(forwardedHost)
       ? `${forwardedProto}://${forwardedHost}`
+      : envUrl && !isLocal(envUrl)
+      ? envUrl
       : !isLocal(origin)
       ? origin
-      : "https://mygymbrou.nocodepy.com";
+      : origin || "https://mygymbrou.nocodepy.com";
 
   const supabase = await createServerSupabaseClient();
 
@@ -93,5 +99,5 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${appOrigin}/coach`);
   }
 
-  return NextResponse.redirect(`${appOrigin}/auth`);
+  return NextResponse.redirect(`${appOrigin}/auth?confirmed=1`);
 }

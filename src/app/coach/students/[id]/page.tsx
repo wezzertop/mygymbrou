@@ -26,6 +26,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { getDaysRemaining, useApp } from "@/context/AppContext";
+import { getPlanCapabilities, getSaasPlanById } from "@/lib/saas-plans";
 import { ProgressCharts } from "@/components/ProgressCharts";
 import { SubscriptionStatus } from "@/types/database";
 import {
@@ -253,6 +254,21 @@ export default function Student360Page() {
 
   const handleSaveAssessment = (e: React.FormEvent) => {
     e.preventDefault();
+    const caps = getPlanCapabilities(coachProfile.saas_plan_tier);
+    const currentMonthKey = (form.assessment_date || new Date().toISOString().slice(0, 10)).slice(0, 7);
+    const assessmentsThisMonth = studentAssessments.filter(
+      (a) => a.assessment_date.slice(0, 7) === currentMonthKey
+    ).length;
+    if (
+      caps.maxAssessmentsPerStudentPerMonth !== null &&
+      assessmentsThisMonth >= caps.maxAssessmentsPerStudentPerMonth
+    ) {
+      const planInfo = getSaasPlanById(coachProfile.saas_plan_tier);
+      showToast(
+        `Límite alcanzado: tu plan ${planInfo.name} permite ${caps.maxAssessmentsPerStudentPerMonth} evaluación(es) por alumno al mes. Mejora tu plan para registrar más.`
+      );
+      return;
+    }
     addAssessment({
       student_id: studentId,
       coach_id: coachProfile.id,

@@ -22,6 +22,8 @@ import {
   SAAS_PLANS_MXN,
   SaasPlanTier,
 } from "@/lib/saas-plans";
+import { GymCatalogSelector } from "@/components/GymCatalogSelector";
+import { CoachSpecialtySelector } from "@/components/CoachSpecialtySelector";
 
 function RegisterCoachContent() {
   const router = useRouter();
@@ -38,6 +40,8 @@ function RegisterCoachContent() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [brandName, setBrandName] = useState("");
+  const [isCustomGym, setIsCustomGym] = useState(false);
+  const [customGymCity, setCustomGymCity] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -103,6 +107,18 @@ function RegisterCoachContent() {
           saas_student_limit: 5,
           terms_accepted_at: termsTimestamp,
         });
+      }
+
+      if (isCustomGym && brandName.trim()) {
+        fetch("/api/gyms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: brandName.trim(),
+            city: customGymCity.trim() || undefined,
+            submitted_by_email: email.trim().toLowerCase(),
+          }),
+        }).catch(() => {});
       }
 
       if (isPaidPlan) {
@@ -311,36 +327,19 @@ function RegisterCoachContent() {
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
-                      Nombre de Marca o Gimnasio *
-                    </label>
-                    <div className="relative">
-                      <Building2 className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                      <input
-                        type="text"
-                        required
-                        value={brandName}
-                        onChange={(e) => setBrandName(e.target.value)}
-                        placeholder="Ej. Apex Performance"
-                        className="w-full rounded-xl border border-white/15 bg-[#060607] py-3 pl-10 pr-4 text-sm text-white outline-none focus:border-emerald-500"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
-                      Especialidad
-                    </label>
-                    <input
-                      type="text"
-                      value={specialty}
-                      onChange={(e) => setSpecialty(e.target.value)}
-                      placeholder="Ej. Hipertrofia y Nutrición"
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-3 text-sm text-white outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                </div>
+                <GymCatalogSelector
+                  value={brandName}
+                  onChange={(name, meta) => {
+                    setBrandName(name);
+                    setIsCustomGym(Boolean(meta?.isCustom));
+                    setCustomGymCity(meta?.customCity || "");
+                  }}
+                />
+
+                <CoachSpecialtySelector
+                  value={specialty}
+                  onChange={setSpecialty}
+                />
 
                 {/* Mandatory Terms & Conditions */}
                 <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/[0.08] bg-[#060607] p-3.5">

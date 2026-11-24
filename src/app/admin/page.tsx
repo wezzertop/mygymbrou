@@ -8,6 +8,7 @@ import {
   Award,
   BadgeCheck,
   Ban,
+  Building2,
   CheckCircle2,
   Dumbbell,
   ExternalLink,
@@ -32,8 +33,9 @@ import {
   UserSanction,
 } from "@/types/database";
 import { getSaasPlanById } from "@/lib/saas-plans";
+import { DEFAULT_APPROVED_GYMS, GymRecord } from "@/lib/coach-catalogs";
 
-type AdminTab = "pagos" | "verificaciones" | "reportes" | "sanciones";
+type AdminTab = "pagos" | "verificaciones" | "gimnasios" | "reportes" | "sanciones";
 
 const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
   pendiente: "Pendiente",
@@ -75,6 +77,8 @@ export default function AdminDashboardPage() {
   const [dbReports, setDbReports] = useState<UserReport[]>([]);
   const [dbSanctions, setDbSanctions] = useState<UserSanction[]>([]);
   const [dbPayments, setDbPayments] = useState<SaasPaymentRequest[]>([]);
+  const [gymsList, setGymsList] = useState<GymRecord[]>(DEFAULT_APPROVED_GYMS);
+  const [gymEdits, setGymEdits] = useState<Record<string, { name: string; city: string }>>({});
   const [paymentFilter, setPaymentFilter] = useState<
     PaymentRequestStatus | "all"
   >("all");
@@ -100,6 +104,57 @@ export default function AdminDashboardPage() {
     setToast(msg);
     setTimeout(() => setToast(null), 3500);
   };
+
+  const loadGyms = useCallback(async () => {
+    try {
+      const res = await fetch("/api/gyms?includePending=true");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.gyms)) setGymsList(data.gyms);
+      }
+    } catch {
+      // keep fallback
+    }
+  }, []);
+
+  useEffect(() => {
+    loadGyms();
+  }, [loadGyms]);
+
+  const handleGymAction = async (
+    gym: GymRecord,
+    status: "approved" | "rejected"
+  ) => {
+    const edited = gymEdits[gym.id];
+    const nextName = edited?.name?.trim() || gym.name;
+    const nextCity = edited?.city !== undefined ? edited.city.trim() : gym.city || "";
+    const res = await fetch("/api/gyms", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: gym.id,
+        status,
+        name: nextName,
+        city: nextCity,
+      }),
+    });
+    if (res.ok) {
+      setGymsList((prev) =>
+        prev.map((g) =>
+          g.id === gym.id
+            ? { ...g, status, name: nextName, city: nextCity || null }
+            : g
+        )
+      );
+      showToast(
+        status === "approved"
+          ? `Gimnasio "${nextName}" aprobado en el catálogo oficial.`
+          : `Gimnasio "${nextName}" rechazado.`
+      );
+    }
+  };
+
+  const pendingGymsCount = gymsList.filter((g) => g.status === "pending").length;
 
   const loadAdminData = useCallback(async () => {
     if (isDemoMode) return;
@@ -475,6 +530,11 @@ export default function AdminDashboardPage() {
                 key: "verificaciones",
                 label: `Verificaciones (${coaches.length})`,
                 icon: ShieldCheck,
+              },
+              {
+                key: "gimnasios",
+                label: `Gimnasios (${pendingGymsCount})`,
+                icon: Building2,
               },
               {
                 key: "reportes",
@@ -1063,6 +1123,132 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* TAB: CATÁLOGO DE GIMNASIOS Y APROBACIÓN */}
+        {tab === "gimnasios" && (
+          <section className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="text-base font-semibold text-white">
+                  Catálogo de Gimnasios y Solicitudes Pendientes
+                </h2>
+                <p className="text-xs text-zinc-400">
+                  Aprueba, corrige el nombre o rechaza gimnasios sugeridos por coaches.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={loadGyms}
+                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/10 px-3.5 text-xs font-medium text-zinc-300 hover:border-white/25 hover:text-white"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Actualizar
+              </button>
+            </div>
+
+            <div className="grid gap-3">
+              {gymsList.map((gym) => {
+                const draft = gymEdits[gym.id] || {
+                  name: gym.name,
+                  city: gym.city || "",
+                };
+                return (
+                  <div
+                    key={gym.id}
+                    className="flex flex-col justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:flex-row sm:items-center"
+                  >
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
+                            gym.status === "approved"
+                              ? "bg-emerald-500/15 text-emerald-400"
+                              : gym.status === "pending"
+                              ? "bg-amber-500/15 text-amber-300"
+                              : "bg-rose-500/15 text-rose-300"
+                          }`}
+                        >
+                          {gym.status === "approved"
+                            ? "Aprobado"
+                            : gym.status === "pending"
+                            ? "Pendiente"
+                            : "Rechazado"}
+                        </span>
+                        {gym.submitted_by_email && (
+                          <span className="text-[11px] text-zinc-400">
+                            Sugerido por: {gym.submitted_by_email}
+                          </span>
+                        )}
+                      </div>
+
+                      {gym.status === "pending" ? (
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          <input
+                            type="text"
+                            value={draft.name}
+                            onChange={(e) =>
+                              setGymEdits((prev) => ({
+                                ...prev,
+                                [gym.id]: { ...draft, name: e.target.value },
+                              }))
+                            }
+                            aria-label="Nombre del gimnasio"
+                            className="h-9 rounded-lg border border-white/10 bg-[#060607] px-3 text-xs text-white outline-none focus:border-emerald-500"
+                          />
+                          <input
+                            type="text"
+                            value={draft.city}
+                            onChange={(e) =>
+                              setGymEdits((prev) => ({
+                                ...prev,
+                                [gym.id]: { ...draft, city: e.target.value },
+                              }))
+                            }
+                            placeholder="Ciudad / Zona"
+                            aria-label="Ciudad del gimnasio"
+                            className="h-9 rounded-lg border border-white/10 bg-[#060607] px-3 text-xs text-white outline-none focus:border-emerald-500"
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-sm font-semibold text-white">
+                            {gym.name}
+                          </p>
+                          {gym.city && (
+                            <p className="text-xs text-zinc-400">{gym.city}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-2">
+                      {gym.status !== "approved" && (
+                        <button
+                          type="button"
+                          onClick={() => handleGymAction(gym, "approved")}
+                          className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-emerald-500 px-3.5 text-xs font-bold text-[#0a0a0a] transition hover:bg-emerald-400"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Aprobar
+                        </button>
+                      )}
+                      {gym.status !== "rejected" && (
+                        <button
+                          type="button"
+                          onClick={() => handleGymAction(gym, "rejected")}
+                          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20"
+                        >
+                          <XCircle className="h-3.5 w-3.5" />
+                          Rechazar
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         )}
       </main>
     </div>

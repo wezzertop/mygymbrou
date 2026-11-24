@@ -31,14 +31,14 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
       "Trabaja cómodo con tus primeros 5 alumnos y prueba la plataforma sin costo fijo.",
     features: [
       "Hasta 5 alumnos activos",
-      "Rutinas directas y dieta básica por alumno",
-      "Evaluaciones antropométricas básicas",
+      "Máximo 2 plantillas de dieta (con imagen)",
+      "1 evaluación antropométrica por alumno al mes",
       "Hasta 2 citas activas y 1 paquete de asesoría",
       "App móvil gratuita para tus alumnos",
     ],
     excludedFeatures: [
       "Incluye publicidad en la app (Plan Free)",
-      "Sin plantillas reutilizables de rutinas ni dietas",
+      "Sin plantillas reutilizables de rutinas",
       "Sin citas ni paquetes ilimitados",
       "Sin soporte prioritario ni multi-coach",
     ],
@@ -58,10 +58,10 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
     features: [
       "Hasta 15 alumnos activos",
       "0% publicidad para ti y tus alumnos",
-      "Biblioteca de rutinas y dietas",
-      "Historial antropométrico ilimitado",
+      "Hasta 10 plantillas de dieta (con imagen)",
+      "Hasta 2 evaluaciones antropométricas/alumno al mes",
       "Agenda de citas y paquetes ilimitados",
-      "Plantillas reutilizables de rutinas y dietas",
+      "Plantillas reutilizables de rutinas",
       "App móvil gratuita para tus alumnos",
     ],
     excludedFeatures: [
@@ -86,7 +86,8 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
     features: [
       "Hasta 50 alumnos activos",
       "0% publicidad en toda la experiencia",
-      "Todo lo incluido en Coach Base",
+      "Hasta 30 plantillas de dieta (con imagen)",
+      "Hasta 4 evaluaciones antropométricas/alumno al mes",
       "Comparativas visuales y galería de progreso",
       "Gestión de cortes, renovaciones y soporte prioritario",
     ],
@@ -110,9 +111,9 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
     features: [
       "Hasta 150 alumnos activos",
       "Hasta 5 coaches base bajo una misma marca",
+      "Plantillas de dieta (con imagen) y evaluaciones ilimitadas",
       "0% publicidad en toda la plataforma",
-      "Todo lo incluido en Coach Pro",
-      "Identidad personalizada y flujo de cobro/suscripción habilitado",
+      "Todo lo incluido en Coach Pro + identidad personalizada",
     ],
     excludedFeatures: [],
     featured: false,
@@ -164,6 +165,8 @@ export interface PlanCapabilities {
   canScheduleUnlimitedAppointments: boolean;
   maxActiveAppointments: number | null;
   maxSubscriptionPackages: number | null;
+  maxDietTemplates: number | null;
+  maxAssessmentsPerStudentPerMonth: number | null;
   hasAds: boolean;
 }
 
@@ -177,15 +180,41 @@ export function getPlanCapabilities(
       canScheduleUnlimitedAppointments: false,
       maxActiveAppointments: 2,
       maxSubscriptionPackages: 1,
+      maxDietTemplates: 2,
+      maxAssessmentsPerStudentPerMonth: 1,
       hasAds: true,
     };
   }
-  // Coach Base, Coach Pro y Estudio / Gym: sin publicidad y funciones desbloqueadas
+  if (normalized === "base") {
+    return {
+      canUseReusableTemplates: true,
+      canScheduleUnlimitedAppointments: true,
+      maxActiveAppointments: null,
+      maxSubscriptionPackages: null,
+      maxDietTemplates: 10,
+      maxAssessmentsPerStudentPerMonth: 2,
+      hasAds: false,
+    };
+  }
+  if (normalized === "pro") {
+    return {
+      canUseReusableTemplates: true,
+      canScheduleUnlimitedAppointments: true,
+      maxActiveAppointments: null,
+      maxSubscriptionPackages: null,
+      maxDietTemplates: 30,
+      maxAssessmentsPerStudentPerMonth: 4,
+      hasAds: false,
+    };
+  }
+  // Estudio / Gym: sin límites en plantillas ni evaluaciones
   return {
     canUseReusableTemplates: true,
     canScheduleUnlimitedAppointments: true,
     maxActiveAppointments: null,
     maxSubscriptionPackages: null,
+    maxDietTemplates: null,
+    maxAssessmentsPerStudentPerMonth: null,
     hasAds: false,
   };
 }

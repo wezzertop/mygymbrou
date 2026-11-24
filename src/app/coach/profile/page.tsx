@@ -22,6 +22,8 @@ import {
 import { IdentityVerificationCard } from "@/components/IdentityVerificationCard";
 import { CoachCertificationsManager } from "@/components/CoachCertificationsManager";
 import { ReportIssueButton } from "@/components/ReportIssueButton";
+import { GymCatalogSelector } from "@/components/GymCatalogSelector";
+import { CoachSpecialtySelector } from "@/components/CoachSpecialtySelector";
 
 type CoachProfileTab = "perfil" | "diplomas" | "verificacion" | "cuenta";
 
@@ -40,6 +42,8 @@ export default function CoachProfilePage() {
   const [tab, setTab] = useState<CoachProfileTab>("perfil");
   const [fullName, setFullName] = useState(coachProfile.full_name);
   const [brandName, setBrandName] = useState(coachProfile.brand_name || "");
+  const [isCustomGym, setIsCustomGym] = useState(false);
+  const [customGymCity, setCustomGymCity] = useState("");
   const [specialty, setSpecialty] = useState(coachProfile.specialty || "");
   const [phone, setPhone] = useState(coachProfile.phone || "");
   const [city, setCity] = useState(coachProfile.city || "");
@@ -65,6 +69,18 @@ export default function CoachProfilePage() {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isCustomGym && brandName.trim()) {
+      fetch("/api/gyms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: brandName.trim(),
+          city: customGymCity.trim() || city.trim() || undefined,
+          submitted_by_email: coachProfile.email,
+        }),
+      }).catch(() => {});
+      setIsCustomGym(false);
+    }
     updateCoachProfile({
       full_name: fullName,
       brand_name: brandName,
@@ -174,42 +190,34 @@ export default function CoachProfilePage() {
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-zinc-400">
-                Nombre completo
-              </label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3.5 text-sm text-white outline-none focus:border-emerald-500/60"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium text-zinc-400">
-                Marca / Gimnasio
-              </label>
-              <input
-                type="text"
-                value={brandName}
-                onChange={(e) => setBrandName(e.target.value)}
-                className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3.5 text-sm text-white outline-none focus:border-emerald-500/60"
-              />
-            </div>
-          </div>
-
           <div>
             <label className="mb-1.5 block text-xs font-medium text-zinc-400">
-              Especialidad
+              Nombre completo
             </label>
             <input
               type="text"
-              value={specialty}
-              onChange={(e) => setSpecialty(e.target.value)}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3.5 text-sm text-white outline-none focus:border-emerald-500/60"
             />
           </div>
+
+          <GymCatalogSelector
+            value={brandName}
+            required={false}
+            label="Marca / Gimnasio"
+            onChange={(name, meta) => {
+              setBrandName(name);
+              setIsCustomGym(Boolean(meta?.isCustom));
+              setCustomGymCity(meta?.customCity || "");
+            }}
+          />
+
+          <CoachSpecialtySelector
+            value={specialty}
+            onChange={setSpecialty}
+            label="Especialidades"
+          />
 
           <div className="grid gap-4 sm:grid-cols-3">
             <div>

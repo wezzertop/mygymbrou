@@ -6,14 +6,17 @@ import {
   CheckCircle2,
   CreditCard,
   Crown,
+  Image as ImageIcon,
   Pencil,
   Plus,
   Trash2,
+  Upload,
   UserCheck,
   Utensils,
   X,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
+import { createClient } from "@/lib/supabase/client";
 import { CoachSubscriptionPlan, CoachingMode } from "@/types/database";
 import {
   canInviteMoreStudents,
@@ -127,6 +130,50 @@ function CoachPlansContent() {
   const [dMealDesc, setDMealDesc] = useState(
     "3 huevos enteros + 70g avena + 1 fruta + café negro"
   );
+  const [dImageUrl, setDImageUrl] = useState<string>("");
+  const [uploadingDietImg, setUploadingDietImg] = useState(false);
+
+  const planCaps = getPlanCapabilities(coachProfile.saas_plan_tier);
+  const dietTemplatesCount = nutritionPlans.filter((n) => n.is_template).length;
+  const dietLimitReached =
+    planCaps.maxDietTemplates !== null &&
+    dietTemplatesCount >= planCaps.maxDietTemplates;
+
+  const handleDietImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      notify("La imagen supera el límite de 5 MB.");
+      return;
+    }
+    setUploadingDietImg(true);
+    try {
+      const supabase = createClient();
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${coachProfile.id || "coach"}/diet-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("diet-images")
+        .upload(path, file, { upsert: true });
+      if (!error) {
+        const { data } = supabase.storage.from("diet-images").getPublicUrl(path);
+        if (data?.publicUrl) {
+          setDImageUrl(data.publicUrl);
+          setUploadingDietImg(false);
+          return;
+        }
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") setDImageUrl(reader.result);
+        setUploadingDietImg(false);
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setUploadingDietImg(false);
+    }
+  };
 
   const notify = (msg: string) => {
     setToast(msg);
@@ -168,10 +215,9 @@ function CoachPlansContent() {
   const handleCreateDietTemplate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!dTitle.trim()) return;
-    const caps = getPlanCapabilities(coachProfile.saas_plan_tier);
-    if (!caps.canUseReusableTemplates) {
+    if (dietLimitReached && planCaps.maxDietTemplates !== null) {
       notify(
-        "Las plantillas reutilizables de dieta se desbloquean desde el plan Coach Base."
+        `Alcanzaste el límite de ${planCaps.maxDietTemplates} plantillas de dieta de tu plan ${currentSaasPlan.name}. Mejora tu plan para agregar más.`
       );
       setTab("saas");
       return;
@@ -182,6 +228,7 @@ function CoachPlansContent() {
       is_template: true,
       title: `Plantilla: ${dTitle}`,
       notes: "Plan nutricional reutilizable.",
+      image_url: dImageUrl || undefined,
       daily_calories: Number(dCals) || 2000,
       protein_g: Number(dProt) || 150,
       carbs_g: Number(dCarbs) || 200,
@@ -204,7 +251,8 @@ function CoachPlansContent() {
       ],
     });
     setDTitle("");
-    notify("Plantilla de dieta guardada.");
+    setDImageUrl("");
+    notify("Plantilla de dieta guardada con éxito.");
   };
 
   const selectedStudent = students.find((s) => s.id === selectedRelationId);
@@ -666,10 +714,33 @@ function CoachPlansContent() {
             onSubmit={handleCreateDietTemplate}
             className="min-w-0 space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:col-span-5"
           >
-            <h2 className="flex items-center gap-2 text-base font-bold text-white">
-              <Plus className="h-4 w-4 text-emerald-400" />
-              Nueva Plantilla de Dieta
-            </h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="flex items-center gap-2 text-base font-bold text-white">
+                <Plus className="h-4 w-4 text-emerald-400" />
+                Nueva Plantilla de Dieta
+              </h2>
+              <span className="rounded-full border border-white/10 bg-[#060607] px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+                {planCaps.maxDietTemplates === null
+                  ? `${dietTemplatesCount} / ∞`
+                  : `${dietTemplatesCount}/${planCaps.maxDietTemplates} (${currentSaasPlan.name})`}
+              </span>
+            </div>
+
+            {dietLimitReached && (
+              <div className="flex items-center justify-between gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">
+                <span>
+                  Límite de {planCaps.maxDietTemplates} plantillas alcanzado en{" "}
+                  <strong>{currentSaasPlan.name}</strong>.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setTab("saas")}
+                  className="shrink-0 rounded-full bg-white px-3 py-1 text-[11px] font-bold text-zinc-950"
+                >
+                  Mejorar
+                </button>
+              </div>
+            )}
             <div>
               <label className="mb-1 block text-xs text-zinc-400">
                 Nombre del plan nutricional *
@@ -754,9 +825,48 @@ function CoachPlansContent() {
                 className="w-full rounded-xl border border-white/15 bg-[#060607] p-2.5 text-xs text-white"
               />
             </div>
+            <div>
+              <label className="mb-1 block text-xs text-zinc-400">
+                Imagen de referencia / platillo (visible para el alumno)
+              </label>
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-[#060607] px-3 py-3 text-xs font-medium text-zinc-300 transition hover:border-emerald-500/50 hover:text-white">
+                <Upload className="h-4 w-4 text-emerald-400" />
+                <span>
+                  {uploadingDietImg
+                    ? "Subiendo imagen..."
+                    : dImageUrl
+                    ? "Cambiar imagen adjunta"
+                    : "Subir imagen (JPG, PNG, WEBP · máx. 5 MB)"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleDietImageUpload}
+                  className="hidden"
+                />
+              </label>
+              {dImageUrl && (
+                <div className="relative mt-2 overflow-hidden rounded-xl border border-white/10">
+                  <img
+                    src={dImageUrl}
+                    alt="Vista previa de plantilla de dieta"
+                    className="h-28 w-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setDImageUrl("")}
+                    aria-label="Quitar imagen"
+                    className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/75 text-white hover:bg-rose-500"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               type="submit"
-              className="w-full rounded-xl bg-emerald-500 py-3 text-xs font-bold text-zinc-950"
+              disabled={uploadingDietImg}
+              className="w-full rounded-xl bg-emerald-500 py-3 text-xs font-bold text-[#0a0a0a] transition hover:bg-emerald-400 disabled:opacity-50"
             >
               Guardar Plantilla de Dieta
             </button>
@@ -768,12 +878,27 @@ function CoachPlansContent() {
                 key={plan.id}
                 className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4"
               >
-                <div>
-                  <h3 className="text-sm font-bold text-white">{plan.title}</h3>
-                  <p className="text-xs text-zinc-400">
-                    {plan.daily_calories} kcal · P:{plan.protein_g}g · C:
-                    {plan.carbs_g}g · G:{plan.fats_g}g
-                  </p>
+                <div className="flex min-w-0 items-center gap-3">
+                  {plan.image_url ? (
+                    <img
+                      src={plan.image_url}
+                      alt={plan.title}
+                      className="h-12 w-12 shrink-0 rounded-lg object-cover ring-1 ring-white/10"
+                    />
+                  ) : (
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] text-zinc-500">
+                      <ImageIcon className="h-5 w-5" />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <h3 className="truncate text-sm font-bold text-white">
+                      {plan.title}
+                    </h3>
+                    <p className="text-xs text-zinc-400">
+                      {plan.daily_calories} kcal · P:{plan.protein_g}g · C:
+                      {plan.carbs_g}g · G:{plan.fats_g}g
+                    </p>
+                  </div>
                 </div>
                 {selectedStudent?.student_id && (
                   <button

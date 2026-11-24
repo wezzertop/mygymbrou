@@ -30,18 +30,32 @@ export function isSupabaseConfigured(): boolean {
 }
 
 export function getAppUrl(): string {
-  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/+$/, "");
+  const configured = (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    ""
+  )
+    .trim()
+    .replace(/\/+$/, "");
   const isLocal = (u?: string) =>
     !u ||
     u.includes("localhost") ||
     u.includes("127.0.0.1") ||
     u.includes("0.0.0.0");
 
+  if (typeof window !== "undefined" && window.location?.origin) {
+    const browserOrigin = window.location.origin.replace(/\/+$/, "");
+    if (!isLocal(browserOrigin)) {
+      return browserOrigin;
+    }
+    if (configured && configured.startsWith("http") && !isLocal(configured)) {
+      return configured;
+    }
+    return browserOrigin;
+  }
+
   if (configured && configured.startsWith("http") && !isLocal(configured)) {
     return configured;
-  }
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return window.location.origin.replace(/\/+$/, "");
   }
   return "https://mygymbrou.nocodepy.com";
 }

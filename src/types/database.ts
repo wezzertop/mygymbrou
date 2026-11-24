@@ -245,6 +245,7 @@ export interface ExerciseLibraryItem {
   id: string;
   coach_id: string | null;
   name: string;
+  search_aliases?: string[];
   muscle_group: MuscleGroup;
   primary_muscles?: string[];
   secondary_muscles?: string[];
@@ -369,6 +370,7 @@ export interface NutritionPlan {
   is_template: boolean;
   title: string;
   notes?: string;
+  image_url?: string | null;
   daily_calories: number;
   protein_g: number;
   carbs_g: number;

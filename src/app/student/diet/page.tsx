@@ -109,8 +109,8 @@ Ver Planes Disponibles
   return (
     <div className="space-y-6">
       <SectionVisualHeader
-        imageSrc="/images/landing/nutrition-editorial.jpg"
-        imageAlt="Plan nutricional saludable"
+        imageSrc={plan.image_url || "/images/landing/nutrition-editorial.jpg"}
+        imageAlt={plan.title || "Plan nutricional saludable"}
         eyebrow="Plan Nutricional"
         title={plan.title}
         subtitle={plan.notes || "Control diario de comidas, macros e hidratación."}

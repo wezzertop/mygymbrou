@@ -21,6 +21,7 @@ function AuthLoginContent() {
   const initialRole = searchParams.get("role") === "student" ? "student" : "coach";
   const nextPath = searchParams.get("next");
   const callbackError = searchParams.get("error");
+  const emailConfirmed = searchParams.get("confirmed") === "1";
 
   const demoMode =
     !isSupabaseConfigured() || process.env.NEXT_PUBLIC_DEMO_MODE === "true";
@@ -190,6 +191,11 @@ function AuthLoginContent() {
                     : "Reenviar correo de confirmación"}
                 </button>
               )}
+            </div>
+          )}
+          {emailConfirmed && !error && (
+            <div className="mb-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs font-medium text-emerald-300">
+              ¡Correo confirmado correctamente! Ya puedes iniciar sesión con tu cuenta.
             </div>
           )}
           {resendSuccess && (

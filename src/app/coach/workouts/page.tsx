@@ -19,7 +19,10 @@ import {
 import { useApp } from "@/context/AppContext";
 import { getPlanCapabilities } from "@/lib/saas-plans";
 import { ExerciseVisualDemo } from "@/components/ExerciseVisualDemo";
-import { loadLiveExerciseCatalog } from "@/lib/live-exercise-catalog";
+import {
+  loadLiveExerciseCatalog,
+  normalizeSearchText,
+} from "@/lib/live-exercise-catalog";
 import {
   ExerciseFrame,
   ExerciseLibraryItem,
@@ -123,38 +126,41 @@ export default function CoachWorkoutsPage() {
   const [frame4Url, setFrame4Url] = useState("");
   const [customInterval, setCustomInterval] = useState("650");
 
-  const localFiltered = exerciseLibrary.filter((ex) => {
+  const normalizedQuery = normalizeSearchText(search);
+  const matchesExercise = (ex: ExerciseLibraryItem) => {
     const matchGroup = groupFilter === "Todos" || ex.muscle_group === groupFilter;
-    const matchSearch =
-      ex.name.toLowerCase().includes(search.toLowerCase()) ||
-      ex.equipment.toLowerCase().includes(search.toLowerCase()) ||
-      (ex.primary_muscles || []).some((m) =>
-        m.toLowerCase().includes(search.toLowerCase())
-      );
-    return matchGroup && matchSearch;
-  });
+    if (!matchGroup) return false;
+    if (!normalizedQuery) return true;
+    const haystack = normalizeSearchText(
+      [
+        ex.name,
+        ex.muscle_group,
+        ex.equipment,
+        ...(ex.primary_muscles || []),
+        ...(ex.secondary_muscles || []),
+        ...(ex.search_aliases || []),
+      ].join(" ")
+    );
+    return normalizedQuery
+      .split(/\s+/)
+      .filter(Boolean)
+      .every((token) => haystack.includes(token));
+  };
 
-  const externalFiltered = externalExercises.filter((ex) => {
-    const matchGroup = groupFilter === "Todos" || ex.muscle_group === groupFilter;
-    const matchSearch =
-      ex.name.toLowerCase().includes(search.toLowerCase()) ||
-      ex.equipment.toLowerCase().includes(search.toLowerCase()) ||
-      (ex.primary_muscles || []).some((m) =>
-        m.toLowerCase().includes(search.toLowerCase())
-      );
-    return matchGroup && matchSearch;
-  });
+  const localFiltered = exerciseLibrary.filter(matchesExercise);
+  const externalFiltered = externalExercises.filter(matchesExercise);
 
-  // Merge local anatomical exercises first + live external catalog (up to 36 visible for smooth perf)
+  // Merge local anatomical exercises first + bilingual curated & live catalog (up to 60 visible)
   const filteredCatalog = [
     ...localFiltered,
     ...externalFiltered.filter(
       (ext) =>
         !localFiltered.some(
-          (loc) => loc.name.toLowerCase() === ext.name.toLowerCase()
+          (loc) =>
+            normalizeSearchText(loc.name) === normalizeSearchText(ext.name)
         )
     ),
-  ].slice(0, 36);
+  ].slice(0, 60);
 
   const handleSelectStudent = (studentId: string) => {
     setTargetStudentId(studentId);
@@ -777,7 +783,7 @@ export default function CoachWorkoutsPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar ejercicio o músculo..."
+              placeholder="Buscar en español o inglés (ej. squat, pecho, remo)..."
               className="w-full rounded-xl border border-white/[0.08] bg-[#0e0f12] py-2.5 pl-9 pr-9 text-xs text-white outline-none transition focus:border-emerald-500/60"
             />
             {search && (
