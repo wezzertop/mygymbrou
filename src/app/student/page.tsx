@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { getDaysRemaining, useApp } from "@/context/AppContext";
 import { DynamicBannerHeader } from "@/components/DynamicBannerHeader";
+import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
 
 export default function StudentDailyHomePage() {
   const {
@@ -491,6 +492,9 @@ export default function StudentDailyHomePage() {
           </div>
         )}
       </section>
+
+      {/* Strategic Visible Ad Slot (320x50 — Only on Free plan) */}
+      <FreeTierAdSlot viewerRole="student" />
 
       {/* SECTION 2: MIS COMIDAS DE HOY */}
       <section className="space-y-5 rounded-3xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:p-6">

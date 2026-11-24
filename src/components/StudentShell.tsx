@@ -325,7 +325,9 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
         <main className="mx-auto w-full min-w-0 max-w-4xl flex-1 px-4 py-6 pb-safe-nav lg:px-8 lg:py-8 lg:pb-12">
           <SanctionNoticeBanner profile={studentProfile} />
           {children}
-          <FreeTierAdSlot variant="banner_320x50" viewerRole="student" />
+          {pathname !== "/student" && (
+            <FreeTierAdSlot viewerRole="student" className="mt-8" />
+          )}
         </main>
 
         {/* Mobile Fixed Bottom Navigation Bar */}

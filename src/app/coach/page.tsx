@@ -277,6 +277,9 @@ export default function CoachDashboardPage() {
         </div>
       </section>
 
+      {/* Strategic Visible Ad Slot (320x50 — Only on Free plan) */}
+      <FreeTierAdSlot viewerRole="coach" />
+
       {/* Main Two-Column Content */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Roster Status with Clean Filters */}
@@ -472,9 +475,6 @@ export default function CoachDashboardPage() {
           </div>
         </section>
       </div>
-
-      {/* Native Ad Slot (Only visible on Free plan, hidden automatically on paid plans) */}
-      <FreeTierAdSlot variant="native_banner" viewerRole="coach" />
 
       {/* Quick Action Modal */}
       {quickModal && (

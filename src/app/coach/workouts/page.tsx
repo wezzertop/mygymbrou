@@ -4,9 +4,11 @@ import React, { useEffect, useState } from "react";
 import {
   CheckCircle2,
   Dumbbell,
+  Layers,
   Loader2,
   Plus,
   Search,
+  Send,
   Sparkles,
   Trash2,
   Upload,
@@ -49,12 +51,23 @@ export default function CoachWorkoutsPage() {
   const {
     coachProfile,
     students,
+    workouts,
     exerciseLibrary,
     addExerciseToLibrary,
     addWorkoutPlan,
+    assignWorkoutToStudent,
   } = useApp();
 
   const activeStudents = students.filter((s) => s.student_id);
+  const [viewTab, setViewTab] = useState<"catalog" | "templates">("catalog");
+  const [builderModalOpen, setBuilderModalOpen] = useState(false);
+  const [saveAsTemplate, setSaveAsTemplate] = useState(false);
+  const [quickAssignTemplateId, setQuickAssignTemplateId] = useState<string | null>(
+    null
+  );
+  const [quickAssignStudentId, setQuickAssignStudentId] = useState(
+    activeStudents[0]?.student_id || ""
+  );
 
   // Catalog filter + Gender preview + Live ExerciseDB GIF catalog
   const [groupFilter, setGroupFilter] = useState<"Todos" | MuscleGroup>("Todos");
@@ -193,9 +206,9 @@ export default function CoachWorkoutsPage() {
     const dayId = `day-${Date.now()}`;
     addWorkoutPlan({
       coach_id: coachProfile.id,
-      student_id: targetStudentId,
-      is_template: false,
-      title: routineTitle,
+      student_id: saveAsTemplate ? null : targetStudentId,
+      is_template: saveAsTemplate,
+      title: saveAsTemplate ? `Plantilla: ${routineTitle}` : routineTitle,
       description:
         "Rutina armada desde el Catálogo Anatómico Visual con días asignados.",
       goal: "Personalizado",
@@ -220,8 +233,11 @@ export default function CoachWorkoutsPage() {
       ],
     });
     setDraftExercises([]);
+    setBuilderModalOpen(false);
     setToast(
-      "¡Rutina con secuencia anatómica asignada! Ya aparece adaptada al género del alumno."
+      saveAsTemplate
+        ? "Plantilla guardada. Ya puedes asignarla en 1 clic desde Mis Plantillas."
+        : "Rutina asignada y enviada al alumno al instante."
     );
     setTimeout(() => setToast(null), 3500);
   };
@@ -350,26 +366,388 @@ export default function CoachWorkoutsPage() {
       </div>
 
       {toast && (
-        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-xs font-semibold text-emerald-300">
+        <div className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs font-medium text-emerald-300">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           {toast}
         </div>
       )}
 
-      {/* Mobile shortcut to jump straight to the Routine Builder */}
-      {draftExercises.length > 0 && (
-        <a
-          href="#routine-builder"
-          className="flex items-center justify-between rounded-2xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-xs font-bold text-emerald-300 lg:hidden"
+      {/* Clean Top Navigation Tabs + Instant Assign Trigger */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex gap-1.5">
+          <button
+            type="button"
+            onClick={() => setViewTab("catalog")}
+            className={`inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-xs font-medium transition ${
+              viewTab === "catalog"
+                ? "bg-white text-zinc-950"
+                : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:text-white"
+            }`}
+          >
+            <Dumbbell className="h-3.5 w-3.5" />
+            Catálogo ({filteredCatalog.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewTab("templates")}
+            className={`inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-xs font-medium transition ${
+              viewTab === "templates"
+                ? "bg-white text-zinc-950"
+                : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:text-white"
+            }`}
+          >
+            <Layers className="h-3.5 w-3.5" />
+            Mis Rutinas ({workouts.length})
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setBuilderModalOpen(true)}
+          className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
         >
-          <span className="flex items-center gap-2">
-            <Dumbbell className="h-4 w-4" />
-            Rutina en progreso ({draftExercises.length} ejerc.)
-          </span>
-          <span>Ir a publicar ↓</span>
-        </a>
+          <Send className="h-3.5 w-3.5" />
+          Asignar rutina
+          {draftExercises.length > 0 && (
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-zinc-950">
+              {draftExercises.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* TAB: MIS RUTINAS Y PLANTILLAS (Asignación en 1 clic) */}
+      {viewTab === "templates" && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {workouts.map((w) => (
+            <div
+              key={w.id}
+              className="flex flex-col justify-between gap-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-5"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-medium text-emerald-400">
+                    {w.is_template ? "Plantilla" : "Rutina activa"}
+                  </span>
+                  <span className="text-[11px] text-zinc-500">
+                    {w.days.length} día(s) ·{" "}
+                    {w.days.reduce((sum, d) => sum + d.exercises.length, 0)} ejerc.
+                  </span>
+                </div>
+                <h3 className="mt-2 text-base font-semibold text-white">
+                  {w.title}
+                </h3>
+                {w.description && (
+                  <p className="mt-1 text-xs text-zinc-400">{w.description}</p>
+                )}
+              </div>
+
+              {quickAssignTemplateId === w.id ? (
+                <div className="space-y-2.5 rounded-xl border border-white/10 bg-[#060607] p-3">
+                  <select
+                    value={quickAssignStudentId}
+                    onChange={(e) => setQuickAssignStudentId(e.target.value)}
+                    className="min-h-[40px] w-full rounded-lg border border-white/10 bg-[#0e0f12] px-3 text-xs text-white"
+                  >
+                    {activeStudents.map((s) => (
+                      <option key={s.id} value={s.student_id!}>
+                        {s.invited_name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!quickAssignStudentId) return;
+                        assignWorkoutToStudent(w.id, quickAssignStudentId);
+                        setQuickAssignTemplateId(null);
+                        setToast(`Rutina "${w.title}" asignada al alumno.`);
+                        setTimeout(() => setToast(null), 3200);
+                      }}
+                      className="h-9 flex-1 rounded-full bg-white text-xs font-semibold text-zinc-950"
+                    >
+                      Confirmar envío
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQuickAssignTemplateId(null)}
+                      className="h-9 rounded-full border border-white/10 px-3 text-xs text-zinc-400"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  disabled={activeStudents.length === 0}
+                  onClick={() => {
+                    setQuickAssignStudentId(activeStudents[0]?.student_id || "");
+                    setQuickAssignTemplateId(w.id);
+                  }}
+                  className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-white text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-40"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  Asignar a un alumno
+                </button>
+              )}
+            </div>
+          ))}
+          {workouts.length === 0 && (
+            <div className="col-span-full rounded-2xl border border-white/[0.08] bg-[#0e0f12] py-12 text-center text-sm text-zinc-500">
+              Aún no tienes rutinas guardadas. Selecciona ejercicios en el Catálogo para crear tu primera rutina.
+            </div>
+          )}
+        </div>
       )}
 
+      {/* Floating Sticky Action Bar (Mobile & Desktop) when exercises are selected */}
+      {viewTab === "catalog" && draftExercises.length > 0 && !builderModalOpen && (
+        <div className="fixed inset-x-4 bottom-24 z-40 mx-auto flex max-w-md items-center justify-between gap-3 rounded-full border border-emerald-500/40 bg-[#0e0f12]/95 py-2 pl-4 pr-2 shadow-2xl backdrop-blur-xl lg:bottom-6">
+          <div className="flex items-center gap-2 text-xs font-medium text-white">
+            <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-emerald-400 px-1.5 text-[11px] font-bold text-zinc-950">
+              {draftExercises.length}
+            </span>
+            <span className="truncate">ejercicio(s) listos</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setBuilderModalOpen(true)}
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
+          >
+            Asignar ahora
+            <Send className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Quick Routine Builder & Assignment Modal (Zero Scrolling Needed!) */}
+      {builderModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Armar y asignar rutina"
+          onClick={() => setBuilderModalOpen(false)}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
+        >
+          <form
+            onSubmit={handlePublishRoutine}
+            onClick={(e) => e.stopPropagation()}
+            className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0e0f12] shadow-2xl"
+          >
+            <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
+              <div>
+                <h2 className="text-base font-semibold text-white">
+                  Asignar Rutina ({draftExercises.length} ejerc.)
+                </h2>
+                <p className="text-[11px] text-zinc-400">
+                  Elige alumno o guarda como plantilla reutilizable.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setBuilderModalOpen(false)}
+                aria-label="Cerrar"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 space-y-4 overflow-y-auto p-5">
+              {/* Toggle: Assign to Student vs Save as Template */}
+              <div className="grid grid-cols-2 gap-1.5 rounded-full border border-white/10 bg-[#060607] p-1">
+                <button
+                  type="button"
+                  onClick={() => setSaveAsTemplate(false)}
+                  className={`h-9 rounded-full text-xs font-medium transition ${
+                    !saveAsTemplate
+                      ? "bg-white text-zinc-950"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Asignar a alumno
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSaveAsTemplate(true)}
+                  className={`h-9 rounded-full text-xs font-medium transition ${
+                    saveAsTemplate
+                      ? "bg-white text-zinc-950"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Guardar plantilla
+                </button>
+              </div>
+
+              {!saveAsTemplate && (
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+                    Alumno destino
+                  </label>
+                  <select
+                    value={targetStudentId}
+                    onChange={(e) => handleSelectStudent(e.target.value)}
+                    className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-sm text-white outline-none focus:border-emerald-500/60"
+                  >
+                    {activeStudents.map((s) => (
+                      <option key={s.id} value={s.student_id!}>
+                        {s.invited_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-zinc-400">
+                    Nombre de la rutina
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={routineTitle}
+                    onChange={(e) => setRoutineTitle(e.target.value)}
+                    className="min-h-[42px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-zinc-400">
+                    Título del día
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={dayTitle}
+                    onChange={(e) => setDayTitle(e.target.value)}
+                    className="min-h-[42px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-xs text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+                  Días asignados
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {WEEKDAYS.map((d) => {
+                    const active = selectedWeekdays.includes(d.num);
+                    return (
+                      <button
+                        key={d.num}
+                        type="button"
+                        onClick={() => toggleWeekday(d.num)}
+                        className={`h-8 rounded-full px-3 text-xs font-medium transition ${
+                          active
+                            ? "bg-emerald-500 text-zinc-950"
+                            : "border border-white/10 bg-[#060607] text-zinc-400"
+                        }`}
+                      >
+                        {d.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-zinc-400">
+                  Ejercicios seleccionados ({draftExercises.length})
+                </p>
+                {draftExercises.length === 0 ? (
+                  <p className="rounded-xl border border-dashed border-white/10 py-6 text-center text-xs text-zinc-500">
+                    Agrega ejercicios desde el catálogo y luego pulsa &ldquo;Asignar ahora&rdquo;.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {draftExercises.map((ex) => (
+                      <div
+                        key={ex.id}
+                        className="rounded-xl border border-white/[0.08] bg-[#060607] p-3"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="truncate text-xs font-semibold text-white">
+                            {ex.name}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setDraftExercises((prev) =>
+                                prev.filter((item) => item.id !== ex.id)
+                              )
+                            }
+                            aria-label="Quitar ejercicio"
+                            className="text-zinc-500 hover:text-rose-400"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                          <input
+                            type="number"
+                            min="1"
+                            max="12"
+                            value={ex.sets}
+                            onChange={(e) =>
+                              updateDraftExercise(ex.id, {
+                                sets: Number(e.target.value) || 3,
+                              })
+                            }
+                            aria-label="Series"
+                            className="h-9 rounded-lg border border-white/10 bg-[#0e0f12] px-2 text-xs text-white"
+                            placeholder="Series"
+                          />
+                          <input
+                            type="text"
+                            value={ex.reps}
+                            onChange={(e) =>
+                              updateDraftExercise(ex.id, { reps: e.target.value })
+                            }
+                            aria-label="Repeticiones"
+                            className="h-9 rounded-lg border border-white/10 bg-[#0e0f12] px-2 text-xs text-white"
+                            placeholder="Reps"
+                          />
+                          <input
+                            type="number"
+                            min="15"
+                            max="300"
+                            value={ex.rest_seconds}
+                            onChange={(e) =>
+                              updateDraftExercise(ex.id, {
+                                rest_seconds: Number(e.target.value) || 90,
+                              })
+                            }
+                            aria-label="Descanso en segundos"
+                            className="h-9 rounded-lg border border-white/10 bg-[#0e0f12] px-2 text-xs text-white"
+                            placeholder="Descanso s"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="border-t border-white/[0.08] p-4">
+              <button
+                type="submit"
+                disabled={draftExercises.length === 0}
+                className="h-11 w-full rounded-full bg-white text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-40"
+              >
+                {saveAsTemplate
+                  ? "Guardar como Plantilla"
+                  : "Publicar y asignar al alumno"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {viewTab === "catalog" && (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* LEFT: Visual Anatomical Exercise Catalog */}
         <section className="min-w-0 space-y-4 lg:col-span-7">
@@ -499,11 +877,11 @@ export default function CoachWorkoutsPage() {
           )}
         </section>
 
-        {/* RIGHT: Active Routine Builder */}
+        {/* RIGHT: Active Routine Builder (Desktop sidebar — Mobile uses floating bar + modal) */}
         <form
           id="routine-builder"
           onSubmit={handlePublishRoutine}
-          className="h-fit min-w-0 scroll-mt-20 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:sticky lg:top-6 lg:col-span-5"
+          className="hidden h-fit min-w-0 scroll-mt-20 space-y-4 rounded-2xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:p-5 lg:sticky lg:top-6 lg:col-span-5 lg:block"
         >
           <div className="flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-base font-bold text-white">
@@ -682,6 +1060,7 @@ export default function CoachWorkoutsPage() {
           </button>
         </form>
       </div>
+      )}
 
       {/* Custom 3-4 Frame Sequence Modal */}
       {customModalOpen && (

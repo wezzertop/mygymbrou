@@ -259,7 +259,9 @@ export function CoachShell({ children }: { children: React.ReactNode }) {
         <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-safe-nav lg:px-8 lg:py-8 lg:pb-12">
           <SanctionNoticeBanner profile={coachProfile} />
           {children}
-          <FreeTierAdSlot variant="banner_320x50" viewerRole="coach" />
+          {pathname !== "/coach" && (
+            <FreeTierAdSlot viewerRole="coach" className="mt-8" />
+          )}
         </main>
 
         {/* Mobile Fixed Bottom Navigation Bar */}

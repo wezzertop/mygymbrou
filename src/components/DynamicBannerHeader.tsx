@@ -229,24 +229,13 @@ export function DynamicBannerHeader({
   return (
     <>
       <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0f12]">
-        {/* Unobstructed Mobile-First Cover Photo */}
-        <div className="relative h-32 w-full overflow-hidden bg-[#060607] sm:h-44">
+        {/* 100% Unobstructed Mobile-First Cover Photo (Zero buttons over the image) */}
+        <div className="h-32 w-full overflow-hidden bg-[#060607] sm:h-44">
           <img
             src={resolvedCover.url}
             alt="Portada motivacional de perfil"
             className={`h-full w-full object-cover ${resolvedCover.position}`}
           />
-          <button
-            type="button"
-            onClick={() => {
-              setCoverError(null);
-              setCoverModalOpen(true);
-            }}
-            className="absolute right-3 top-3 inline-flex h-8 items-center gap-1.5 rounded-full border border-white/15 bg-black/65 px-3 text-[11px] font-medium text-zinc-100 backdrop-blur-md transition hover:bg-black/85"
-          >
-            <ImageIcon className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Cambiar portada</span>
-          </button>
         </div>
 
         {/* Clean Typographic Block Below Photo */}
@@ -283,6 +272,17 @@ export function DynamicBannerHeader({
                 >
                   <PencilLine className="h-3 w-3" />
                   Personalizar frase
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCoverError(null);
+                    setCoverModalOpen(true);
+                  }}
+                  className="inline-flex h-7 items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 text-[11px] font-medium text-zinc-400 transition hover:border-white/25 hover:text-white"
+                >
+                  <ImageIcon className="h-3 w-3" />
+                  Portada
                 </button>
               </div>
             </div>
