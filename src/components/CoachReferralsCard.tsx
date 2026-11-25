@@ -36,10 +36,16 @@ export function CoachReferralsCard() {
   }, [coachProfile.id]);
 
   const shareLink = `${getAppUrl()}/auth/register-coach?ref=${encodeURIComponent(code)}`;
-  const queuedRewards = queue.filter((q) => q.status === "queued");
+  const armedInStripe = queue.find((q) => q.status === "queued_in_stripe");
+  const waitingInQueue = queue.filter(
+    (q) => q.status === "pending" || q.status === "queued"
+  );
+  const queuedRewards = armedInStripe
+    ? [armedInStripe, ...waitingInQueue]
+    : waitingInQueue;
   const appliedRewards = queue.filter((q) => q.status === "applied");
   const totalEarned = queuedRewards.length + appliedRewards.length;
-  const nextReward = queuedRewards[0];
+  const nextReward = armedInStripe || waitingInQueue[0];
   const nextCalc = nextReward
     ? calculateQueuedRewardForPlan(nextReward, coachProfile.saas_plan_tier)
     : null;
@@ -136,10 +142,59 @@ export function CoachReferralsCard() {
       </div>
 
       {nextReward && nextCalc && (
-        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-3 text-xs text-zinc-200">
-          Próximo descuento en cola: <strong>{nextReward.discount_percent}%</strong>{" "}
-          (base plan {nextReward.plan_at_grant.toUpperCase()} · -${nextCalc.discountAmountMxn.toFixed(2)} MXN → cuota estimada{" "}
-          <strong className="text-emerald-400">${nextCalc.netMonthlyDueMxn.toFixed(2)} MXN</strong>).
+        <div className="space-y-1 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.07] p-3.5 text-xs text-zinc-200">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="font-bold text-emerald-400">
+              {armedInStripe
+                ? "✓ Descuento armado en Stripe para tu próximo cobro"
+                : "Próximo descuento en cola mensual"}
+            </span>
+            {armedInStripe?.stripe_coupon_id && (
+              <span className="rounded-full border border-emerald-500/30 bg-[#060607] px-2 py-0.5 font-mono text-[10px] text-emerald-300">
+                Cupón Stripe activo
+              </span>
+            )}
+          </div>
+          <p>
+            <strong>{nextReward.discount_percent}%</strong> (base plan{" "}
+            {nextReward.plan_at_grant.toUpperCase()} · -${nextCalc.discountAmountMxn.toFixed(2)}{" "}
+            MXN → cobro estimado{" "}
+            <strong className="text-emerald-400">
+              ${nextCalc.netMonthlyDueMxn.toFixed(2)} MXN
+            </strong>
+            ).
+            {waitingInQueue.length > 0 && armedInStripe && (
+              <span className="text-zinc-400">
+                {" "}
+                +{waitingInQueue.length} mes(es) adicionales en cola consecutiva.
+              </span>
+            )}
+          </p>
+        </div>
+      )}
+
+      {appliedRewards.length > 0 && (
+        <div className="space-y-1.5 rounded-xl border border-white/[0.06] bg-[#060607] p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+            Historial de descuentos aplicados por Stripe
+          </p>
+          <div className="divide-y divide-white/[0.06]">
+            {appliedRewards.slice(0, 6).map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between py-1.5 text-xs"
+              >
+                <span className="text-zinc-300">
+                  {item.applied_month || "Ciclo aplicado"} · {item.discount_percent}%
+                </span>
+                <span className="font-semibold tabular-nums text-emerald-400">
+                  {item.applied_amount_mxn
+                    ? `-$${Number(item.applied_amount_mxn).toFixed(2)} MXN`
+                    : "Aplicado"}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

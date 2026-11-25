@@ -32,7 +32,9 @@ export interface ReferralRewardItem {
   plan_at_grant: SaasPlanTier;
   locked_plan_price_mxn: number;
   queue_position: number;
-  status: "queued" | "applied" | "expired" | "cancelled";
+  status: "pending" | "queued" | "queued_in_stripe" | "applied" | "expired" | "cancelled";
+  stripe_coupon_id?: string | null;
+  stripe_invoice_id?: string | null;
   applied_month?: string | null;
   applied_amount_mxn?: number | null;
   created_at: string;

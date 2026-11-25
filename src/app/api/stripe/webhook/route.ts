@@ -7,10 +7,11 @@ import {
   getTierFromStripePriceId,
 } from "@/lib/stripe";
 import { getSaasPlanById, SaasPlanTier } from "@/lib/saas-plans";
+import { REFERRAL_RULES } from "@/lib/referrals";
 import {
-  calculateQueuedRewardForPlan,
-  REFERRAL_RULES,
-} from "@/lib/referrals";
+  applyNextReferralRewardToStripe,
+  finalizeAppliedRewardAndQueueNext,
+} from "@/lib/stripe-referrals";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -174,7 +175,7 @@ export async function POST(request: Request) {
                     .from("referral_reward_queue")
                     .select("id, queue_position")
                     .eq("sponsor_coach_id", redemption.sponsor_coach_id)
-                    .in("status", ["queued", "applied"]),
+                    .in("status", ["pending", "queued", "queued_in_stripe", "applied"]),
                 ]);
 
               const cap = sponsorCode?.max_rewards_cap || REFERRAL_RULES.defaultRewardCap;
@@ -199,11 +200,42 @@ export async function POST(request: Request) {
                   plan_at_grant: sponsorTier,
                   locked_plan_price_mxn: lockedPrice,
                   queue_position: currentCount + 1,
-                  status: "queued",
+                  status: "pending",
                 });
+
+                // Si el padrino ya tiene suscripción activa y aún no tiene descuento armado para el próximo mes,
+                // inyectamos 1 cupón `duration: 'once'` directamente en Stripe.
+                await applyNextReferralRewardToStripe(redemption.sponsor_coach_id);
               }
             }
           }
+        }
+        break;
+      }
+
+      // ============================================================
+      // 1B. invoice.created (inyectar descuento en factura draft antes de finalizar)
+      // ============================================================
+      case "invoice.created": {
+        const draftInvoice = event.data.object as Stripe.Invoice;
+        if (draftInvoice.status !== "draft") break;
+
+        const customerId =
+          typeof draftInvoice.customer === "string"
+            ? draftInvoice.customer
+            : draftInvoice.customer?.id || null;
+        if (!customerId) break;
+
+        const { data: coach } = await admin
+          .from("profiles")
+          .select("id")
+          .eq("stripe_customer_id", customerId)
+          .maybeSingle();
+
+        if (coach?.id) {
+          await applyNextReferralRewardToStripe(coach.id, {
+            draftInvoiceId: draftInvoice.id,
+          });
         }
         break;
       }
@@ -302,48 +334,21 @@ export async function POST(request: Request) {
           }
         }
 
-        // Cola mensual consecutiva de referidos: aplicar ÚNICAMENTE 1 recompensa para el siguiente ciclo
-        const activeTierForNext = (scheduledTier || coach.saas_plan_tier || "base") as SaasPlanTier;
-        if (activeTierForNext !== "free") {
-          const { data: nextReward } = await admin
-            .from("referral_reward_queue")
-            .select("*")
-            .eq("sponsor_coach_id", coach.id)
-            .eq("status", "queued")
-            .order("queue_position", { ascending: true })
-            .limit(1)
-            .maybeSingle();
-
-          if (nextReward) {
-            const calc = calculateQueuedRewardForPlan(
-              {
-                discount_percent: Number(nextReward.discount_percent || 25),
-                locked_plan_price_mxn: Number(nextReward.locked_plan_price_mxn || 449),
-                plan_at_grant: nextReward.plan_at_grant as SaasPlanTier,
-              },
-              activeTierForNext
-            );
-
-            if (calc.discountAmountMxn > 0) {
-              await stripe.invoiceItems.create({
-                customer: customerId,
-                amount: -Math.round(calc.discountAmountMxn * 100),
-                currency: "mxn",
-                description: `Recompensa mensual por referido (${nextReward.discount_percent}% sobre base $${calc.referenceBasePriceMxn} MXN)`,
-              });
-
-              await admin
-                .from("referral_reward_queue")
-                .update({
-                  status: "applied",
-                  applied_month: new Date().toISOString().slice(0, 7),
-                  applied_amount_mxn: calc.discountAmountMxn,
-                  applied_at: new Date().toISOString(),
-                })
-                .eq("id", nextReward.id);
-            }
-          }
-        }
+        // Cola mensual consecutiva nativa en Stripe:
+        // 1) Marca como `applied` la recompensa `queued_in_stripe` recién cobrada en esta factura
+        // 2) Arma ÚNICAMENTE 1 siguiente cupón `duration: 'once'` en Stripe para el próximo ciclo
+        const totalDiscountCents = (invoice.total_discount_amounts || []).reduce(
+          (sum, d) => sum + (d.amount || 0),
+          0
+        );
+        await finalizeAppliedRewardAndQueueNext({
+          coachId: coach.id,
+          invoiceId: invoice.id,
+          discountAmountMxn:
+            totalDiscountCents > 0
+              ? Number((totalDiscountCents / 100).toFixed(2))
+              : undefined,
+        });
         break;
       }
 
