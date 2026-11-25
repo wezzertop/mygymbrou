@@ -15,7 +15,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
-import { createClient, getAppUrl, isSupabaseConfigured } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Gender } from "@/types/database";
 
 interface InviteMetadata {
@@ -28,6 +28,7 @@ interface InviteMetadata {
   invite_status: string;
   plan_name: string;
   has_existing_account: boolean;
+  needs_password_setup?: boolean;
 }
 
 function ActivateAccountContent() {
@@ -60,6 +61,36 @@ function ActivateAccountContent() {
   const [loading, setLoading] = useState(false);
   const [activated, setActivated] = useState(false);
   const [needsEmailConfirm, setNeedsEmailConfirm] = useState(false);
+
+  // Capturar sesión implícita (#access_token=...&refresh_token=...) cuando Supabase redirige desde correo de invitación
+  useEffect(() => {
+    if (typeof window === "undefined" || !isSupabaseConfigured()) return;
+    const hash = window.location.hash;
+    if (!hash || !hash.includes("access_token=")) return;
+
+    const params = new URLSearchParams(hash.replace(/^#/, ""));
+    const accessToken = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
+    if (!accessToken || !refreshToken) return;
+
+    const supabase = createClient();
+    supabase.auth
+      .setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      })
+      .then(() => {
+        window.history.replaceState(
+          null,
+          "",
+          `${window.location.pathname}${window.location.search}`
+        );
+        return refreshData();
+      })
+      .catch(() => {
+        // Si el hash expiró, el formulario usará complete-activation con el token de invitación
+      });
+  }, [refreshData]);
 
   useEffect(() => {
     let active = true;
@@ -98,9 +129,14 @@ function ActivateAccountContent() {
   const coachBrand = inviteMeta?.coach_brand || coachProfile.brand_name || "MiGymBrou";
   const planName = inviteMeta?.plan_name || "Plan Personalizado";
 
+  // Solo considerar cuenta existente si el usuario YA configuró su contraseña previamente
+  const hasActiveAccount =
+    Boolean(inviteMeta?.has_existing_account) &&
+    !inviteMeta?.needs_password_setup;
+
   // Si ya hay una sesión iniciada con cuenta existente en modo Supabase real
   const isExistingLoggedInUser =
-    !isDemoMode && Boolean(authUserId) && Boolean(inviteMeta?.has_existing_account);
+    !isDemoMode && Boolean(authUserId) && hasActiveAccount;
 
   const handleOneClickAccept = async () => {
     setError(null);
@@ -155,7 +191,10 @@ function ActivateAccountContent() {
           data: { user: currentUser },
         } = await supabase.auth.getUser();
 
-        if (currentUser) {
+        if (
+          currentUser &&
+          (currentUser.email || "").toLowerCase() === invitedEmail.toLowerCase()
+        ) {
           // Usuario llegó desde el correo de invitación con sesión temporal activa
           const { error: updateErr } = await supabase.auth.updateUser({
             password,
@@ -164,6 +203,7 @@ function ActivateAccountContent() {
               full_name: fullName,
               gender,
               fitness_goal: fitnessGoal,
+              password_set: true,
               terms_accepted_at: new Date().toISOString(),
             },
           });
@@ -189,42 +229,42 @@ function ActivateAccountContent() {
           });
           await refreshData();
         } else {
-          // Registro rápido directo desde enlace compartido
-          const { data: signUpData, error: signUpErr } =
-            await supabase.auth.signUp({
-              email: invitedEmail,
+          // Activación directa con token de invitación (crea/actualiza contraseña en servidor y autentica al instante)
+          const res = await fetch("/api/students/complete-activation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              token,
+              fullName,
+              gender,
+              fitnessGoal,
               password,
-              options: {
-                emailRedirectTo: `${getAppUrl()}/auth/callback?next=/student`,
-                data: {
-                  role: "student",
-                  full_name: fullName,
-                  gender,
-                  fitness_goal: fitnessGoal,
-                  invite_token: token,
-                  terms_accepted_at: new Date().toISOString(),
-                },
-              },
-            });
+            }),
+          });
+          const data = await res.json();
 
-          if (signUpErr) {
-            setError(signUpErr.message);
+          if (!res.ok) {
+            setError(
+              data.error || "No se pudo activar la cuenta. Verifica el enlace."
+            );
             setLoading(false);
             return;
           }
 
-          if (signUpData.session) {
-            await fetch("/api/students/accept-invite", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ token, fullName }),
-            });
-            await refreshData();
-          } else {
-            setNeedsEmailConfirm(true);
+          const { error: signInErr } = await supabase.auth.signInWithPassword({
+            email: data.email || invitedEmail,
+            password,
+          });
+
+          if (signInErr) {
+            setError(
+              "Tu contraseña se guardó correctamente, pero no se pudo iniciar sesión automáticamente. Inicia sesión con tu correo y nueva contraseña."
+            );
             setLoading(false);
             return;
           }
+
+          await refreshData();
         }
       }
 
@@ -344,7 +384,7 @@ function ActivateAccountContent() {
                   : `Aceptar invitación de ${coachName}`}
               </button>
             </div>
-          ) : inviteMeta?.has_existing_account && !isDemoMode ? (
+          ) : hasActiveAccount && !isDemoMode ? (
             <div className="space-y-5 text-center">
               <div className="rounded-xl border border-white/[0.08] bg-emerald-500/10 p-4 text-left text-xs text-zinc-300">
                 <p className="flex items-center gap-1.5 font-bold text-emerald-400">

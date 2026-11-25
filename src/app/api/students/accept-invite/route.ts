@@ -4,6 +4,7 @@ import {
   createServerSupabaseClient,
 } from "@/lib/supabase/server";
 import { getPlanCapabilities } from "@/lib/saas-plans";
+import { needsPasswordSetup } from "@/lib/auth-helpers";
 import type { InitialMeasurementsInput } from "@/types/database";
 
 async function materializeInitialMeasurementIfNeeded(
@@ -215,6 +216,17 @@ export async function GET(request: Request) {
         .maybeSingle(),
     ]);
 
+    let existingAccountReady = false;
+    let requiresPasswordSetup = true;
+
+    if (existingStudent?.id) {
+      const { data: authUserRes } = await adminClient.auth.admin.getUserById(
+        existingStudent.id
+      );
+      requiresPasswordSetup = needsPasswordSetup(authUserRes?.user);
+      existingAccountReady = !requiresPasswordSetup;
+    }
+
     return NextResponse.json({
       mode: "supabase",
       invite: {
@@ -230,7 +242,8 @@ export async function GET(request: Request) {
         initial_goals: Array.isArray(relation.initial_goals)
           ? relation.initial_goals
           : [],
-        has_existing_account: Boolean(existingStudent),
+        has_existing_account: existingAccountReady,
+        needs_password_setup: requiresPasswordSetup,
       },
     });
   } catch (err) {

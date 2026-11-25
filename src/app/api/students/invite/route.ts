@@ -4,6 +4,7 @@ import {
   createServerSupabaseClient,
 } from "@/lib/supabase/server";
 import { canInviteMoreStudents, getSaasPlanById } from "@/lib/saas-plans";
+import { needsPasswordSetup } from "@/lib/auth-helpers";
 import type { InitialMeasurementsInput } from "@/types/database";
 
 const PROD_FALLBACK_URL = "https://migymbrou.com";
@@ -250,6 +251,13 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     let existingUserId: string | null = existingProfile?.id || null;
+    let existingUserNeedsPassword = false;
+
+    if (existingUserId) {
+      const { data: authUserRes } =
+        await adminClient.auth.admin.getUserById(existingUserId);
+      existingUserNeedsPassword = needsPasswordSetup(authUserRes?.user);
+    }
 
     // Función auxiliar para guardar coach_students + coach_student_records aislado
     const persistRelationAndRecord = async (
@@ -425,8 +433,8 @@ export async function POST(request: Request) {
       }
     };
 
-    // === CASO B: Usuario YA registrado en MiGymBrou ===
-    if (existingUserId) {
+    // === CASO B: Usuario YA registrado y activo con contraseña en MiGymBrou ===
+    if (existingUserId && !existingUserNeedsPassword) {
       const relationId = await persistRelationAndRecord(
         "pending_acceptance",
         existingUserId
@@ -446,6 +454,27 @@ export async function POST(request: Request) {
       });
     }
 
+    // === CASO B2: Usuario pre-creado por invitación previa que AÚN NO define contraseña ===
+    if (existingUserId && existingUserNeedsPassword) {
+      const relationId = await persistRelationAndRecord(
+        "pending_signup",
+        existingUserId
+      );
+
+      return NextResponse.json({
+        mode: "supabase",
+        sent: true,
+        existingUser: false,
+        needsPasswordSetup: true,
+        status: "pending_signup",
+        relationId,
+        inviteToken,
+        activationLink,
+        message:
+          "Invitación lista. Comparte el enlace de activación para que el alumno cree su contraseña y entre directo a su cuenta.",
+      });
+    }
+
     // === CASO A: Usuario NUEVO en MiGymBrou ===
     const relationId = await persistRelationAndRecord("pending_signup", null);
 
@@ -460,6 +489,7 @@ export async function POST(request: Request) {
           invite_token: inviteToken,
           invited_plan_name: resolvedPlanName,
           fitness_goal: goals.join(", ") || "Recomposición corporal",
+          password_set: false,
         },
       }
     );
