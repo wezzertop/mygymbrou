@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  createAdminSupabaseClient,
+  createServerSupabaseClient,
+} from "@/lib/supabase/server";
 
 function sanitizeNextPath(next: string | null): string | null {
   if (!next || !next.startsWith("/") || next.startsWith("//")) {
@@ -70,15 +73,64 @@ export async function GET(request: Request) {
     }
   }
 
+  // Auto-vincular invitaciones pendientes de registro (Caso A) al confirmar cuenta
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user?.email) {
+    try {
+      const adminClient = createAdminSupabaseClient();
+      if (adminClient) {
+        const cleanEmail = user.email.toLowerCase();
+        const { data: pendingSignups } = await adminClient
+          .from("coach_students")
+          .select("id, coach_id, invited_name, subscription_status")
+          .ilike("invited_email", cleanEmail)
+          .in("invite_status", ["pending", "pending_signup"])
+          .is("student_id", null);
+
+        for (const rel of pendingSignups || []) {
+          await adminClient
+            .from("coach_students")
+            .update({
+              student_id: user.id,
+              invite_status: "active",
+              subscription_status:
+                rel.subscription_status === "trial"
+                  ? "active"
+                  : rel.subscription_status,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", rel.id);
+
+          const { data: rec } = await adminClient
+            .from("coach_student_records")
+            .update({
+              student_id: user.id,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("coach_student_id", rel.id)
+            .select("id")
+            .maybeSingle();
+
+          if (rec?.id) {
+            await adminClient.rpc("materialize_initial_assessment", {
+              target_record_id: rec.id,
+              target_student_id: user.id,
+            });
+          }
+        }
+      }
+    } catch {
+      // No bloquear redirección si falla la auto-vinculación en callback (reintenta en AppContext)
+    }
+  }
+
   // Si hay una ruta específica (ej. /auth/reset-password o /auth/activate?token=...), redirigimos allí
   if (next) {
     return NextResponse.redirect(`${appOrigin}${next}`);
   }
-
-  // Caso contrario, redirigimos según el rol real del usuario autenticado
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   if (user) {
     const { data: profile } = await supabase

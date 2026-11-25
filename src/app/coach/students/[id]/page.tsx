@@ -11,10 +11,12 @@ import {
   ArrowUpRight,
   Calendar,
   CheckCircle2,
+  ClipboardList,
   CreditCard,
   Dumbbell,
   Eye,
   FileDown,
+  FileText,
   Plus,
   Save,
   Share2,
@@ -38,8 +40,9 @@ import {
   exportStudentPdf,
   PdfExportSection,
 } from "@/lib/pdf-export";
+import { StudentClinicalRecordTab } from "@/components/StudentClinicalRecordTab";
 
-type TabKey = "assessment" | "workout" | "diet" | "subscription";
+type TabKey = "clinical" | "assessment" | "workout" | "diet" | "subscription";
 
 function DeltaBadge({
   current,
@@ -82,6 +85,7 @@ export default function Student360Page() {
   const {
     coachProfile,
     students,
+    studentRecords,
     studentGoals,
     subscriptionPlans,
     assessments,
@@ -89,6 +93,7 @@ export default function Student360Page() {
     workouts,
     nutritionPlans,
     addAssessment,
+    updateStudentRecord,
     assignWorkoutToStudent,
     assignNutritionToStudent,
     assignSubscriptionPlanToStudent,
@@ -109,6 +114,21 @@ export default function Student360Page() {
 
   const student = students.find(
     (s) => s.student_id === studentId || s.id === studentId
+  );
+
+  const studentRecord = useMemo(
+    () =>
+      student
+        ? studentRecords.find(
+            (r) =>
+              r.coach_student_id === student.id ||
+              (r.coach_id === student.coach_id &&
+                ((student.student_id && r.student_id === student.student_id) ||
+                  r.invited_email.toLowerCase() ===
+                    student.invited_email.toLowerCase()))
+          )
+        : undefined,
+    [student, studentRecords]
   );
 
   const studentGoal = studentGoals.find((g) => g.student_id === studentId);
@@ -153,13 +173,14 @@ export default function Student360Page() {
       section,
       coach: coachProfile,
       student,
+      record: studentRecord,
       workout: activeWorkout,
       diet: activeDiet,
       assessments: studentAssessments,
       appointments: studentAppointments,
     });
     setExportModalOpen(false);
-    showToast("Documento PDF listo para guardar o compartir.");
+    showToast("Reporte PDF generado y listo para imprimir o descargar.");
   };
 
   const handleShareFriendly = async (viaWhatsApp = false) => {
@@ -168,6 +189,7 @@ export default function Student360Page() {
       section: "full",
       coach: coachProfile,
       student,
+      record: studentRecord,
       workout: activeWorkout,
       diet: activeDiet,
       assessments: studentAssessments,
@@ -357,10 +379,10 @@ export default function Student360Page() {
             <button
               type="button"
               onClick={() => setExportModalOpen(true)}
-              className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl border border-emerald-500/35 bg-emerald-500/15 px-3.5 py-2.5 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500 hover:text-[#0a0a0a] active:scale-[0.98]"
+              className="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl border border-[#00FF90]/45 bg-[#00FF90]/15 px-3.5 py-2.5 text-xs font-bold text-[#00FF90] transition hover:bg-[#00FF90] hover:text-zinc-950 active:scale-[0.98]"
             >
-              <FileDown className="h-4 w-4" />
-              Exportar PDF
+              <FileText className="h-4 w-4" />
+              Generar Reportes
             </button>
             <Link
               href={`/coach/agenda?student=${studentId}`}
@@ -413,12 +435,12 @@ export default function Student360Page() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h2 className="text-base font-bold text-white">
-                    Exportar y compartir PDF
+                    Centro de Reportes y Exportación PDF
                   </h2>
                   <p className="mt-0.5 text-xs text-zinc-400">
-                    Genera documentos profesionales de{" "}
+                    Consulta, imprime o descarga reportes limpios de{" "}
                     <strong className="text-white">{student.invited_name}</strong>{" "}
-                    con tu marca de Coach.
+                    con identidad de MiGymBrou y tu marca de Coach.
                   </p>
                 </div>
                 <button
@@ -435,51 +457,64 @@ export default function Student360Page() {
                 <button
                   type="button"
                   onClick={() => handleExportPdf("full")}
-                  className="flex w-full items-center justify-between rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-left transition hover:bg-emerald-500/20"
+                  className="flex w-full items-center justify-between rounded-xl border border-[#00FF90]/45 bg-[#00FF90]/10 px-4 py-3 text-left transition hover:bg-[#00FF90]/20"
                 >
                   <div>
-                    <p className="text-xs font-bold text-emerald-300">
-                      Expediente Completo 360° (PDF)
+                    <p className="text-xs font-bold text-[#00FF90]">
+                      1. Reporte Integral del Expediente (PDF)
                     </p>
-                    <p className="text-[11px] text-zinc-400">
-                      Progreso, rutina, dieta y citas en un solo reporte
+                    <p className="text-[11px] text-zinc-300">
+                      Ficha clínica, objetivos, comparativa antropométrica, rutina y dieta
                     </p>
                   </div>
-                  <FileDown className="h-4 w-4 shrink-0 text-emerald-400" />
+                  <FileDown className="h-4 w-4 shrink-0 text-[#00FF90]" />
                 </button>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <button
                     type="button"
                     onClick={() => handleExportPdf("workout")}
-                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
+                    className="flex items-start gap-2.5 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left transition hover:border-[#00FF90]/40"
                   >
-                    <Dumbbell className="h-4 w-4 shrink-0 text-emerald-400" />
-                    Solo Rutina
+                    <Dumbbell className="mt-0.5 h-4 w-4 shrink-0 text-[#00FF90]" />
+                    <div>
+                      <p className="text-xs font-semibold text-white">
+                        2. Rutina de Entrenamiento
+                      </p>
+                      <p className="text-[10px] text-zinc-400">
+                        Ejercicios, series, descansos y notas
+                      </p>
+                    </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleExportPdf("diet")}
-                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
+                    className="flex items-start gap-2.5 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left transition hover:border-[#00FF90]/40"
                   >
-                    <Utensils className="h-4 w-4 shrink-0 text-emerald-400" />
-                    Solo Dieta
+                    <Utensils className="mt-0.5 h-4 w-4 shrink-0 text-[#00FF90]" />
+                    <div>
+                      <p className="text-xs font-semibold text-white">
+                        3. Plan Nutricional / Dieta
+                      </p>
+                      <p className="text-[10px] text-zinc-400">
+                        Comidas, macros, imagen y alergias
+                      </p>
+                    </div>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleExportPdf("progress")}
-                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
+                    className="flex items-start gap-2.5 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left transition hover:border-[#00FF90]/40 sm:col-span-2"
                   >
-                    <Activity className="h-4 w-4 shrink-0 text-emerald-400" />
-                    Solo Progreso
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleExportPdf("appointments")}
-                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#060607] px-3 py-2.5 text-left text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white"
-                  >
-                    <Calendar className="h-4 w-4 shrink-0 text-emerald-400" />
-                    Solo Citas
+                    <Activity className="mt-0.5 h-4 w-4 shrink-0 text-[#00FF90]" />
+                    <div>
+                      <p className="text-xs font-semibold text-white">
+                        4. Progreso Antropométrico
+                      </p>
+                      <p className="text-[10px] text-zinc-400">
+                        Historial, comparativa de perímetros (inicial vs. actual) y gráfica visual
+                      </p>
+                    </div>
                   </button>
                 </div>
               </div>
@@ -728,10 +763,11 @@ export default function Student360Page() {
       )}
 
       {/* 360° Tabs */}
-      <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/[0.08] bg-[#060607] p-1.5 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/[0.08] bg-[#060607] p-1.5 sm:grid-cols-5">
         {(
           [
             { key: "assessment", label: "Evaluación y Medidas", icon: Activity },
+            { key: "clinical", label: "Ficha Clínica", icon: ClipboardList },
             { key: "workout", label: "Rutina Asignada", icon: Dumbbell },
             { key: "diet", label: "Dieta Asignada", icon: Utensils },
             { key: "subscription", label: "Suscripción", icon: CreditCard },
@@ -756,6 +792,18 @@ export default function Student360Page() {
           );
         })}
       </div>
+
+      {/* TAB 0: FICHA CLÍNICA AISLADA */}
+      {activeTab === "clinical" && (
+        <StudentClinicalRecordTab
+          student={student}
+          record={studentRecord}
+          onSave={(patch) => {
+            updateStudentRecord(student.id, patch);
+            showToast("Expediente clínico actualizado de forma segura.");
+          }}
+        />
+      )}
 
       {/* TAB 1: EVALUACIÓN Y MEDIDAS */}
       {activeTab === "assessment" && (

@@ -12,6 +12,8 @@ import {
   X,
 } from "lucide-react";
 import { getDaysRemaining, useApp } from "@/context/AppContext";
+import { isPendingInviteStatus } from "@/lib/student-record-constants";
+import { PendingCoachInvitesBanner } from "@/components/PendingCoachInvitesBanner";
 
 interface SmartAlert {
   id: string;
@@ -198,8 +200,8 @@ export function SmartNotificationsCenter({
       }
 
       // 3. Invitaciones pendientes de confirmar por el alumno
-      const pendingInvites = students.filter(
-        (s) => s.invite_status === "pending"
+      const pendingInvites = students.filter((s) =>
+        isPendingInviteStatus(s.invite_status)
       );
       if (pendingInvites.length > 0) {
         alerts.push({
@@ -238,11 +240,21 @@ export function SmartNotificationsCenter({
     assessments,
   ]);
 
+  const pendingAcceptanceCount =
+    role === "student"
+      ? students.filter(
+          (s) =>
+            s.invite_status === "pending_acceptance" &&
+            (s.student_id === studentProfile.id ||
+              s.invited_email.toLowerCase() ===
+                studentProfile.email.toLowerCase())
+        ).length
+      : 0;
   const unreadDbCount = userDbNotifications.filter((n) => !n.is_read).length;
   const unreadSmartCount = smartAlerts.filter(
     (a) => !seenAlertIds.includes(a.id)
   ).length;
-  const totalBadge = unreadDbCount + unreadSmartCount;
+  const totalBadge = unreadDbCount + unreadSmartCount + pendingAcceptanceCount;
 
   const handleToggleOpen = () => {
     const nextOpen = !open;
@@ -336,6 +348,15 @@ export function SmartNotificationsCenter({
             </div>
 
             <div className="max-h-[62vh] divide-y divide-white/[0.06] overflow-y-auto">
+              {role === "student" && (
+                <div className="p-2.5 empty:hidden">
+                  <PendingCoachInvitesBanner
+                    compact
+                    onAccepted={() => setOpen(false)}
+                  />
+                </div>
+              )}
+
               {/* Smart Proactive Alerts */}
               {smartAlerts.map((alert) => (
                 <Link

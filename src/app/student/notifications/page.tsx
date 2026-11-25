@@ -11,10 +11,12 @@ import {
   Dumbbell,
   Inbox,
   Target,
+  UserPlus,
   Utensils,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { NotificationType } from "@/types/database";
+import { PendingCoachInvitesBanner } from "@/components/PendingCoachInvitesBanner";
 
 const TYPE_ICON: Record<NotificationType, React.ElementType> = {
   assessment: Activity,
@@ -25,6 +27,7 @@ const TYPE_ICON: Record<NotificationType, React.ElementType> = {
   goal: Target,
   verification: BadgeCheck,
   inquiry: Inbox,
+  coach_invite: UserPlus,
 };
 
 export default function StudentNotificationsPage() {
@@ -59,6 +62,8 @@ export default function StudentNotificationsPage() {
           </button>
         )}
       </div>
+
+      <PendingCoachInvitesBanner />
 
       <div className="space-y-3">
         {myNotifs.map((n) => {

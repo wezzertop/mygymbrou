@@ -9,10 +9,13 @@ import {
   BodyAssessment,
   CoachCertification,
   CoachInquiry,
+  CoachStudentRecord,
   CoachStudentRelation,
   CoachSubscriptionPlan,
   ExerciseLibraryItem,
   IdentityDocumentType,
+  InitialMeasurementsInput,
+  InviteStatus,
   NotificationType,
   NutritionPlan,
   Profile,
@@ -66,6 +69,7 @@ interface AppState {
   directoryCoaches: PublicCoachProfile[];
   coachInquiries: CoachInquiry[];
   students: CoachStudentRelation[];
+  studentRecords: CoachStudentRecord[];
   subscriptionPlans: CoachSubscriptionPlan[];
   studentGoals: StudentGoal[];
   exerciseLibrary: ExerciseLibraryItem[];
@@ -107,6 +111,29 @@ const demoInitialState: AppState = {
   directoryCoaches: DEMO_DIRECTORY_COACHES,
   coachInquiries: DEMO_COACH_INQUIRIES,
   students: DEMO_STUDENTS,
+  studentRecords: [
+    {
+      id: "rec-demo-1",
+      coach_student_id: "rel-1",
+      coach_id: "coach-1",
+      student_id: "student-1",
+      invited_email: "sofia.ramirez@email.com",
+      phone: "+52 55 1234 5678",
+      goals: ["Recomposición corporal", "Hipertrofia / Ganancia muscular"],
+      has_injuries: false,
+      has_chronic_conditions: false,
+      takes_medications: false,
+      allergies: "Lactosa leve",
+      current_supplements: "Proteína aislada, Creatina 5g",
+      gym_experience: "1 a 3 años",
+      available_days_per_week: 4,
+      session_duration_hours: "1.5 horas",
+      initial_coach_notes: "Buena adherencia y técnica base sólida en tren inferior.",
+      initial_assessment_materialized: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ],
   subscriptionPlans: DEMO_SUBSCRIPTION_PLANS,
   studentGoals: DEMO_STUDENT_GOALS,
   exerciseLibrary: DEMO_EXERCISE_LIBRARY,
@@ -154,6 +181,7 @@ const emptyRealState: AppState = {
   directoryCoaches: [],
   coachInquiries: [],
   students: [],
+  studentRecords: [],
   subscriptionPlans: [],
   studentGoals: [],
   exerciseLibrary: DEMO_EXERCISE_LIBRARY,
@@ -206,11 +234,34 @@ interface AppContextValue extends AppState {
   inviteStudent: (input: {
     name: string;
     email: string;
+    phone?: string;
     planId?: string;
     planName: string;
     price: number;
+    durationDays?: number;
     goal?: string;
+    goals?: string[];
+    status?: InviteStatus;
+    record?: Partial<
+      Omit<
+        CoachStudentRecord,
+        "id" | "coach_student_id" | "coach_id" | "student_id" | "invited_email" | "created_at" | "updated_at"
+      >
+    >;
+    initialMeasurements?: InitialMeasurementsInput | null;
+    skipDbInsert?: boolean;
   }) => CoachStudentRelation;
+  updateStudentRecord: (
+    coachStudentId: string,
+    patch: Partial<
+      Omit<
+        CoachStudentRecord,
+        "id" | "coach_student_id" | "coach_id" | "created_at" | "updated_at"
+      >
+    >
+  ) => void;
+  acceptCoachInvite: (relationIdOrToken: string) => Promise<boolean>;
+  declineCoachInvite: (relationIdOrToken: string) => Promise<boolean>;
   activateInvitedStudent: (token: string, fullName?: string) => boolean;
   updateStudentSubscription: (
     relationId: string,
@@ -361,6 +412,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [
       profileRes,
       studentsRes,
+      recordsRes,
       plansRes,
       goalsRes,
       assessmentsRes,
@@ -376,6 +428,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .from("coach_students")
         .select("*")
         .order("created_at", { ascending: false }),
+      supabase
+        .from("coach_student_records")
+        .select("*")
+        .order("updated_at", { ascending: false }),
       supabase
         .from("coach_subscription_plans")
         .select("*")
@@ -487,32 +543,50 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
 
     const studentsList: CoachStudentRelation[] = (studentsRes.data || []).map(
-      (row) => ({
-        id: row.id,
-        coach_id: row.coach_id,
-        student_id: row.student_id,
-        plan_id: row.plan_id,
-        invited_name: row.invited_name,
-        invited_email: row.invited_email,
-        invite_token: row.invite_token || "",
-        invite_status:
-          row.invite_status === "inactive" ||
-          row.invite_status === "finalizado" ||
-          Boolean(row.ended_at)
-            ? "finalizado"
-            : row.invite_status,
-        ended_at: row.ended_at || null,
-        end_reason: row.end_reason || null,
-        subscription_status: row.subscription_status,
-        subscription_plan_name: row.subscription_plan_name,
-        subscription_price: Number(row.subscription_price || 0),
-        subscription_started_at:
-          row.subscription_started_at || new Date().toISOString().split("T")[0],
-        expires_at: row.expires_at || row.next_billing_date || "",
-        next_billing_date: row.next_billing_date || row.expires_at || "",
-        created_at: row.created_at,
-      })
+      (row) => {
+        const goalsArr = Array.isArray(row.initial_goals)
+          ? (row.initial_goals as string[])
+          : [];
+        return {
+          id: row.id,
+          coach_id: row.coach_id,
+          student_id: row.student_id,
+          plan_id: row.plan_id,
+          invited_name: row.invited_name,
+          invited_email: row.invited_email,
+          invited_phone: row.invited_phone || undefined,
+          phone: row.invited_phone || undefined,
+          invite_token: row.invite_token || "",
+          invite_status:
+            row.invite_status === "inactive" ||
+            row.invite_status === "finalizado" ||
+            Boolean(row.ended_at)
+              ? "finalizado"
+              : row.invite_status,
+          initial_goals: goalsArr,
+          fitness_goal:
+            goalsArr.length > 0 ? goalsArr.join(" · ") : undefined,
+          ended_at: row.ended_at || null,
+          end_reason: row.end_reason || null,
+          subscription_status: row.subscription_status,
+          subscription_plan_name: row.subscription_plan_name,
+          subscription_price: Number(row.subscription_price || 0),
+          subscription_started_at:
+            row.subscription_started_at ||
+            new Date().toISOString().split("T")[0],
+          expires_at: row.expires_at || row.next_billing_date || "",
+          next_billing_date: row.next_billing_date || row.expires_at || "",
+          created_at: row.created_at,
+        };
+      }
     );
+
+    const recordsList: CoachStudentRecord[] = (
+      (recordsRes.data || []) as CoachStudentRecord[]
+    ).map((r) => ({
+      ...r,
+      goals: Array.isArray(r.goals) ? r.goals : [],
+    }));
 
     const mappedAppointments: Appointment[] = (appointmentsRes.data || []).map(
       (a) => {
@@ -577,6 +651,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       directoryCoaches: builtDirectoryCoaches,
       coachInquiries: (inquiriesRes.data || []) as CoachInquiry[],
       students: studentsList,
+      studentRecords: recordsList,
       subscriptionPlans: allPlans,
       studentGoals: (goalsRes.data || []) as StudentGoal[],
       assessments: (assessmentsRes.data || []) as BodyAssessment[],
@@ -595,6 +670,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       })),
     }));
     setHydrated(true);
+
+    // Si es alumno y tiene invitaciones pending_signup sin vincular, auto-vincular en segundo plano
+    if (
+      userRole === "student" &&
+      studentsList.some(
+        (s) =>
+          !s.student_id &&
+          (s.invite_status === "pending_signup" || s.invite_status === "pending")
+      )
+    ) {
+      fetch("/api/students/accept-invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ autoLinkByEmail: true }),
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          if (res?.autoLinked > 0) {
+            loadRealUserData();
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -668,50 +766,106 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const inviteStudent: AppContextValue["inviteStudent"] = ({
     name,
     email,
+    phone,
     planId,
     planName,
     price,
+    durationDays,
     goal,
+    goals,
+    status,
+    record,
+    initialMeasurements,
+    skipDbInsert,
   }) => {
     const today = new Date().toISOString().split("T")[0];
     const matchedPlan = state.subscriptionPlans.find((p) => p.id === planId);
-    const expires = addDaysToDate(today, matchedPlan?.duration_days || 30);
+    const expires = addDaysToDate(
+      today,
+      matchedPlan?.duration_days || durationDays || 30
+    );
     const coachId = authUserId || state.coachProfile.id;
+    const normalizedGoals =
+      goals && goals.length > 0
+        ? goals
+        : goal?.trim()
+        ? [goal.trim()]
+        : ["Recomposición corporal"];
+    const relationId = uid("rel");
+    const inviteToken = uid("tok");
+    const resolvedStatus: InviteStatus = status || "pending_signup";
+    const cleanEmail = email.trim().toLowerCase();
 
     const relation: CoachStudentRelation = {
-      id: uid("rel"),
+      id: relationId,
       coach_id: coachId,
       student_id: null,
       plan_id: matchedPlan?.id || null,
-      invited_name: name,
-      invited_email: email.toLowerCase(),
-      invite_token: uid("tok"),
-      invite_status: "pending",
+      invited_name: name.trim(),
+      invited_email: cleanEmail,
+      invited_phone: phone?.trim() || undefined,
+      phone: phone?.trim() || undefined,
+      invite_token: inviteToken,
+      invite_status: resolvedStatus,
+      initial_goals: normalizedGoals,
       subscription_status: "trial",
-      subscription_plan_name: matchedPlan?.name || planName || "Plan Mensual",
-      subscription_price: matchedPlan?.price ?? price ?? 1000,
+      subscription_plan_name:
+        matchedPlan?.name || planName || "Asesoría sin paquete",
+      subscription_price: matchedPlan?.price ?? price ?? 0,
       subscription_started_at: today,
       expires_at: expires,
       next_billing_date: expires,
-      fitness_goal: goal || "Recomposición Corporal",
+      fitness_goal: normalizedGoals.join(" · "),
       created_at: new Date().toISOString(),
     };
+
+    const nowIso = new Date().toISOString();
+    const newRecord: CoachStudentRecord = {
+      id: uid("rec"),
+      coach_student_id: relationId,
+      coach_id: coachId,
+      student_id: null,
+      invited_email: cleanEmail,
+      phone: phone?.trim() || undefined,
+      goals: normalizedGoals,
+      has_injuries: Boolean(record?.has_injuries),
+      injuries_detail: record?.injuries_detail?.trim() || undefined,
+      has_chronic_conditions: Boolean(record?.has_chronic_conditions),
+      chronic_conditions_detail:
+        record?.chronic_conditions_detail?.trim() || undefined,
+      takes_medications: Boolean(record?.takes_medications),
+      medications_detail: record?.medications_detail?.trim() || undefined,
+      allergies: record?.allergies?.trim() || undefined,
+      current_supplements: record?.current_supplements?.trim() || undefined,
+      gym_experience: record?.gym_experience || undefined,
+      available_days_per_week: record?.available_days_per_week || undefined,
+      session_duration_hours: record?.session_duration_hours || undefined,
+      initial_coach_notes: record?.initial_coach_notes?.trim() || undefined,
+      initial_measurements: initialMeasurements || null,
+      initial_assessment_materialized: false,
+      created_at: nowIso,
+      updated_at: nowIso,
+    };
+
     setState((prev) => ({
       ...prev,
       students: [relation, ...prev.students],
+      studentRecords: [newRecord, ...prev.studentRecords],
     }));
 
-    if (!isDemoMode && coachId) {
+    if (!isDemoMode && coachId && !skipDbInsert) {
       const supabase = createClient();
       supabase
         .from("coach_students")
         .insert({
           coach_id: coachId,
           plan_id: matchedPlan?.id || null,
-          invited_name: name,
-          invited_email: email.toLowerCase(),
+          invited_name: relation.invited_name,
+          invited_email: cleanEmail,
+          invited_phone: phone?.trim() || null,
           invite_token: relation.invite_token,
-          invite_status: "pending",
+          invite_status: resolvedStatus,
+          initial_goals: normalizedGoals,
           subscription_status: "trial",
           subscription_plan_name: relation.subscription_plan_name,
           subscription_price: relation.subscription_price,
@@ -723,6 +877,190 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
 
     return relation;
+  };
+
+  const updateStudentRecord: AppContextValue["updateStudentRecord"] = (
+    coachStudentId,
+    patch
+  ) => {
+    const nowIso = new Date().toISOString();
+    const targetRel = state.students.find((s) => s.id === coachStudentId);
+    const coachId = authUserId || state.coachProfile.id;
+
+    setState((prev) => {
+      const exists = prev.studentRecords.some(
+        (r) => r.coach_student_id === coachStudentId
+      );
+      const nextRecords = exists
+        ? prev.studentRecords.map((r) =>
+            r.coach_student_id === coachStudentId
+              ? { ...r, ...patch, updated_at: nowIso }
+              : r
+          )
+        : [
+            {
+              id: uid("rec"),
+              coach_student_id: coachStudentId,
+              coach_id: coachId,
+              student_id: targetRel?.student_id || null,
+              invited_email: targetRel?.invited_email || "",
+              goals: patch.goals || targetRel?.initial_goals || [],
+              has_injuries: Boolean(patch.has_injuries),
+              has_chronic_conditions: Boolean(patch.has_chronic_conditions),
+              takes_medications: Boolean(patch.takes_medications),
+              ...patch,
+              created_at: nowIso,
+              updated_at: nowIso,
+            } as CoachStudentRecord,
+            ...prev.studentRecords,
+          ];
+
+      const nextStudents = patch.goals
+        ? prev.students.map((s) =>
+            s.id === coachStudentId
+              ? {
+                  ...s,
+                  initial_goals: patch.goals,
+                  fitness_goal: patch.goals?.join(" · ") || s.fitness_goal,
+                }
+              : s
+          )
+        : prev.students;
+
+      return {
+        ...prev,
+        studentRecords: nextRecords,
+        students: nextStudents,
+      };
+    });
+
+    if (!isDemoMode && coachId && targetRel) {
+      const supabase = createClient();
+      supabase
+        .from("coach_student_records")
+        .upsert(
+          {
+            coach_student_id: coachStudentId,
+            coach_id: coachId,
+            student_id: targetRel.student_id,
+            invited_email: targetRel.invited_email,
+            phone: patch.phone ?? targetRel.phone ?? null,
+            goals: patch.goals ?? targetRel.initial_goals ?? [],
+            has_injuries: Boolean(patch.has_injuries),
+            injuries_detail: patch.injuries_detail ?? null,
+            has_chronic_conditions: Boolean(patch.has_chronic_conditions),
+            chronic_conditions_detail: patch.chronic_conditions_detail ?? null,
+            takes_medications: Boolean(patch.takes_medications),
+            medications_detail: patch.medications_detail ?? null,
+            allergies: patch.allergies ?? null,
+            current_supplements: patch.current_supplements ?? null,
+            gym_experience: patch.gym_experience ?? null,
+            available_days_per_week: patch.available_days_per_week ?? null,
+            session_duration_hours: patch.session_duration_hours ?? null,
+            initial_coach_notes: patch.initial_coach_notes ?? null,
+            updated_at: nowIso,
+          },
+          { onConflict: "coach_student_id" }
+        )
+        .then(() => {});
+    }
+  };
+
+  const acceptCoachInvite = async (
+    relationIdOrToken: string
+  ): Promise<boolean> => {
+    if (!isDemoMode) {
+      try {
+        const isUuid =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            relationIdOrToken
+          );
+        const res = await fetch("/api/students/accept-invite", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            isUuid
+              ? { relationId: relationIdOrToken, action: "accept" }
+              : { token: relationIdOrToken, action: "accept" }
+          ),
+        });
+        if (!res.ok) return false;
+        await loadRealUserData();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    // Demo mode
+    setState((prev) => ({
+      ...prev,
+      students: prev.students.map((s) =>
+        s.id === relationIdOrToken || s.invite_token === relationIdOrToken
+          ? {
+              ...s,
+              student_id: s.student_id || prev.studentProfile.id,
+              invite_status: "active",
+              subscription_status:
+                s.subscription_status === "trial"
+                  ? "active"
+                  : s.subscription_status,
+            }
+          : s
+      ),
+      notifications: prev.notifications.map((n) =>
+        n.type === "coach_invite" &&
+        (n.metadata?.relation_id === relationIdOrToken ||
+          n.metadata?.invite_token === relationIdOrToken)
+          ? { ...n, is_read: true }
+          : n
+      ),
+    }));
+    return true;
+  };
+
+  const declineCoachInvite = async (
+    relationIdOrToken: string
+  ): Promise<boolean> => {
+    if (!isDemoMode) {
+      try {
+        const isUuid =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            relationIdOrToken
+          );
+        const res = await fetch("/api/students/accept-invite", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            isUuid
+              ? { relationId: relationIdOrToken, action: "decline" }
+              : { token: relationIdOrToken, action: "decline" }
+          ),
+        });
+        if (!res.ok) return false;
+        await loadRealUserData();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    setState((prev) => ({
+      ...prev,
+      students: prev.students.map((s) =>
+        s.id === relationIdOrToken || s.invite_token === relationIdOrToken
+          ? { ...s, invite_status: "inactive", ended_at: new Date().toISOString() }
+          : s
+      ),
+      notifications: prev.notifications.map((n) =>
+        n.type === "coach_invite" &&
+        (n.metadata?.relation_id === relationIdOrToken ||
+          n.metadata?.invite_token === relationIdOrToken)
+          ? { ...n, is_read: true }
+          : n
+      ),
+    }));
+    return true;
   };
 
   const activateInvitedStudent = (token: string, fullName?: string) => {
@@ -1852,6 +2190,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         liftSanction,
         refreshData,
         inviteStudent,
+        updateStudentRecord,
+        acceptCoachInvite,
+        declineCoachInvite,
         activateInvitedStudent,
         updateStudentSubscription,
         assignSubscriptionPlanToStudent,

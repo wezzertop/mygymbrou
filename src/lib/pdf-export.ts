@@ -1,6 +1,7 @@
 import {
   Appointment,
   BodyAssessment,
+  CoachStudentRecord,
   CoachStudentRelation,
   NutritionPlan,
   Profile,
@@ -18,6 +19,7 @@ export interface StudentPdfPayload {
   section: PdfExportSection;
   coach: Profile;
   student: CoachStudentRelation;
+  record?: CoachStudentRecord;
   workout?: WorkoutPlan;
   diet?: NutritionPlan;
   assessments: BodyAssessment[];
@@ -35,10 +37,10 @@ const WEEKDAY_NAMES: Record<number, string> = {
 };
 
 const SECTION_TITLES: Record<PdfExportSection, string> = {
-  full: "Expediente Integral 360°",
-  workout: "Plan de Entrenamiento",
-  diet: "Plan Nutricional",
-  progress: "Reporte de Progreso y Antropometría",
+  full: "Reporte Integral del Expediente",
+  workout: "Reporte de Rutina de Entrenamiento",
+  diet: "Reporte de Plan Nutricional / Dieta",
+  progress: "Reporte de Progreso Antropométrico",
   appointments: "Agenda de Citas y Evaluaciones",
 };
 
@@ -136,11 +138,118 @@ function renderWorkoutHtml(workout?: WorkoutPlan): string {
     </section>`;
 }
 
-function renderDietHtml(diet?: NutritionPlan): string {
+function renderClinicalRecordHtml(
+  record?: CoachStudentRecord,
+  student?: CoachStudentRelation
+): string {
+  const goals =
+    record?.goals && record.goals.length > 0
+      ? record.goals
+      : student?.initial_goals && student.initial_goals.length > 0
+      ? student.initial_goals
+      : student?.fitness_goal
+      ? [student.fitness_goal]
+      : [];
+
+  if (!record && goals.length === 0) {
+    return "";
+  }
+
+  const goalTags = goals
+    .map((g) => `<span class="tag" style="margin-right:4px;margin-bottom:4px">${esc(g)}</span>`)
+    .join("");
+
+  return `
+    <section class="section">
+      <h2 class="section-title">Ficha Clínica, Experiencia y Objetivos</h2>
+      ${goalTags ? `<div style="margin-bottom:10px">${goalTags}</div>` : ""}
+      <div class="clinical-grid">
+        <div class="clinical-box">
+          <span>Lesiones previas / actuales</span>
+          <strong>${
+            record?.has_injuries
+              ? esc(record.injuries_detail || "Sí (sin detalle)")
+              : "Ninguna reportada"
+          }</strong>
+        </div>
+        <div class="clinical-box">
+          <span>Condiciones médicas / crónicas</span>
+          <strong>${
+            record?.has_chronic_conditions
+              ? esc(record.chronic_conditions_detail || "Sí (sin detalle)")
+              : "Ninguna reportada"
+          }</strong>
+        </div>
+        <div class="clinical-box">
+          <span>Medicamentos actuales</span>
+          <strong>${
+            record?.takes_medications
+              ? esc(record.medications_detail || "Sí (sin detalle)")
+              : "Ninguno"
+          }</strong>
+        </div>
+        <div class="clinical-box">
+          <span>Alergias / intolerancias</span>
+          <strong>${esc(record?.allergies || "Sin alergias registradas")}</strong>
+        </div>
+        <div class="clinical-box">
+          <span>Suplementación actual</span>
+          <strong>${esc(record?.current_supplements || "Ninguna")}</strong>
+        </div>
+        <div class="clinical-box">
+          <span>Experiencia y disponibilidad</span>
+          <strong>${esc(
+            [
+              record?.gym_experience,
+              record?.available_days_per_week
+                ? `${record.available_days_per_week} días/sem`
+                : null,
+              record?.session_duration_hours,
+            ]
+              .filter(Boolean)
+              .join(" · ") || "Por definir"
+          )}</strong>
+        </div>
+      </div>
+      ${
+        record?.initial_coach_notes
+          ? `<div class="note-box"><strong>Notas iniciales del Coach:</strong> ${esc(
+              record.initial_coach_notes
+            )}</div>`
+          : ""
+      }
+    </section>`;
+}
+
+function renderDietHtml(
+  diet?: NutritionPlan,
+  record?: CoachStudentRecord
+): string {
+  const allergyBanner =
+    record?.allergies || record?.current_supplements
+      ? `<div class="alert-box">
+          ${
+            record?.allergies
+              ? `<div><strong>Alergias / Restricciones alimentarias:</strong> ${esc(
+                  record.allergies
+                )}</div>`
+              : ""
+          }
+          ${
+            record?.current_supplements
+              ? `<div><strong>Suplementación actual:</strong> ${esc(
+                  record.current_supplements
+                )}</div>`
+              : ""
+          }
+        </div>`
+      : "";
+
   if (!diet) {
     return `
       <section class="section">
-        <h2 class="section-title">Plan Nutricional</h2>
+        <h2 class="section-title">Plan Nutricional / Dieta</h2>
+        ${allergyBanner}
         <p class="empty">Sin plan nutricional activo asignado por el momento.</p>
       </section>`;
   }
@@ -155,7 +264,7 @@ function renderDietHtml(diet?: NutritionPlan): string {
         </td>
         <td>
           ${esc(m.foods_description)}
-          ${m.exchange_options ? `<div class="note">Opciones: ${esc(m.exchange_options)}</div>` : ""}
+          ${m.exchange_options ? `<div class="note">Equivalencias: ${esc(m.exchange_options)}</div>` : ""}
         </td>
         <td class="mono" style="white-space:nowrap">
           ${m.calories ? `${m.calories} kcal` : "—"}
@@ -169,10 +278,18 @@ function renderDietHtml(diet?: NutritionPlan): string {
     )
     .join("");
 
+  const imageBlock = diet.image_url
+    ? `<div class="diet-image-wrap">
+        <img src="${esc(diet.image_url)}" alt="${esc(diet.title)}" />
+      </div>`
+    : "";
+
   return `
     <section class="section">
       <h2 class="section-title">Plan Nutricional · ${esc(diet.title)}</h2>
+      ${allergyBanner}
       ${diet.notes ? `<p class="lead">${esc(diet.notes)}</p>` : ""}
+      ${imageBlock}
       <div class="kpi-grid kpi-5">
         <div class="kpi"><span>Calorías</span><strong>${diet.daily_calories} kcal</strong></div>
         <div class="kpi"><span>Proteína</span><strong>${diet.protein_g} g</strong></div>
@@ -184,8 +301,8 @@ function renderDietHtml(diet?: NutritionPlan): string {
         <thead>
           <tr>
             <th style="width:120px">Comida</th>
-            <th>Alimentos y porciones</th>
-            <th style="width:130px">Aporte</th>
+            <th>Alimentos y equivalencias</th>
+            <th style="width:130px">Macros / kcal</th>
           </tr>
         </thead>
         <tbody>${mealsHtml}</tbody>
@@ -193,11 +310,51 @@ function renderDietHtml(diet?: NutritionPlan): string {
     </section>`;
 }
 
+function renderWeightTrendSvg(chronological: BodyAssessment[]): string {
+  if (chronological.length < 2) return "";
+  const width = 720;
+  const height = 140;
+  const padX = 36;
+  const padY = 20;
+  const weights = chronological.map((a) => a.weight_kg);
+  const minW = Math.min(...weights) - 1;
+  const maxW = Math.max(...weights) + 1;
+  const span = Math.max(maxW - minW, 1);
+
+  const points = chronological.map((a, idx) => {
+    const x =
+      padX + (idx / (chronological.length - 1)) * (width - padX * 2);
+    const y =
+      height - padY - ((a.weight_kg - minW) / span) * (height - padY * 2);
+    return { x, y, weight: a.weight_kg, date: a.assessment_date };
+  });
+
+  const polyline = points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  const dots = points
+    .map(
+      (p) => `
+      <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="#10b981" stroke="#ffffff" stroke-width="1.5" />
+      <text x="${p.x.toFixed(1)}" y="${(p.y - 8).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="700" fill="#0f172a">${p.weight}kg</text>
+      <text x="${p.x.toFixed(1)}" y="${height - 4}" text-anchor="middle" font-size="8.5" fill="#64748b">${esc(p.date.slice(5))}</text>`
+    )
+    .join("");
+
+  return `
+    <div class="chart-box">
+      <div class="chart-title">Evolución visual de peso corporal (kg)</div>
+      <svg viewBox="0 0 ${width} ${height}" width="100%" height="140" xmlns="http://www.w3.org/2000/svg">
+        <line x1="${padX}" y1="${height - padY}" x2="${width - padX}" y2="${height - padY}" stroke="#e2e8f0" stroke-width="1" />
+        <polyline fill="none" stroke="#10b981" stroke-width="2.5" points="${polyline}" />
+        ${dots}
+      </svg>
+    </div>`;
+}
+
 function renderProgressHtml(assessments: BodyAssessment[]): string {
   if (assessments.length === 0) {
     return `
       <section class="section">
-        <h2 class="section-title">Progreso y Antropometría</h2>
+        <h2 class="section-title">Progreso Antropométrico</h2>
         <p class="empty">Aún no se registran evaluaciones corporales para este alumno.</p>
       </section>`;
   }
@@ -205,8 +362,60 @@ function renderProgressHtml(assessments: BodyAssessment[]): string {
   const sorted = [...assessments].sort((a, b) =>
     b.assessment_date.localeCompare(a.assessment_date)
   );
+  const chronological = [...sorted].reverse();
   const latest = sorted[0];
   const initial = sorted[sorted.length - 1];
+
+  const latestBmi =
+    latest.height_cm && latest.height_cm > 0
+      ? Number((latest.weight_kg / Math.pow(latest.height_cm / 100, 2)).toFixed(1))
+      : undefined;
+
+  const perimeters: Array<{ label: string; init?: number; curr?: number }> = [
+    { label: "Pecho / Tórax", init: initial.chest_cm, curr: latest.chest_cm },
+    { label: "Espalda", init: initial.back_width_cm, curr: latest.back_width_cm },
+    { label: "Cintura", init: initial.waist_cm, curr: latest.waist_cm },
+    { label: "Abdomen", init: initial.abdomen_cm, curr: latest.abdomen_cm },
+    { label: "Cadera / Glúteo", init: initial.hip_cm, curr: latest.hip_cm },
+    { label: "Brazo Izq.", init: initial.bicep_left_cm, curr: latest.bicep_left_cm },
+    { label: "Brazo Der.", init: initial.bicep_right_cm, curr: latest.bicep_right_cm },
+    { label: "Muslo Izq.", init: initial.thigh_left_cm, curr: latest.thigh_left_cm },
+    { label: "Muslo Der.", init: initial.thigh_right_cm, curr: latest.thigh_right_cm },
+    { label: "Pantorrilla", init: initial.calf_cm, curr: latest.calf_cm },
+  ].filter((p) => p.init !== undefined || p.curr !== undefined);
+
+  const perimeterCompareHtml =
+    perimeters.length > 0
+      ? `
+      <div style="margin-bottom:12px">
+        <div class="sub-heading">Comparativa de Perímetros (Inicial vs. Actual)</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Zona</th>
+              <th>Inicial (${esc(initial.assessment_date)})</th>
+              <th>Actual (${esc(latest.assessment_date)})</th>
+              <th>Cambio</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${perimeters
+              .map(
+                (p) => `
+              <tr>
+                <td><strong>${esc(p.label)}</strong></td>
+                <td class="mono">${fmtNum(p.init, " cm")}</td>
+                <td class="mono"><strong>${fmtNum(p.curr, " cm")}</strong></td>
+                <td class="mono">${
+                  sorted.length > 1 ? esc(fmtDelta(p.curr, p.init, " cm") || "—") : "Base inicial"
+                }</td>
+              </tr>`
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>`
+      : "";
 
   const rows = sorted
     .map(
@@ -226,12 +435,17 @@ function renderProgressHtml(assessments: BodyAssessment[]): string {
 
   return `
     <section class="section">
-      <h2 class="section-title">Progreso y Antropometría (${sorted.length} registro${sorted.length === 1 ? "" : "s"})</h2>
-      <div class="kpi-grid kpi-4">
+      <h2 class="section-title">Progreso Antropométrico (${sorted.length} evaluación${sorted.length === 1 ? "" : "es"})</h2>
+      <div class="kpi-grid kpi-5">
         <div class="kpi">
           <span>Peso actual</span>
           <strong>${fmtNum(latest.weight_kg, " kg")}</strong>
           <small>${sorted.length > 1 ? fmtDelta(latest.weight_kg, initial.weight_kg, " kg") : "Base inicial"}</small>
+        </div>
+        <div class="kpi">
+          <span>IMC</span>
+          <strong>${fmtNum(latestBmi)}</strong>
+          <small>${latest.height_cm ? `Est. ${latest.height_cm} cm` : "Sin estatura"}</small>
         </div>
         <div class="kpi">
           <span>Grasa corporal</span>
@@ -249,6 +463,9 @@ function renderProgressHtml(assessments: BodyAssessment[]): string {
           <small>${sorted.length > 1 ? fmtDelta(latest.waist_cm, initial.waist_cm, " cm") : "Base inicial"}</small>
         </div>
       </div>
+      ${renderWeightTrendSvg(chronological)}
+      ${perimeterCompareHtml}
+      <div class="sub-heading">Historial de Evaluaciones</div>
       <table>
         <thead>
           <tr>
@@ -321,14 +538,26 @@ function renderAppointmentsHtml(appointments: Appointment[]): string {
 export function exportStudentPdf(payload: StudentPdfPayload): void {
   if (typeof window === "undefined") return;
 
-  const { section, coach, student, workout, diet, assessments, appointments } =
-    payload;
+  const {
+    section,
+    coach,
+    student,
+    record,
+    workout,
+    diet,
+    assessments,
+    appointments,
+  } = payload;
   const docTitle = `${SECTION_TITLES[section]} — ${student.invited_name}`;
   const generatedAt = new Date().toLocaleDateString("es-MX", {
     dateStyle: "long",
   });
 
   const bodySections: string[] = [];
+  if (section === "full") {
+    const clinicalHtml = renderClinicalRecordHtml(record, student);
+    if (clinicalHtml) bodySections.push(clinicalHtml);
+  }
   if (section === "full" || section === "progress") {
     bodySections.push(renderProgressHtml(assessments));
   }
@@ -336,7 +565,7 @@ export function exportStudentPdf(payload: StudentPdfPayload): void {
     bodySections.push(renderWorkoutHtml(workout));
   }
   if (section === "full" || section === "diet") {
-    bodySections.push(renderDietHtml(diet));
+    bodySections.push(renderDietHtml(diet, record));
   }
   if (section === "full" || section === "appointments") {
     bodySections.push(renderAppointmentsHtml(appointments));
@@ -424,6 +653,17 @@ export function exportStudentPdf(payload: StudentPdfPayload): void {
     .kpi span { display: block; font-size: 10px; color: #64748b; }
     .kpi strong { display: block; font-size: 15px; color: #09090b; margin-top: 2px; }
     .kpi small { display: block; font-size: 10px; color: #059669; font-weight: 600; margin-top: 2px; }
+    .clinical-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
+    .clinical-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; background: #f8fafc; }
+    .clinical-box span { display: block; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
+    .clinical-box strong { display: block; font-size: 11.5px; color: #0f172a; margin-top: 2px; }
+    .note-box { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 9px 11px; font-size: 11px; color: #065f46; }
+    .alert-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 9px 11px; font-size: 11px; color: #92400e; margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .diet-image-wrap { margin-bottom: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; max-height: 200px; }
+    .diet-image-wrap img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .chart-box { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; background: #f8fafc; margin-bottom: 12px; }
+    .chart-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #475569; margin-bottom: 4px; }
+    .sub-heading { font-size: 11px; font-weight: 700; color: #334155; margin: 10px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
     .subcard {
       border: 1px solid #e2e8f0;
       border-radius: 10px;

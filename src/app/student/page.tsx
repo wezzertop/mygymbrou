@@ -21,6 +21,7 @@ import {
 import { getDaysRemaining, useApp } from "@/context/AppContext";
 import { DynamicBannerHeader } from "@/components/DynamicBannerHeader";
 import { FreeTierAdSlot } from "@/components/FreeTierAdSlot";
+import { PendingCoachInvitesBanner } from "@/components/PendingCoachInvitesBanner";
 
 export default function StudentDailyHomePage() {
   const {
@@ -199,6 +200,8 @@ export default function StudentDailyHomePage() {
 
   return (
     <div className="space-y-6">
+      <PendingCoachInvitesBanner />
+
       {/* Dynamic Cover + Motivational Quote Header */}
       <DynamicBannerHeader
         role="student"

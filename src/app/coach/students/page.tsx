@@ -1,16 +1,12 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
-  Check,
   CheckCircle2,
-  Copy,
   Inbox,
-  Mail,
   Search,
-  Send,
   UserMinus,
   UserPlus,
   X,
@@ -24,6 +20,8 @@ import {
   VerificationStatusPill,
   VerifiedPersonBadge,
 } from "@/components/VerificationBadge";
+import { InviteStudentModal } from "@/components/InviteStudentModal";
+import { isPendingInviteStatus } from "@/lib/student-record-constants";
 
 type FilterStatus =
   | "all"
@@ -38,10 +36,8 @@ function CoachStudentsContent() {
   const searchParams = useSearchParams();
   const {
     students,
-    subscriptionPlans,
     coachProfile,
     coachInquiries,
-    inviteStudent,
     endStudentCoaching,
     respondToCoachInquiry,
   } = useApp();
@@ -56,29 +52,6 @@ function CoachStudentsContent() {
     searchParams.get("invite") === "true"
   );
 
-  // Invite form state
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [selectedPlanId, setSelectedPlanId] = useState<string>(
-    subscriptionPlans[0]?.id || ""
-  );
-  const [planName, setPlanName] = useState(
-    subscriptionPlans[0]?.name || "Plan Transformación 360°"
-  );
-  const [price, setPrice] = useState(
-    String(subscriptionPlans[0]?.price ?? 1200)
-  );
-  const [goal, setGoal] = useState("Recomposición Corporal");
-  const [sending, setSending] = useState(false);
-  const [inviteError, setInviteError] = useState<string | null>(null);
-  const [inviteResult, setInviteResult] = useState<{
-    email: string;
-    link: string;
-    mode: string;
-    existingUser?: boolean;
-    message?: string;
-  } | null>(null);
-  const [copied, setCopied] = useState(false);
   const [endingRelation, setEndingRelation] = useState<{
     id: string;
     name: string;
@@ -87,7 +60,9 @@ function CoachStudentsContent() {
   const [statusToast, setStatusToast] = useState<string | null>(null);
 
   const activeCount = students.filter((s) => s.invite_status === "active").length;
-  const pendingCount = students.filter((s) => s.invite_status === "pending").length;
+  const pendingCount = students.filter((s) =>
+    isPendingInviteStatus(s.invite_status)
+  ).length;
   const endedCount = students.filter(
     (s) => s.invite_status === "finalizado" || s.invite_status === "inactive"
   ).length;
@@ -99,24 +74,6 @@ function CoachStudentsContent() {
     coachProfile.saas_student_limit
   );
 
-  useEffect(() => {
-    if (!modalOpen) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setModalOpen(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [modalOpen]);
-
-  const handlePlanPresetChange = (planId: string) => {
-    setSelectedPlanId(planId);
-    const matched = subscriptionPlans.find((p) => p.id === planId);
-    if (matched) {
-      setPlanName(matched.name);
-      setPrice(String(matched.price));
-    }
-  };
-
   const filtered = students.filter((s) => {
     const matchesQuery =
       s.invited_name.toLowerCase().includes(query.toLowerCase()) ||
@@ -124,7 +81,7 @@ function CoachStudentsContent() {
     if (!matchesQuery) return false;
     if (filter === "active")
       return s.invite_status === "active" && Boolean(s.student_id);
-    if (filter === "pending") return s.invite_status === "pending";
+    if (filter === "pending") return isPendingInviteStatus(s.invite_status);
     if (filter === "expiring")
       return (
         s.invite_status === "active" &&
@@ -140,77 +97,6 @@ function CoachStudentsContent() {
     return true;
   });
 
-  const handleInviteSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setInviteError(null);
-
-    if (!quota.allowed && quota.limit !== null) {
-      setInviteError(
-        `Has alcanzado el cupo máximo de ${quota.limit} alumnos de tu plan ${currentSaasPlan.name}. Actualiza tu plan para invitar más alumnos.`
-      );
-      return;
-    }
-
-    setSending(true);
-    const created = inviteStudent({
-      name,
-      email,
-      planId: selectedPlanId || undefined,
-      planName,
-      price: Number(price) || 1000,
-      goal,
-    });
-
-    try {
-      const res = await fetch("/api/students/invite", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          coachId: coachProfile.id,
-          token: created.invite_token,
-          planName,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setInviteError(data.error || "No se pudo enviar la invitación.");
-        setSending(false);
-        return;
-      }
-      setInviteResult({
-        email,
-        link:
-          data.activationLink ||
-          `${window.location.origin}/auth/activate?token=${created.invite_token}&email=${encodeURIComponent(
-            email
-          )}&name=${encodeURIComponent(name)}`,
-        mode: data.mode || "demo",
-        existingUser: data.existingUser,
-        message: data.message,
-      });
-    } catch {
-      setInviteResult({
-        email,
-        link: `${window.location.origin}/auth/activate?token=${created.invite_token}&email=${encodeURIComponent(
-          email
-        )}&name=${encodeURIComponent(name)}`,
-        mode: "demo",
-      });
-    } finally {
-      setSending(false);
-      setName("");
-      setEmail("");
-    }
-  };
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard?.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between gap-3">
@@ -219,12 +105,8 @@ function CoachStudentsContent() {
         </h1>
         <button
           type="button"
-          onClick={() => {
-            setInviteResult(null);
-            setInviteError(null);
-            setModalOpen(true);
-          }}
-          className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-white px-4 text-xs font-bold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98]"
+          onClick={() => setModalOpen(true)}
+          className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-[#00FF90] px-4 text-xs font-bold text-zinc-950 transition hover:bg-[#48b73d] active:scale-[0.98]"
         >
           <UserPlus className="h-4 w-4" />
           Invitar alumno
@@ -286,12 +168,6 @@ function CoachStudentsContent() {
           </Link>
         </div>
       </div>
-
-      {inviteError && !modalOpen && (
-        <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-300">
-          {inviteError}
-        </div>
-      )}
 
       {/* Incoming Coaching Inquiries from Directory */}
       {pendingInquiries.length > 0 && (
@@ -418,7 +294,8 @@ function CoachStudentsContent() {
       {/* Students List */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {filtered.map((st) => {
-          const isPending = st.invite_status === "pending";
+          const isPending = isPendingInviteStatus(st.invite_status);
+          const isPendingAcceptance = st.invite_status === "pending_acceptance";
           const isEnded =
             st.invite_status === "finalizado" || st.invite_status === "inactive";
           return (
@@ -477,8 +354,10 @@ function CoachStudentsContent() {
                 >
                   {isEnded
                     ? "Finalizado"
+                    : isPendingAcceptance
+                    ? "Esperando aceptación"
                     : isPending
-                    ? "Pendiente"
+                    ? "Pendiente registro"
                     : st.subscription_status === "active"
                     ? "Activo"
                     : "Pago pendiente"}
@@ -563,11 +442,8 @@ function CoachStudentsContent() {
             ) : (
               <button
                 type="button"
-                onClick={() => {
-                  setInviteResult(null);
-                  setModalOpen(true);
-                }}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-zinc-200 px-4 py-2.5 text-xs font-bold text-zinc-950"
+                onClick={() => setModalOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#00FF90] hover:bg-[#48b73d] px-4 py-2.5 text-xs font-bold text-zinc-950"
               >
                 <UserPlus className="h-4 w-4" />
                 Invitar Primer Alumno
@@ -577,210 +453,11 @@ function CoachStudentsContent() {
         </div>
       )}
 
-      {/* Invite Student Modal */}
-      {modalOpen && (
-        <div
-          onClick={() => setModalOpen(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-xl border border-white/[0.08] bg-[#0e0f12] p-6 shadow-2xl"
-          >
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-white">
-                Invitar Alumno por Correo
-              </h2>
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                aria-label="Cerrar modal"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {inviteResult ? (
-              <div className="space-y-4">
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-200">
-                  <p className="font-bold text-emerald-300">
-                    {inviteResult.existingUser
-                      ? `Enlace de vinculación listo para ${inviteResult.email}`
-                      : `¡Invitación enviada a ${inviteResult.email}!`}
-                  </p>
-                  <p className="mt-1 leading-relaxed text-emerald-200/80">
-                    {inviteResult.message ||
-                      "Cuando el alumno abra su enlace podrá definir su contraseña, aceptar Términos y Condiciones y quedar vinculado automáticamente contigo."}
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-medium text-zinc-400">
-                    Enlace personal de activación (solo para el alumno):
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      readOnly
-                      value={inviteResult.link}
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-emerald-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(inviteResult.link)}
-                      aria-label="Copiar enlace de invitación"
-                      className="rounded-xl border border-white/15 bg-white/[0.06] p-2 text-zinc-200 hover:bg-white/[0.12]"
-                    >
-                      {copied ? (
-                        <Check className="h-4 w-4 text-emerald-400" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                  <p className="text-[11px] text-zinc-500">
-                    Comparte este enlace con tu alumno o pídele que revise su correo para crear su contraseña.
-                  </p>
-                </div>
-
-                <div className="flex gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(inviteResult.link)}
-                    className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-white px-4 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="h-4 w-4 text-emerald-600" />
-                        ¡Enlace copiado!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-4 w-4" />
-                        Copiar enlace para enviar
-                      </>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(false)}
-                    className="h-11 rounded-full border border-white/15 bg-white/[0.06] px-5 text-xs font-semibold text-white hover:bg-white/[0.12]"
-                  >
-                    Listo
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleInviteSubmit} className="space-y-4">
-                {inviteError && (
-                  <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3 text-xs text-rose-300">
-                    <p>{inviteError}</p>
-                    <Link
-                      href="/coach/plans?tab=saas"
-                      className="mt-1.5 inline-block font-bold text-emerald-300 underline"
-                    >
-                      Ver planes disponibles en MXN →
-                    </Link>
-                  </div>
-                )}
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-zinc-300">
-                    Nombre completo del alumno *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Ej. Andrea López"
-                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500/60"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-zinc-300">
-                    Correo electrónico *
-                  </label>
-                  <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="andrea@correo.com"
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] py-2.5 pl-9 pr-3.5 text-sm text-white outline-none focus:border-emerald-500/60"
-                    />
-                  </div>
-                </div>
-                {subscriptionPlans.length > 0 && (
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
-                      Paquete configurado
-                    </label>
-                    <select
-                      value={selectedPlanId}
-                      onChange={(e) => handlePlanPresetChange(e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-emerald-500/60"
-                    >
-                      {subscriptionPlans.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} — ${p.price} ({p.duration_days} días)
-                        </option>
-                      ))}
-                      <option value="">Personalizado...</option>
-                    </select>
-                  </div>
-                )}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
-                      Plan de Suscripción
-                    </label>
-                    <input
-                      type="text"
-                      value={planName}
-                      onChange={(e) => setPlanName(e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-emerald-500/60"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-semibold text-zinc-300">
-                      Costo mensual ($)
-                    </label>
-                    <input
-                      type="number"
-                      min={0}
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2.5 text-xs text-white outline-none focus:border-emerald-500/60"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-zinc-300">
-                    Objetivo inicial
-                  </label>
-                  <input
-                    type="text"
-                    value={goal}
-                    onChange={(e) => setGoal(e.target.value)}
-                    placeholder="Hipertrofia, Definición, Recomposición..."
-                    className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500/60"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={sending}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-200 py-3 text-sm font-bold text-zinc-950"
-                >
-                  <Send className="h-4 w-4" />
-                  {sending ? "Enviando invitación..." : "Enviar Invitación"}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Invite Student Modal (2-Level Smart Modal) */}
+      <InviteStudentModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
 
       {/* Confirm End Coaching Modal */}
       {endingRelation && (

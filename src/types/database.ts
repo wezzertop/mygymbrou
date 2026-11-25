@@ -185,8 +185,72 @@ export interface CoachSubscriptionPlan {
   created_at: string;
 }
 
-export type InviteStatus = "pending" | "active" | "inactive" | "finalizado";
+export type InviteStatus =
+  | "pending"
+  | "pending_signup"
+  | "pending_acceptance"
+  | "active"
+  | "inactive"
+  | "finalizado";
 export type SubscriptionStatus = "active" | "trial" | "expired" | "pending_payment";
+
+export type GymExperienceLevel =
+  | "Principiante / Nuevo"
+  | "< 6 meses"
+  | "6 meses a 1 año"
+  | "1 a 3 años"
+  | "> 3 años";
+
+export type SessionDurationOption =
+  | "1 hora"
+  | "1.5 horas"
+  | "2 horas"
+  | "3 horas";
+
+export interface InitialMeasurementsInput {
+  assessment_date?: string;
+  weight_kg?: number;
+  height_cm?: number;
+  body_fat_percentage?: number;
+  muscle_mass_kg?: number;
+  chest_cm?: number;
+  back_width_cm?: number;
+  waist_cm?: number;
+  abdomen_cm?: number;
+  hip_cm?: number;
+  bicep_left_cm?: number;
+  bicep_right_cm?: number;
+  thigh_left_cm?: number;
+  thigh_right_cm?: number;
+  calf_cm?: number;
+  coach_analysis_notes?: string;
+}
+
+export interface CoachStudentRecord {
+  id: string;
+  coach_student_id: string;
+  coach_id: string;
+  student_id: string | null;
+  invited_email: string;
+  phone?: string;
+  goals: string[];
+  has_injuries: boolean;
+  injuries_detail?: string;
+  has_chronic_conditions: boolean;
+  chronic_conditions_detail?: string;
+  takes_medications: boolean;
+  medications_detail?: string;
+  allergies?: string;
+  current_supplements?: string;
+  gym_experience?: GymExperienceLevel | string;
+  available_days_per_week?: number;
+  session_duration_hours?: SessionDurationOption | string;
+  initial_coach_notes?: string;
+  initial_measurements?: InitialMeasurementsInput | null;
+  initial_assessment_materialized?: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface CoachStudentRelation {
   id: string;
@@ -196,8 +260,10 @@ export interface CoachStudentRelation {
   gender?: Gender;
   invited_name: string;
   invited_email: string;
+  invited_phone?: string;
   invite_token: string;
   invite_status: InviteStatus;
+  initial_goals?: string[];
   ended_at?: string | null;
   end_reason?: string | null;
   subscription_status: SubscriptionStatus;
@@ -209,6 +275,8 @@ export interface CoachStudentRelation {
   avatar_url?: string;
   fitness_goal?: string;
   phone?: string;
+  coach_name?: string;
+  coach_brand?: string;
   is_verified_identity?: boolean;
   verification_status?: VerificationStatus;
   verified_at?: string;
@@ -450,7 +518,8 @@ export type NotificationType =
   | "subscription"
   | "goal"
   | "verification"
-  | "inquiry";
+  | "inquiry"
+  | "coach_invite";
 
 export interface AppNotification {
   id: string;
@@ -459,6 +528,16 @@ export interface AppNotification {
   message: string;
   type: NotificationType;
   is_read: boolean;
+  action_url?: string;
+  metadata?: {
+    invite_token?: string;
+    relation_id?: string;
+    coach_id?: string;
+    coach_name?: string;
+    coach_brand?: string;
+    plan_name?: string;
+    goals?: string[];
+  } | null;
   created_at: string;
 }
 
