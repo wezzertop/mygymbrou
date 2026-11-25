@@ -49,14 +49,24 @@ export function ExerciseVisualDemo({
     setActiveGender(gender);
   }, [gender]);
 
+  const hasDistinctGenderVariants = useMemo(() => {
+    if (!frames?.female?.length || !frames?.male?.length) return false;
+    return frames.female[0]?.image_url !== frames.male[0]?.image_url;
+  }, [frames]);
+
   // Prefer frames matching student gender, fallback cleanly if empty
   const activeFrames: ExerciseFrame[] = useMemo(() => {
-    if (!frames) return [];
-    const preferred = frames[activeGender];
-    if (preferred && preferred.length > 0) return preferred;
-    const fallback = activeGender === "female" ? frames.male : frames.female;
-    return fallback || [];
-  }, [frames, activeGender]);
+    if (frames) {
+      const preferred = frames[activeGender];
+      if (preferred && preferred.length > 0) return preferred;
+      const fallback = activeGender === "female" ? frames.male : frames.female;
+      if (fallback && fallback.length > 0) return fallback;
+    }
+    if (mediaUrl && mediaType !== "video") {
+      return [{ phase: 1, label: name, image_url: mediaUrl }];
+    }
+    return [];
+  }, [frames, activeGender, mediaUrl, mediaType, name]);
 
   // Build smooth ping-pong playback order: 0 -> 1 -> 2 -> 1 -> 0 (eliminates harsh snap-back)
   const playbackOrder = useMemo(() => {
@@ -107,13 +117,8 @@ export function ExerciseVisualDemo({
     );
   }
 
-  // GIF animado (ExerciseDB o cargado por Coach) con integración automática Dark UI
-  if (mediaType === "gif" && mediaUrl && activeFrames.length === 0) {
-    const isLightGif = mediaUrl.includes("exercisedb.dev");
-    const darkFilterClass = isLightGif
-      ? "invert-[0.91] hue-rotate-180 contrast-110 brightness-95 mix-blend-lighten"
-      : "";
-
+  // GIF animado (cargado por Coach)
+  if (mediaType === "gif" && mediaUrl && (!frames || (frames.female.length === 0 && frames.male.length === 0))) {
     return (
       <>
         <div
@@ -126,7 +131,7 @@ export function ExerciseVisualDemo({
             src={mediaUrl}
             alt={name}
             loading="lazy"
-            className={`h-full w-full object-contain p-1 ${darkFilterClass}`}
+            className="h-full w-full object-cover"
           />
           <button
             type="button"
@@ -146,8 +151,8 @@ export function ExerciseVisualDemo({
             name={name}
             activeGender={activeGender}
             setActiveGender={setActiveGender}
+            showGenderSwitch={false}
             currentFrame={{ phase: 1, label: name, image_url: mediaUrl }}
-            isLightGif={isLightGif}
             primaryMuscles={primaryMuscles}
             secondaryMuscles={secondaryMuscles}
             instructions={instructions}
@@ -175,7 +180,8 @@ export function ExerciseVisualDemo({
                   key={f.image_url}
                   src={f.image_url}
                   alt={name}
-                  className={`absolute inset-0 h-full w-full object-contain p-1 transition-opacity duration-150 ${
+                  loading="lazy"
+                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${
                     idx === frameIdx ? "opacity-100" : "opacity-0"
                   }`}
                 />
@@ -204,6 +210,7 @@ export function ExerciseVisualDemo({
             name={name}
             activeGender={activeGender}
             setActiveGender={setActiveGender}
+            showGenderSwitch={hasDistinctGenderVariants}
             currentFrame={currentFrame}
             primaryMuscles={primaryMuscles}
             secondaryMuscles={secondaryMuscles}
@@ -221,7 +228,7 @@ export function ExerciseVisualDemo({
       <div className="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b1117]">
         <div
           onClick={() => hasFrames && setModalOpen(true)}
-          className="relative flex aspect-[16/10] w-full cursor-pointer items-center justify-center bg-[#0b1117] p-2"
+          className="relative flex aspect-[16/10] w-full cursor-pointer items-center justify-center bg-[#0b1117]"
         >
           {hasFrames ? (
             <>
@@ -230,14 +237,15 @@ export function ExerciseVisualDemo({
                   key={f.image_url}
                   src={f.image_url}
                   alt={name}
-                  className={`absolute inset-0 h-full w-full object-contain p-2 transition-opacity duration-150 ${
+                  loading="lazy"
+                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${
                     idx === frameIdx ? "opacity-100" : "opacity-0"
                   }`}
                 />
               ))}
             </>
           ) : (
-            <p className="text-xs text-zinc-500">Ilustración pendiente</p>
+            <p className="text-xs text-zinc-500">Imagen no disponible</p>
           )}
 
           {/* Single discreet expand icon in top-right corner */}
@@ -285,6 +293,7 @@ export function ExerciseVisualDemo({
           name={name}
           activeGender={activeGender}
           setActiveGender={setActiveGender}
+          showGenderSwitch={hasDistinctGenderVariants}
           currentFrame={currentFrame}
           primaryMuscles={primaryMuscles}
           secondaryMuscles={secondaryMuscles}
@@ -300,8 +309,8 @@ function CleanExerciseModal({
   name,
   activeGender,
   setActiveGender,
+  showGenderSwitch = false,
   currentFrame,
-  isLightGif = false,
   primaryMuscles,
   secondaryMuscles,
   instructions,
@@ -310,8 +319,8 @@ function CleanExerciseModal({
   name: string;
   activeGender: Gender;
   setActiveGender: (g: Gender) => void;
+  showGenderSwitch?: boolean;
   currentFrame: ExerciseFrame;
-  isLightGif?: boolean;
   primaryMuscles: string[];
   secondaryMuscles: string[];
   instructions?: string;
@@ -331,30 +340,32 @@ function CleanExerciseModal({
             {name}
           </h3>
           <div className="flex items-center gap-2">
-            <div className="flex rounded-lg border border-white/[0.08] bg-[#0e0f12] p-0.5 text-[11px] font-bold">
-              <button
-                type="button"
-                onClick={() => setActiveGender("female")}
-                className={`rounded-md px-2.5 py-1 transition ${
-                  activeGender === "female"
-                    ? "bg-rose-500/20 text-rose-300"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                Mujer
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveGender("male")}
-                className={`rounded-md px-2.5 py-1 transition ${
-                  activeGender === "male"
-                    ? "bg-emerald-500/20 text-cyan-300"
-                    : "text-zinc-400 hover:text-white"
-                }`}
-              >
-                Hombre
-              </button>
-            </div>
+            {showGenderSwitch && (
+              <div className="flex rounded-lg border border-white/[0.08] bg-[#0e0f12] p-0.5 text-[11px] font-bold">
+                <button
+                  type="button"
+                  onClick={() => setActiveGender("female")}
+                  className={`rounded-md px-2.5 py-1 transition ${
+                    activeGender === "female"
+                      ? "bg-rose-500/20 text-rose-300"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Mujer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveGender("male")}
+                  className={`rounded-md px-2.5 py-1 transition ${
+                    activeGender === "male"
+                      ? "bg-emerald-500/20 text-cyan-300"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Hombre
+                </button>
+              </div>
+            )}
             <button
               type="button"
               onClick={onClose}
@@ -366,16 +377,12 @@ function CleanExerciseModal({
           </div>
         </div>
 
-        {/* Pure Uncluttered Anatomical Illustration */}
+        {/* Clean Exercise Photo */}
         <div className="bg-[#0b1117] p-2">
           <img
             src={currentFrame.image_url}
             alt={name}
-            className={`mx-auto max-h-[60vh] w-full object-contain ${
-              isLightGif
-                ? "invert-[0.91] hue-rotate-180 contrast-110 brightness-95 mix-blend-lighten"
-                : ""
-            }`}
+            className="mx-auto max-h-[60vh] w-full rounded-lg object-contain"
           />
         </div>
 

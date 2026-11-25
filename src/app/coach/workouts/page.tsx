@@ -133,12 +133,17 @@ export default function CoachWorkoutsPage() {
     activeStudents[0]?.student_id || ""
   );
 
-  // Catalog filter + Gender preview + Live ExerciseDB GIF catalog
+  // Catalog filter + Gender preview + Full Free Exercise DB catalog
   const [groupFilter, setGroupFilter] = useState<"Todos" | MuscleGroup>("Todos");
   const [search, setSearch] = useState("");
   const [previewGender, setPreviewGender] = useState<Gender>("female");
   const [externalExercises, setExternalExercises] = useState<ExerciseLibraryItem[]>([]);
   const [loadingCatalog, setLoadingCatalog] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(48);
+
+  useEffect(() => {
+    setVisibleCount(48);
+  }, [groupFilter, search]);
 
   useEffect(() => {
     let active = true;
@@ -223,20 +228,15 @@ export default function CoachWorkoutsPage() {
       .every((token) => haystack.includes(token));
   };
 
-  const localFiltered = exerciseLibrary.filter(matchesExercise);
-  const externalFiltered = externalExercises.filter(matchesExercise);
+  const customCoachExercises = exerciseLibrary.filter((e) => e.coach_id !== null);
+  const baseCatalog =
+    externalExercises.length > 0
+      ? [...customCoachExercises, ...externalExercises]
+      : exerciseLibrary;
 
-  // Merge local anatomical exercises first + bilingual curated & live catalog (up to 60 visible)
-  const filteredCatalog = [
-    ...localFiltered,
-    ...externalFiltered.filter(
-      (ext) =>
-        !localFiltered.some(
-          (loc) =>
-            normalizeSearchText(loc.name) === normalizeSearchText(ext.name)
-        )
-    ),
-  ].slice(0, 60);
+  const allFilteredCatalog = baseCatalog.filter(matchesExercise);
+  const filteredCatalog = allFilteredCatalog.slice(0, visibleCount);
+  const hasMoreCatalog = allFilteredCatalog.length > visibleCount;
 
   const handleSelectStudent = (studentId: string) => {
     setTargetStudentId(studentId);
@@ -268,10 +268,11 @@ export default function CoachWorkoutsPage() {
       target_weight_or_rpe: "RPE 8",
       coach_notes: "",
       instructions: item.instructions,
-      media_url: item.media_url,
+      media_url: item.media_url || item.frames?.female?.[0]?.image_url,
+      demo_url: item.frames?.female?.[1]?.image_url || item.media_url,
       media_type: item.media_type,
       frames: item.frames,
-      frame_interval_ms: item.frame_interval_ms || 650,
+      frame_interval_ms: item.frame_interval_ms || 850,
       animation_key: item.animation_key,
     };
     setDraftExercises((prev) => [...prev, next]);
@@ -371,18 +372,15 @@ export default function CoachWorkoutsPage() {
         : [
             {
               phase: 1,
-              label: "Posición inicial",
-              image_url: `/exercises/anatomical/bulgarian-female-1.jpg`,
+              label: "Inicio",
+              image_url:
+                "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Split_Squat_with_Dumbbells/0.jpg",
             },
             {
               phase: 2,
-              label: "Ejecución controlada",
-              image_url: `/exercises/anatomical/bulgarian-female-2.jpg`,
-            },
-            {
-              phase: 3,
-              label: "Contracción máxima",
-              image_url: `/exercises/anatomical/bulgarian-female-3.jpg`,
+              label: "Ejecución",
+              image_url:
+                "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Split_Squat_with_Dumbbells/1.jpg",
             },
           ];
 
@@ -1160,10 +1158,18 @@ export default function CoachWorkoutsPage() {
             ))}
           </div>
 
-          {loadingCatalog && (
+          {loadingCatalog ? (
             <div className="flex items-center gap-1.5 text-[11px] text-emerald-400">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Cargando catálogo...
+              Cargando catálogo completo de Free Exercise DB...
+            </div>
+          ) : (
+            <div className="flex items-center justify-between text-[11px] text-zinc-400">
+              <span>
+                Mostrando <strong className="text-white">{filteredCatalog.length}</strong> de{" "}
+                <strong className="text-white">{allFilteredCatalog.length}</strong> ejercicios
+              </span>
+              <span className="text-zinc-500">Free Exercise DB</span>
             </div>
           )}
 
@@ -1230,6 +1236,18 @@ export default function CoachWorkoutsPage() {
               );
             })}
           </div>
+
+          {hasMoreCatalog && (
+            <div className="flex justify-center pt-1">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + 48)}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-5 text-xs font-semibold text-white transition hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-300"
+              >
+                Cargar más ejercicios ({allFilteredCatalog.length - filteredCatalog.length} restantes)
+              </button>
+            </div>
+          )}
 
           {filteredCatalog.length === 0 && (
             <div className="rounded-xl border border-dashed border-white/[0.08] bg-[#0e0f12]/40 p-8 text-center">

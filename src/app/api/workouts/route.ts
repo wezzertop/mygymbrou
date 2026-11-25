@@ -4,6 +4,7 @@ import {
   createServerSupabaseClient,
 } from "@/lib/supabase/server";
 import type { WorkoutDay, WorkoutExercise, WorkoutPlan } from "@/types/database";
+import { reconstructFramesFromMediaUrls } from "@/lib/live-exercise-catalog";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -123,6 +124,12 @@ export async function GET() {
     for (const row of exerciseRows) {
       const dayId = String(row.workout_day_id);
       const list = exercisesByDay.get(dayId) || [];
+      const mediaUrl = row.media_url ? String(row.media_url) : undefined;
+      const demoUrl = row.demo_url ? String(row.demo_url) : undefined;
+      const reconstructedFrames = reconstructFramesFromMediaUrls(
+        mediaUrl,
+        demoUrl
+      );
       list.push({
         id: String(row.id),
         workout_day_id: dayId,
@@ -139,11 +146,15 @@ export async function GET() {
           ? String(row.target_weight_or_rpe)
           : undefined,
         coach_notes: row.coach_notes ? String(row.coach_notes) : undefined,
-        demo_url: row.demo_url ? String(row.demo_url) : undefined,
-        media_url: row.media_url ? String(row.media_url) : undefined,
-        media_type: sanitizeDbMediaType(
-          row.media_type ? String(row.media_type) : undefined
-        ),
+        demo_url: demoUrl,
+        media_url: mediaUrl,
+        media_type: reconstructedFrames
+          ? "sequence"
+          : sanitizeDbMediaType(
+              row.media_type ? String(row.media_type) : undefined
+            ),
+        frames: reconstructedFrames,
+        frame_interval_ms: reconstructedFrames ? 850 : undefined,
       });
       exercisesByDay.set(dayId, list);
     }
@@ -252,6 +263,10 @@ export async function POST(request: Request) {
           demo_url?: string;
           media_url?: string;
           media_type?: string;
+          frames?: {
+            female?: Array<{ image_url?: string }>;
+            male?: Array<{ image_url?: string }>;
+          };
         }>;
       }>;
     };
@@ -358,21 +373,31 @@ export async function POST(request: Request) {
       let savedExercises: WorkoutExercise[] = [];
 
       if (inputExercises.length > 0) {
-        const exPayloads = inputExercises.map((ex, exIdx) => ({
-          workout_day_id: insertedDay.id,
-          exercise_library_id: asUuidOrNull(ex.exercise_library_id),
-          sort_order: Number(ex.sort_order ?? exIdx + 1),
-          name: ex.name?.trim() || "Ejercicio",
-          muscle_group: ex.muscle_group?.trim() || "General",
-          sets: Number(ex.sets ?? 3) || 3,
-          reps: String(ex.reps || "10-12"),
-          rest_seconds: Number(ex.rest_seconds ?? 90) || 90,
-          target_weight_or_rpe: ex.target_weight_or_rpe?.trim() || null,
-          coach_notes: ex.coach_notes?.trim() || null,
-          demo_url: ex.demo_url?.trim() || null,
-          media_url: ex.media_url?.trim() || null,
-          media_type: sanitizeDbMediaType(ex.media_type),
-        }));
+        const exPayloads = inputExercises.map((ex, exIdx) => {
+          const frameList = ex.frames?.female?.length
+            ? ex.frames.female
+            : ex.frames?.male || [];
+          const resolvedMediaUrl =
+            ex.media_url?.trim() || frameList[0]?.image_url?.trim() || null;
+          const resolvedDemoUrl =
+            ex.demo_url?.trim() || frameList[1]?.image_url?.trim() || null;
+
+          return {
+            workout_day_id: insertedDay.id,
+            exercise_library_id: asUuidOrNull(ex.exercise_library_id),
+            sort_order: Number(ex.sort_order ?? exIdx + 1),
+            name: ex.name?.trim() || "Ejercicio",
+            muscle_group: ex.muscle_group?.trim() || "General",
+            sets: Number(ex.sets ?? 3) || 3,
+            reps: String(ex.reps || "10-12"),
+            rest_seconds: Number(ex.rest_seconds ?? 90) || 90,
+            target_weight_or_rpe: ex.target_weight_or_rpe?.trim() || null,
+            coach_notes: ex.coach_notes?.trim() || null,
+            demo_url: resolvedDemoUrl,
+            media_url: resolvedMediaUrl,
+            media_type: sanitizeDbMediaType(ex.media_type),
+          };
+        });
 
         const { data: insertedExs, error: exErr } = await adminClient
           .from("workout_exercises")

@@ -616,184 +616,34 @@ export const DEMO_STUDENT_GOALS: StudentGoal[] = [
   },
 ];
 
-const HIP_THRUST_FRAMES = {
-  female: [
-    {
-      phase: 1,
-      label: "Hip Thrust con Barra",
-      image_url: "/exercises/anatomical/hip-thrust-female-2.jpg",
-    },
-  ],
-  male: [
-    {
-      phase: 1,
-      label: "Hip Thrust con Barra",
-      image_url: "/exercises/anatomical/hip-thrust-male-1.jpg",
-    },
-  ],
-};
+const FREE_DB_IMG =
+  "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises";
 
-const BULGARIAN_FRAMES = {
-  female: [
-    {
-      phase: 1,
-      label: "Sentadilla Búlgara",
-      image_url: "/exercises/anatomical/bulgarian-female-3.jpg",
-    },
-  ],
-  male: [
-    {
-      phase: 1,
-      label: "Sentadilla Búlgara",
-      image_url: "/exercises/anatomical/bulgarian-female-3.jpg",
-    },
-  ],
-};
-
-const RDL_FRAMES = {
-  female: [
-    {
-      phase: 1,
-      label: "Peso Muerto Rumano",
-      image_url: "/exercises/anatomical/rdl-female-3.jpg",
-    },
-  ],
-  male: [
-    {
-      phase: 1,
-      label: "Peso Muerto Rumano",
-      image_url: "/exercises/anatomical/rdl-female-3.jpg",
-    },
-  ],
-};
-
-// Plancha isométrica: postura fija sin parpadeo
-const PLANK_FRAMES = {
-  female: [
-    {
-      phase: 1,
-      label: "Alineación isométrica",
-      image_url: "/exercises/anatomical/plank-female-2.jpg",
-    },
-  ],
-  male: [
-    {
-      phase: 1,
-      label: "Alineación isométrica",
-      image_url: "/exercises/anatomical/plank-female-1.jpg",
-    },
-  ],
-};
-
-const LAT_PULLDOWN_FRAMES = {
-  female: [
-    {
-      phase: 1,
-      label: "Jalón dorsal",
-      image_url: "/exercises/anatomical/lat-pulldown-female-1.jpg",
-    },
-  ],
-  male: [
-    {
-      phase: 1,
-      label: "Jalón dorsal",
-      image_url: "/exercises/anatomical/lat-pulldown-female-1.jpg",
-    },
-  ],
-};
-
-const INCLINE_PRESS_FRAMES = {
-  female: [
-    {
-      phase: 1,
-      label: "Press inclinado",
-      image_url: "/exercises/anatomical/incline-press-female-1.jpg",
-    },
-  ],
-  male: [
-    {
-      phase: 1,
-      label: "Press inclinado",
-      image_url: "/exercises/anatomical/incline-press-male-1.jpg",
-    },
-  ],
-};
-
-// Secuencia sincronizada píxel a píxel (bucle ping-pong 1 -> 2 -> 3 -> 2 -> 1)
-const BICEP_CURL_FRAMES = {
-  female: [
+function freeDbFrames(exerciseFolder: string) {
+  const frames = [
     {
       phase: 1,
       label: "Inicio",
-      image_url: "/exercises/anatomical/bicep-curl-female-1.jpg",
+      image_url: `${FREE_DB_IMG}/${exerciseFolder}/0.jpg`,
     },
     {
       phase: 2,
-      label: "Flexión 90°",
-      image_url: "/exercises/anatomical/bicep-curl-female-2.jpg",
+      label: "Ejecución",
+      image_url: `${FREE_DB_IMG}/${exerciseFolder}/1.jpg`,
     },
-    {
-      phase: 3,
-      label: "Contracción máxima",
-      image_url: "/exercises/anatomical/bicep-curl-female-3.jpg",
-    },
-  ],
-  male: [
-    {
-      phase: 1,
-      label: "Inicio",
-      image_url: "/exercises/anatomical/bicep-curl-female-1.jpg",
-    },
-    {
-      phase: 2,
-      label: "Flexión 90°",
-      image_url: "/exercises/anatomical/bicep-curl-female-2.jpg",
-    },
-    {
-      phase: 3,
-      label: "Contracción máxima",
-      image_url: "/exercises/anatomical/bicep-curl-female-3.jpg",
-    },
-  ],
-};
+  ];
+  return { female: frames, male: frames };
+}
 
-// Secuencia sincronizada píxel a píxel (bucle ping-pong 1 -> 2 -> 3 -> 2 -> 1)
-const LATERAL_RAISE_FRAMES = {
-  female: [
-    {
-      phase: 1,
-      label: "Inicio",
-      image_url: "/exercises/anatomical/lateral-raise-female-1.jpg",
-    },
-    {
-      phase: 2,
-      label: "Elevación media",
-      image_url: "/exercises/anatomical/lateral-raise-female-2.jpg",
-    },
-    {
-      phase: 3,
-      label: "Contracción horizontal",
-      image_url: "/exercises/anatomical/lateral-raise-female-3.jpg",
-    },
-  ],
-  male: [
-    {
-      phase: 1,
-      label: "Inicio",
-      image_url: "/exercises/anatomical/lateral-raise-female-1.jpg",
-    },
-    {
-      phase: 2,
-      label: "Elevación media",
-      image_url: "/exercises/anatomical/lateral-raise-female-2.jpg",
-    },
-    {
-      phase: 3,
-      label: "Contracción horizontal",
-      image_url: "/exercises/anatomical/lateral-raise-female-3.jpg",
-    },
-  ],
-};
+const HIP_THRUST_FRAMES = freeDbFrames("Barbell_Hip_Thrust");
+const BULGARIAN_FRAMES = freeDbFrames("Split_Squat_with_Dumbbells");
+const RDL_FRAMES = freeDbFrames("Romanian_Deadlift");
+const PLANK_FRAMES = freeDbFrames("Plank");
+const LAT_PULLDOWN_FRAMES = freeDbFrames("Wide-Grip_Lat_Pulldown");
+const INCLINE_PRESS_FRAMES = freeDbFrames("Incline_Dumbbell_Press");
+const BICEP_CURL_FRAMES = freeDbFrames("Dumbbell_Bicep_Curl");
+const LATERAL_RAISE_FRAMES = freeDbFrames("Side_Lateral_Raise");
+const BENCH_PRESS_FRAMES = freeDbFrames("Barbell_Bench_Press_-_Medium_Grip");
 
 export const DEMO_EXERCISE_LIBRARY: ExerciseLibraryItem[] = [
   {
@@ -1328,7 +1178,11 @@ export const DEMO_WORKOUTS: WorkoutPlan[] = [
             reps: "6-8",
             rest_seconds: 120,
             target_weight_or_rpe: "85 kg / RPE 8.5",
-            media_type: "svg_anim",
+            media_url: BENCH_PRESS_FRAMES.female[0].image_url,
+            demo_url: BENCH_PRESS_FRAMES.female[1].image_url,
+            media_type: "sequence",
+            frames: BENCH_PRESS_FRAMES,
+            frame_interval_ms: 850,
             animation_key: "bench_press",
           },
         ],
