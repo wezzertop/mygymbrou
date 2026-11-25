@@ -142,6 +142,26 @@ function CoachPlansContent() {
   const [targetChangeTier, setTargetChangeTier] = useState<SaasPlanTier | null>(null);
   const [acceptChangeTerms, setAcceptChangeTerms] = useState(false);
   const [submittingChange, setSubmittingChange] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
+
+  const paymentStatusParam = searchParams.get("payment");
+
+  const handleOpenStripePortal = async () => {
+    setOpeningPortal(true);
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      notify(data.error || "No se pudo abrir el portal de facturación.");
+    } catch {
+      notify("Error de conexión al abrir el portal de Stripe.");
+    } finally {
+      setOpeningPortal(false);
+    }
+  };
 
   const changeQuote = targetChangeTier
     ? calculatePlanChangeQuote({
@@ -156,7 +176,35 @@ function CoachPlansContent() {
     setSubmittingChange(true);
     const acceptedAt = new Date().toISOString();
     try {
-      await fetch("/api/billing/plan-change", {
+      // 1) Si viene de Free hacia un plan de pago, intentamos Stripe Checkout directo
+      if (changeQuote.fromPlan.id === "free" && changeQuote.mode === "upgrade") {
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            target_plan: changeQuote.toPlan.id,
+            coach_email: coachProfile.email,
+            coach_name: coachProfile.full_name,
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        // Fallback a SPEI si Stripe no está configurado en entorno local
+        if (data.fallback === "spei") {
+          setTargetChangeTier(null);
+          setAcceptChangeTerms(false);
+          router.push(`/coach/billing/checkout?plan=${changeQuote.toPlan.id}`);
+          return;
+        }
+        notify(data.error || "No se pudo iniciar el pago con Stripe.");
+        return;
+      }
+
+      // 2) Upgrade desde plan de pago o Downgrade -> /api/stripe/change-plan
+      const res = await fetch("/api/stripe/change-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -167,6 +215,25 @@ function CoachPlansContent() {
           accepted_terms_at: acceptedAt,
         }),
       });
+      const data = await res.json();
+
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+
+      if (res.ok && data.upgradedImmediately) {
+        updateCoachProfile({
+          saas_plan_tier: changeQuote.toPlan.id,
+          saas_student_limit: changeQuote.toPlan.studentLimit,
+          saas_subscription_status: "active",
+          scheduled_downgrade_plan_tier: null,
+        });
+        setTargetChangeTier(null);
+        setAcceptChangeTerms(false);
+        notify(`¡Upgrade completado! Ya estás en ${changeQuote.toPlan.name}.`);
+        return;
+      }
 
       if (changeQuote.mode === "downgrade") {
         updateCoachProfile({
@@ -178,19 +245,21 @@ function CoachPlansContent() {
         notify(
           `Cambio programado a ${changeQuote.toPlan.name} al cierre de tu corte (${new Date(
             changeQuote.effectiveAtIso
-          ).toLocaleDateString("es-MX")}).`
+          ).toLocaleDateString("es-MX")}). Sin cargos ni devoluciones.`
         );
-      } else {
-        const qs = new URLSearchParams({
-          plan: changeQuote.toPlan.id,
-          net: String(changeQuote.netPayableTodayMxn),
-          credit: String(changeQuote.creditMxn),
-          days: String(changeQuote.remainingDays),
-        });
-        setTargetChangeTier(null);
-        setAcceptChangeTerms(false);
-        router.push(`/coach/billing/checkout?${qs.toString()}`);
+        return;
       }
+
+      // Fallback SPEI en upgrade si Stripe no está configurado
+      const qs = new URLSearchParams({
+        plan: changeQuote.toPlan.id,
+        net: String(changeQuote.netPayableTodayMxn),
+        credit: String(changeQuote.creditMxn),
+        days: String(changeQuote.remainingDays),
+      });
+      setTargetChangeTier(null);
+      setAcceptChangeTerms(false);
+      router.push(`/coach/billing/checkout?${qs.toString()}`);
     } finally {
       setSubmittingChange(false);
     }
@@ -397,6 +466,39 @@ function CoachPlansContent() {
 
       {tab === "saas" ? (
         <div className="space-y-6">
+          {paymentStatusParam === "success" && (
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-xs font-semibold text-emerald-300">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              ¡Pago completado en Stripe! Tu suscripción y tus nuevos cupos ya están activos.
+            </div>
+          )}
+          {paymentStatusParam === "canceled" && (
+            <div className="rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-xs font-medium text-amber-200">
+              Pago cancelado. No se realizó ningún cargo; puedes intentarlo de nuevo cuando gustes.
+            </div>
+          )}
+          {coachProfile.saas_subscription_status === "past_due" && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-500/40 bg-rose-500/15 p-4 text-xs text-rose-200">
+              <div>
+                <p className="font-bold text-rose-300">
+                  Pago pendiente — Actualiza tu tarjeta
+                </p>
+                <p className="mt-0.5 text-rose-200/85">
+                  No pudimos procesar tu última renovación en Stripe. Actualiza tu
+                  método de pago para conservar tus cupos extendidos.
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={openingPortal}
+                onClick={handleOpenStripePortal}
+                className="shrink-0 rounded-full bg-white px-4 py-2 text-xs font-bold text-zinc-950 hover:bg-zinc-200 disabled:opacity-50"
+              >
+                {openingPortal ? "Abriendo..." : "Actualizar tarjeta"}
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-col justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5 sm:flex-row sm:items-center">
             <div className="space-y-1">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-bold text-emerald-300">
@@ -410,8 +512,22 @@ function CoachPlansContent() {
                   : `Cupo usado: ${occupiedSlots} de ${quota.limit} alumnos (${quota.remaining} disponibles).`}
               </p>
               <p className="text-xs text-zinc-400">
-                Actualiza tu plan en cualquier momento para ampliar tu límite de alumnos activos.
+                Actualiza tu plan en cualquier momento con equivalencia transparente de
+                días o administra tu método de pago en Stripe.
               </p>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  disabled={openingPortal}
+                  onClick={handleOpenStripePortal}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.04] px-3.5 text-xs font-semibold text-zinc-200 transition hover:border-emerald-500/40 hover:text-white disabled:opacity-50"
+                >
+                  <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
+                  {openingPortal
+                    ? "Abriendo portal..."
+                    : "Administrar facturación y tarjeta"}
+                </button>
+              </div>
             </div>
             {quota.limit !== null && (
               <div className="w-full sm:w-48">

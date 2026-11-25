@@ -70,8 +70,12 @@ export interface Profile {
   suspended_until?: string;
   saas_plan_tier?: SaasPlanTier;
   saas_student_limit?: number | null;
+  saas_subscription_status?: "free" | "active" | "past_due" | "canceled" | "trialing";
+  saas_period_start?: string | null;
   saas_period_end?: string | null;
   scheduled_downgrade_plan_tier?: SaasPlanTier | null;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
   terms_accepted_at: string;
   created_at: string;
 }
