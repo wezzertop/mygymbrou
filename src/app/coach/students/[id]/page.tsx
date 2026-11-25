@@ -131,13 +131,26 @@ export default function Student360Page() {
     [student, studentRecords]
   );
 
-  const studentGoal = studentGoals.find((g) => g.student_id === studentId);
+  const resolvedStudentId = student?.student_id || studentId;
+
+  const studentGoal = studentGoals.find(
+    (g) => g.student_id === resolvedStudentId
+  );
   const daysRemaining = getDaysRemaining(
     student?.expires_at || student?.next_billing_date
   );
   const [selectedPlanId, setSelectedPlanId] = useState(
-    student?.plan_id || subscriptionPlans[2]?.id || ""
+    student?.plan_id || subscriptionPlans[0]?.id || ""
   );
+
+  React.useEffect(() => {
+    if (student?.plan_id) {
+      setSelectedPlanId(student.plan_id);
+    } else if (!selectedPlanId && subscriptionPlans[0]?.id) {
+      setSelectedPlanId(subscriptionPlans[0].id);
+    }
+  }, [student?.plan_id, subscriptionPlans, selectedPlanId]);
+
   const [planStartDate, setPlanStartDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -145,26 +158,41 @@ export default function Student360Page() {
   const studentAssessments = useMemo(
     () =>
       assessments
-        .filter((a) => a.student_id === studentId)
+        .filter(
+          (a) =>
+            a.student_id === resolvedStudentId &&
+            (!coachProfile.id || a.coach_id === coachProfile.id)
+        )
         .sort((a, b) => b.assessment_date.localeCompare(a.assessment_date)),
-    [assessments, studentId]
+    [assessments, resolvedStudentId, coachProfile.id]
   );
 
   const latest = studentAssessments[0];
   const previous = studentAssessments[1];
 
   const activeWorkout = workouts.find(
-    (w) => w.student_id === studentId && w.is_active
+    (w) =>
+      w.student_id === resolvedStudentId &&
+      w.is_active &&
+      (!coachProfile.id || w.coach_id === coachProfile.id)
   );
   const workoutTemplates = workouts.filter((w) => w.is_template);
 
   const activeDiet = nutritionPlans.find(
-    (n) => n.student_id === studentId && n.is_active
+    (n) =>
+      n.student_id === resolvedStudentId &&
+      n.is_active &&
+      (!coachProfile.id || n.coach_id === coachProfile.id)
   );
   const dietTemplates = nutritionPlans.filter((n) => n.is_template);
   const studentAppointments = useMemo(
-    () => appointments.filter((a) => a.student_id === studentId),
-    [appointments, studentId]
+    () =>
+      appointments.filter(
+        (a) =>
+          a.student_id === resolvedStudentId &&
+          (!coachProfile.id || a.coach_id === coachProfile.id)
+      ),
+    [appointments, resolvedStudentId, coachProfile.id]
   );
 
   const handleExportPdf = (section: PdfExportSection) => {
@@ -1141,6 +1169,14 @@ export default function Student360Page() {
       {/* TAB 3: DIETA ASIGNADA */}
       {activeTab === "diet" && (
         <div className="space-y-5">
+          {studentRecord?.allergies && (
+            <div className="rounded-xl border border-rose-500/35 bg-rose-500/10 p-3.5 text-xs text-rose-200">
+              <strong className="font-bold text-rose-300">
+                Alergias / Restricciones alimentarias registradas:
+              </strong>{" "}
+              {studentRecord.allergies}
+            </div>
+          )}
           {activeDiet ? (
             <div className="space-y-4 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-5">
               <div>

@@ -42,12 +42,37 @@ export default function StudentProfilePage() {
   const router = useRouter();
   const {
     studentProfile,
+    coachProfile,
+    students,
+    studentRecords,
     studentGoals,
     updateStudentProfile,
     updateStudentGoal,
     resetOnboarding,
     signOut,
   } = useApp();
+
+  const activeRelation =
+    students.find(
+      (s) =>
+        s.student_id === studentProfile.id &&
+        s.invite_status === "active" &&
+        (!coachProfile.id || s.coach_id === coachProfile.id)
+    ) || students.find((s) => s.student_id === studentProfile.id);
+
+  const activeRecord = studentRecords.find(
+    (r) =>
+      (activeRelation && r.coach_student_id === activeRelation.id) ||
+      (r.student_id === studentProfile.id &&
+        (!coachProfile.id || r.coach_id === coachProfile.id))
+  );
+
+  const assignedMultiGoals: string[] =
+    activeRecord?.goals && activeRecord.goals.length > 0
+      ? activeRecord.goals
+      : activeRelation?.initial_goals && activeRelation.initial_goals.length > 0
+      ? activeRelation.initial_goals
+      : [];
 
   const [tab, setTab] = useState<ProfileTab>("datos");
   const [signingOut, setSigningOut] = useState(false);
@@ -88,6 +113,30 @@ export default function StudentProfilePage() {
   );
 
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (studentProfile.full_name) setFullName(studentProfile.full_name);
+    if (studentProfile.gender) setGender(studentProfile.gender);
+    if (studentProfile.phone) setPhone(studentProfile.phone);
+    if (studentProfile.avatar_url) setAvatarUrl(studentProfile.avatar_url);
+  }, [
+    studentProfile.full_name,
+    studentProfile.gender,
+    studentProfile.phone,
+    studentProfile.avatar_url,
+  ]);
+
+  React.useEffect(() => {
+    if (!existingGoal) return;
+    if (existingGoal.primary_goal) setPrimaryGoal(existingGoal.primary_goal);
+    if (existingGoal.priority_zones?.length)
+      setPriorityZones(existingGoal.priority_zones);
+    if (existingGoal.target_weight_kg !== undefined)
+      setTargetWeight(existingGoal.target_weight_kg.toString());
+    if (existingGoal.days_per_week) setDaysPerWeek(existingGoal.days_per_week);
+    if (existingGoal.limitations_or_injuries)
+      setLimitations(existingGoal.limitations_or_injuries);
+  }, [existingGoal]);
 
   const toggleZone = (zone: string) => {
     setPriorityZones((prev) =>
@@ -289,6 +338,24 @@ export default function StudentProfilePage() {
               Se sincronizan automáticamente con el expediente de tu Coach.
             </p>
           </div>
+
+          {assignedMultiGoals.length > 0 && (
+            <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3.5">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
+                Objetivos definidos en tu expediente con {coachProfile.full_name || "tu Coach"}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {assignedMultiGoals.map((goal) => (
+                  <span
+                    key={goal}
+                    className="rounded-lg border border-emerald-500/30 bg-[#060607] px-2.5 py-1 text-xs font-semibold text-emerald-200"
+                  >
+                    {goal}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="mb-1.5 block text-xs font-medium text-zinc-400">

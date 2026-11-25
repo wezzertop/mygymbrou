@@ -13,7 +13,11 @@ export function CoachVerificationGraceBanner({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { coachProfile, isDemoMode } = useApp();
+  const { coachProfile, isDemoMode, hydrated } = useApp();
+
+  if (!hydrated) {
+    return <>{children}</>;
+  }
 
   // En modo demo mostramos aviso informativo pero no bloqueamos la exploración
   const grace = getCoachVerificationGraceStatus(coachProfile);

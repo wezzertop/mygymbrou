@@ -342,11 +342,17 @@ export async function POST(request: Request) {
 
       if (decision === "aprobado" && targetCoachId) {
         const planConfig = getSaasPlanById(payment.plan_tier);
+        const now = new Date();
+        const periodEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
         await admin
           .from("profiles")
           .update({
             saas_plan_tier: planConfig.id,
             saas_student_limit: planConfig.studentLimit,
+            saas_subscription_status: "active",
+            saas_period_start: now.toISOString(),
+            saas_period_end: periodEnd.toISOString(),
+            scheduled_downgrade_plan_tier: null,
           })
           .eq("id", targetCoachId);
 

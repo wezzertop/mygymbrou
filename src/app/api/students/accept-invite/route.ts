@@ -355,14 +355,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verificar que la invitación corresponda al usuario autenticado (por student_id o correo)
+    // Verificar estrictamente que la invitación corresponda al usuario autenticado
     const userEmail = (user.email || "").toLowerCase();
     const invitedEmail = String(relation.invited_email || "").toLowerCase();
-    if (
-      relation.student_id &&
-      relation.student_id !== user.id &&
-      invitedEmail !== userEmail
-    ) {
+    const matchesById = Boolean(relation.student_id && relation.student_id === user.id);
+    const matchesByEmail = Boolean(invitedEmail && userEmail && invitedEmail === userEmail);
+    if (!matchesById && !matchesByEmail) {
       return NextResponse.json(
         { error: "Esta invitación pertenece a otra cuenta." },
         { status: 403 }
@@ -375,7 +373,7 @@ export async function POST(request: Request) {
       await adminClient
         .from("coach_students")
         .update({
-          invite_status: "inactive",
+          invite_status: "declined",
           ended_at: new Date().toISOString(),
           end_reason: "Invitación rechazada por el alumno",
           updated_at: new Date().toISOString(),
@@ -417,6 +415,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: updateErr.message }, { status: 400 });
     }
 
+    // Sincronizar objetivos iniciales al perfil/student_goals si aún no existen
+    const initialGoals: string[] = Array.isArray(relation.initial_goals)
+      ? (relation.initial_goals as string[]).filter(Boolean)
+      : [];
+    if (initialGoals.length > 0) {
+      const primaryGoal = initialGoals.join(" · ");
+      await adminClient
+        .from("student_goals")
+        .upsert(
+          {
+            student_id: user.id,
+            primary_goal: primaryGoal,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "student_id" }
+        );
+    }
+
     // Vincular coach_student_records y materializar Evaluación #1 si existe
     await materializeInitialMeasurementIfNeeded(
       adminClient,
@@ -425,12 +441,30 @@ export async function POST(request: Request) {
       user.id
     );
 
-    // Marcar notificaciones de invitación relacionadas como leídas
-    await adminClient
+    // Marcar solo la notificación de invitación de este coach/relación como leída
+    const { data: inviteNotifs } = await adminClient
       .from("notifications")
-      .update({ is_read: true })
+      .select("id, metadata")
       .eq("user_id", user.id)
-      .eq("type", "coach_invite");
+      .eq("type", "coach_invite")
+      .eq("is_read", false);
+
+    const matchingNotifIds = (inviteNotifs || [])
+      .filter((n) => {
+        const meta = (n.metadata || {}) as Record<string, unknown>;
+        return (
+          meta.relation_id === relation.id ||
+          meta.coach_id === relation.coach_id
+        );
+      })
+      .map((n) => n.id);
+
+    if (matchingNotifIds.length > 0) {
+      await adminClient
+        .from("notifications")
+        .update({ is_read: true })
+        .in("id", matchingNotifIds);
+    }
 
     // Notificar al Coach en tiempo real
     await adminClient.from("notifications").insert({

@@ -43,9 +43,12 @@ function ActivateAccountContent() {
     isDemoMode,
   } = useApp();
 
-  const token = searchParams.get("token") || "demo-token-mateo";
-  const paramEmail = searchParams.get("email") || "mateo.herrera@email.com";
-  const paramName = searchParams.get("name") || "Mateo Herrera";
+  const token =
+    searchParams.get("token") || (isDemoMode ? "demo-token-mateo" : "");
+  const paramEmail =
+    searchParams.get("email") || (isDemoMode ? "mateo.herrera@email.com" : "");
+  const paramName =
+    searchParams.get("name") || (isDemoMode ? "Mateo Herrera" : "");
 
   const [inviteMeta, setInviteMeta] = useState<InviteMetadata | null>(null);
   const [loadingMeta, setLoadingMeta] = useState(true);
@@ -109,6 +112,12 @@ function ActivateAccountContent() {
             setInviteMeta(data.invite);
             if (data.invite.invited_name) {
               setFullName(data.invite.invited_name);
+            }
+            if (
+              Array.isArray(data.invite.initial_goals) &&
+              data.invite.initial_goals.length > 0
+            ) {
+              setFitnessGoal(data.invite.initial_goals.join(" · "));
             }
           }
         }
@@ -213,7 +222,7 @@ function ActivateAccountContent() {
             return;
           }
 
-          await supabase
+          const { error: profErr } = await supabase
             .from("profiles")
             .update({
               full_name: fullName,
@@ -221,12 +230,26 @@ function ActivateAccountContent() {
               fitness_goal: fitnessGoal,
             })
             .eq("id", currentUser.id);
+          if (profErr) {
+            setError(profErr.message);
+            setLoading(false);
+            return;
+          }
 
-          await fetch("/api/students/accept-invite", {
+          const acceptRes = await fetch("/api/students/accept-invite", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token, fullName }),
           });
+          if (!acceptRes.ok) {
+            const errBody = await acceptRes.json().catch(() => ({}));
+            setError(
+              errBody.error ||
+                "No se pudo vincular tu invitación. Verifica el enlace."
+            );
+            setLoading(false);
+            return;
+          }
           await refreshData();
         } else {
           // Activación directa con token de invitación (crea/actualiza contraseña en servidor y autentica al instante)

@@ -222,7 +222,7 @@ export function SmartNotificationsCenter({
           kind: "payment",
           title: "Plan Inicio / Free activo",
           message:
-            "Actualiza a Coach Base ($449 MXN) para quitar anuncios y desbloquear citas y plantillas ilimitadas.",
+            "Actualiza a Coach Base ($449 MXN) para quitar anuncios, desbloquear citas ilimitadas y hasta 10 plantillas de dieta.",
           href: "/coach/plans?tab=saas",
           isSmart: true,
         });

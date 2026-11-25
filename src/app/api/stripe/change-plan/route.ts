@@ -19,7 +19,70 @@ const VALID_TIERS: SaasPlanTier[] = ["free", "base", "pro", "studio"];
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const fromPlan = body.from_plan as SaasPlanTier;
+    const supabase = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const adminClient = createAdminSupabaseClient();
+
+    if (adminClient && !user?.id) {
+      return NextResponse.json(
+        { error: "Debes iniciar sesión como Coach para cambiar tu plan." },
+        { status: 401 }
+      );
+    }
+
+    let profile: {
+      id: string;
+      email: string;
+      full_name: string;
+      saas_plan_tier?: SaasPlanTier | null;
+      stripe_customer_id?: string | null;
+      stripe_subscription_id?: string | null;
+      saas_period_end?: string | null;
+    } | null = null;
+
+    if (adminClient && user?.id) {
+      const { data } = await adminClient
+        .from("profiles")
+        .select(
+          "id, email, full_name, saas_plan_tier, stripe_customer_id, stripe_subscription_id, saas_period_end"
+        )
+        .eq("id", user.id)
+        .maybeSingle();
+      profile = data;
+    }
+
+    // Acción: cancelar downgrade programado en Stripe y BD
+    if (body.action === "cancel_scheduled_downgrade") {
+      const stripe = getStripeClient();
+      if (stripe && profile?.stripe_subscription_id) {
+        const sub = await stripe.subscriptions.retrieve(
+          profile.stripe_subscription_id
+        );
+        if (sub.status !== "canceled") {
+          await stripe.subscriptions.update(sub.id, {
+            cancel_at_period_end: false,
+            metadata: {
+              ...sub.metadata,
+              scheduled_downgrade_plan: "",
+            },
+          });
+        }
+      }
+      if (adminClient && user?.id) {
+        await adminClient
+          .from("profiles")
+          .update({ scheduled_downgrade_plan_tier: null })
+          .eq("id", user.id);
+      }
+      return NextResponse.json({ cancelled: true });
+    }
+
+    // Nunca confiar en from_plan del cliente cuando existe perfil real en BD
+    const fromPlan = (profile?.saas_plan_tier ||
+      body.from_plan ||
+      "free") as SaasPlanTier;
     const toPlan = body.to_plan as SaasPlanTier;
     const acceptedTermsAt =
       typeof body.accepted_terms_at === "string" && body.accepted_terms_at
@@ -43,32 +106,6 @@ export async function POST(request: Request) {
         { error: "Debes aceptar los términos de cambio de plan antes de continuar." },
         { status: 400 }
       );
-    }
-
-    const supabase = await createServerSupabaseClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    const adminClient = createAdminSupabaseClient();
-
-    let profile: {
-      id: string;
-      email: string;
-      full_name: string;
-      stripe_customer_id?: string | null;
-      stripe_subscription_id?: string | null;
-      saas_period_end?: string | null;
-    } | null = null;
-
-    if (adminClient && user?.id) {
-      const { data } = await adminClient
-        .from("profiles")
-        .select(
-          "id, email, full_name, stripe_customer_id, stripe_subscription_id, saas_period_end"
-        )
-        .eq("id", user.id)
-        .maybeSingle();
-      profile = data;
     }
 
     const quote = calculatePlanChangeQuote({
@@ -145,10 +182,11 @@ export async function POST(request: Request) {
             });
           }
 
+          // Aplicamos nuestro crédito transparente de días restantes SIN doble prorrateo automático de Stripe
           const updatedSub = await stripe.subscriptions.update(sub.id, {
             items: [{ id: itemId, price: targetPriceId }],
             cancel_at_period_end: false,
-            proration_behavior: "always_invoice",
+            proration_behavior: "none",
             metadata: {
               coach_id: profile.id,
               target_plan: toPlan,

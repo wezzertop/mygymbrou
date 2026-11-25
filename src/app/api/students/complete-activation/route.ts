@@ -266,7 +266,13 @@ export async function POST(request: Request) {
       targetUserId = created.user.id;
     }
 
-    // 3. Actualizar perfil público
+    const initialGoals: string[] = Array.isArray(relation.initial_goals)
+      ? (relation.initial_goals as string[]).filter(Boolean)
+      : [];
+    const resolvedGoalText =
+      initialGoals.length > 0 ? initialGoals.join(" · ") : fitnessGoal;
+
+    // 3. Actualizar perfil público y sincronizar objetivos
     await adminClient.from("profiles").upsert(
       {
         id: targetUserId,
@@ -274,12 +280,23 @@ export async function POST(request: Request) {
         email: invitedEmail,
         full_name: resolvedName,
         gender,
-        fitness_goal: fitnessGoal,
+        fitness_goal: resolvedGoalText,
         terms_accepted_at: nowIso,
         updated_at: nowIso,
       },
       { onConflict: "id" }
     );
+
+    if (resolvedGoalText) {
+      await adminClient.from("student_goals").upsert(
+        {
+          student_id: targetUserId,
+          primary_goal: resolvedGoalText,
+          updated_at: nowIso,
+        },
+        { onConflict: "student_id" }
+      );
+    }
 
     // 4. Activar relación coach_students
     await adminClient

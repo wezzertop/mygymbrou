@@ -134,9 +134,15 @@ export default function StudentCalendarPage() {
     const assignedDay =
       dayIndex >= 0 && activeWorkout ? activeWorkout.days[dayIndex] : null;
     const completedLog = myLogs.find((l) => l.completed_date === iso);
-    const dayApts = myAppointments.filter(
-      (a) => a.scheduled_at.split("T")[0] === iso
-    );
+    const dayApts = myAppointments.filter((a) => {
+      const dt = new Date(a.scheduled_at);
+      if (Number.isNaN(dt.getTime())) return a.scheduled_at.split("T")[0] === iso;
+      const localIso = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}-${String(dt.getDate()).padStart(2, "0")}`;
+      return localIso === iso;
+    });
     const isExpirationDay = expiresIso === iso;
 
     return { assignedDay, dayIndex, completedLog, dayApts, isExpirationDay };

@@ -22,23 +22,52 @@ export default function StudentDietPage() {
   const {
     studentProfile,
     students,
+    studentRecords,
+    coachProfile,
     subscriptionPlans,
     nutritionPlans,
     completedMeals,
     toggleMealComplete,
   } = useApp();
 
-  const relation = students.find((s) => s.student_id === studentProfile.id);
+  const relation =
+    students.find(
+      (s) =>
+        s.student_id === studentProfile.id &&
+        s.invite_status === "active" &&
+        (!coachProfile.id || s.coach_id === coachProfile.id)
+    ) || students.find((s) => s.student_id === studentProfile.id);
+
+  const activeRecord = studentRecords.find(
+    (r) =>
+      (relation && r.coach_student_id === relation.id) ||
+      (r.student_id === studentProfile.id &&
+        (!coachProfile.id || r.coach_id === coachProfile.id))
+  );
+
   const activePlan = subscriptionPlans.find((p) => p.id === relation?.plan_id);
 
-  const plan = nutritionPlans.find(
-    (n) => n.student_id === studentProfile.id && n.is_active
-  );
+  const plan =
+    nutritionPlans.find(
+      (n) =>
+        n.student_id === studentProfile.id &&
+        n.is_active &&
+        (!coachProfile.id || n.coach_id === coachProfile.id)
+    ) ||
+    nutritionPlans.find(
+      (n) => n.student_id === studentProfile.id && n.is_active
+    );
 
   const [expandedMeal, setExpandedMeal] = useState<string | null>(
     plan?.meals[0]?.id || null
   );
   const [waterGlasses, setWaterGlasses] = useState(5);
+
+  React.useEffect(() => {
+    if (!expandedMeal && plan?.meals[0]?.id) {
+      setExpandedMeal(plan.meals[0].id);
+    }
+  }, [plan?.id, plan?.meals, expandedMeal]);
 
   if (activePlan && !activePlan.includes_nutrition) {
     return (
@@ -115,6 +144,15 @@ Ver Planes Disponibles
         title={plan.title}
         subtitle={plan.notes || "Control diario de comidas, macros e hidratación."}
       />
+
+      {activeRecord?.allergies && (
+        <div className="rounded-xl border border-rose-500/35 bg-rose-500/10 p-3.5 text-xs text-rose-200">
+          <strong className="font-bold text-rose-300">
+            Tus alergias / restricciones registradas:
+          </strong>{" "}
+          {activeRecord.allergies}
+        </div>
+      )}
 
       {/* Macros & Calories Summary Card */}
       <section className="rounded-xl border border-white/[0.08] bg-gradient-to-br from-slate-900 to-slate-950 p-5">
@@ -278,8 +316,17 @@ Ver Planes Disponibles
                       {meal.meal_time}
                     </p>
                     <p className="text-[11px] text-zinc-400">
-                      {meal.suggested_hour} · {meal.calories} kcal · P:
-                      {meal.protein_g}g C:{meal.carbs_g}g G:{meal.fats_g}g
+                      {[
+                        meal.suggested_hour,
+                        meal.calories !== undefined && meal.calories !== null
+                          ? `${meal.calories} kcal`
+                          : null,
+                        meal.protein_g !== undefined && meal.protein_g !== null
+                          ? `P:${meal.protein_g}g C:${meal.carbs_g ?? 0}g G:${meal.fats_g ?? 0}g`
+                          : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </p>
                   </div>
                   {isOpen ? (

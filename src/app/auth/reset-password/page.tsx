@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, KeyRound } from "lucide-react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -11,6 +11,34 @@ export default function ResetPasswordPage() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Capturar sesión implícita (#access_token=...&refresh_token=...) si Supabase redirigió con fragmento hash
+  useEffect(() => {
+    if (typeof window === "undefined" || !isSupabaseConfigured()) return;
+    const hash = window.location.hash;
+    if (!hash || !hash.includes("access_token=")) return;
+    const params = new URLSearchParams(hash.replace(/^#/, ""));
+    const accessToken = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
+    if (!accessToken || !refreshToken) return;
+
+    const supabase = createClient();
+    supabase.auth
+      .setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      })
+      .then(() => {
+        window.history.replaceState(
+          null,
+          "",
+          `${window.location.pathname}${window.location.search}`
+        );
+      })
+      .catch(() => {
+        setError("El enlace de recuperación expiró. Solicita uno nuevo.");
+      });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

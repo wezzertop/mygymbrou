@@ -39,6 +39,35 @@ function StudentWorkoutsContent() {
   const relation = students.find((s) => s.student_id === studentProfile.id);
   const activePlan = subscriptionPlans.find((p) => p.id === relation?.plan_id);
 
+  const activeWorkout = workouts.find(
+    (w) => w.student_id === studentProfile.id && w.is_active
+  );
+
+  const [selectedDayIdx, setSelectedDayIdx] = useState(
+    isNaN(initialDay) ? 0 : initialDay
+  );
+  const [openInstructions, setOpenInstructions] = useState<
+    Record<string, boolean>
+  >({});
+  const [completedToast, setCompletedToast] = useState(false);
+
+  // Integrated Rest Timer
+  const [selectedPreset, setSelectedPreset] = useState(90);
+  const [secondsLeft, setSecondsLeft] = useState(90);
+  const [timerRunning, setTimerRunning] = useState(false);
+
+  useEffect(() => {
+    if (!timerRunning) return;
+    if (secondsLeft <= 0) {
+      setTimerRunning(false);
+      return;
+    }
+    const id = setInterval(() => {
+      setSecondsLeft((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [timerRunning, secondsLeft]);
+
   // Smart Access Control: if coach assigned a plan without workouts (e.g. Plan Básico)
   if (activePlan && !activePlan.includes_workouts) {
     return (
@@ -71,35 +100,6 @@ function StudentWorkoutsContent() {
     );
   }
 
-  const activeWorkout = workouts.find(
-    (w) => w.student_id === studentProfile.id && w.is_active
-  );
-
-  const [selectedDayIdx, setSelectedDayIdx] = useState(
-    isNaN(initialDay) ? 0 : initialDay
-  );
-  const [openInstructions, setOpenInstructions] = useState<
-    Record<string, boolean>
-  >({});
-  const [completedToast, setCompletedToast] = useState(false);
-
-  // Integrated Rest Timer
-  const [selectedPreset, setSelectedPreset] = useState(90);
-  const [secondsLeft, setSecondsLeft] = useState(90);
-  const [timerRunning, setTimerRunning] = useState(false);
-
-  useEffect(() => {
-    if (!timerRunning) return;
-    if (secondsLeft <= 0) {
-      setTimerRunning(false);
-      return;
-    }
-    const id = setInterval(() => {
-      setSecondsLeft((prev) => (prev <= 1 ? 0 : prev - 1));
-    }, 1000);
-    return () => clearInterval(id);
-  }, [timerRunning, secondsLeft]);
-
   const startRest = (sec: number) => {
     setSelectedPreset(sec);
     setSecondsLeft(sec);
@@ -112,7 +112,7 @@ function StudentWorkoutsContent() {
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
-  if (!activeWorkout) {
+  if (!activeWorkout || !activeWorkout.days || activeWorkout.days.length === 0) {
     return (
       <div className="rounded-xl border border-white/[0.08] bg-[#0e0f12] p-8 text-center">
         <p className="text-base font-bold text-white">
@@ -134,7 +134,10 @@ function StudentWorkoutsContent() {
     (completedCount / Math.max(currentDay.exercises.length, 1)) * 100
   );
 
-  const todayIso = new Date().toISOString().split("T")[0];
+  const nowLocal = new Date();
+  const todayIso = `${nowLocal.getFullYear()}-${String(
+    nowLocal.getMonth() + 1
+  ).padStart(2, "0")}-${String(nowLocal.getDate()).padStart(2, "0")}`;
   const alreadyLoggedToday = workoutLogs.some(
     (l) =>
       l.student_id === studentProfile.id &&

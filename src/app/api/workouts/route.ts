@@ -5,6 +5,7 @@ import {
 } from "@/lib/supabase/server";
 import type { WorkoutDay, WorkoutExercise, WorkoutPlan } from "@/types/database";
 import { reconstructFramesFromMediaUrls } from "@/lib/live-exercise-catalog";
+import { getPlanCapabilities } from "@/lib/saas-plans";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -146,6 +147,13 @@ export async function GET() {
           ? String(row.target_weight_or_rpe)
           : undefined,
         coach_notes: row.coach_notes ? String(row.coach_notes) : undefined,
+        instructions: row.instructions ? String(row.instructions) : undefined,
+        primary_muscles: Array.isArray(row.primary_muscles)
+          ? (row.primary_muscles as string[])
+          : undefined,
+        secondary_muscles: Array.isArray(row.secondary_muscles)
+          ? (row.secondary_muscles as string[])
+          : undefined,
         demo_url: demoUrl,
         media_url: mediaUrl,
         media_type: reconstructedFrames
@@ -260,6 +268,9 @@ export async function POST(request: Request) {
           rest_seconds?: number;
           target_weight_or_rpe?: string;
           coach_notes?: string;
+          instructions?: string;
+          primary_muscles?: string[];
+          secondary_muscles?: string[];
           demo_url?: string;
           media_url?: string;
           media_type?: string;
@@ -285,6 +296,50 @@ export async function POST(request: Request) {
     const startDate = asIsoDateOrNull(body.start_date);
     const endDate = asIsoDateOrNull(body.end_date);
     const cleanDesc = body.description?.trim() || null;
+
+    // Validar permisos del Coach: plantillas según plan y relación activa si se asigna a alumno
+    const { data: coachProf } = await adminClient
+      .from("profiles")
+      .select("role, saas_plan_tier")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (coachProf && coachProf.role !== "coach" && coachProf.role !== "admin") {
+      return NextResponse.json(
+        { error: "Solo un Coach puede crear o asignar rutinas." },
+        { status: 403 }
+      );
+    }
+
+    if (isTemplate) {
+      const caps = getPlanCapabilities(coachProf?.saas_plan_tier);
+      if (!caps.canUseReusableTemplates) {
+        return NextResponse.json(
+          {
+            error:
+              "Las plantillas reutilizables de rutinas están disponibles a partir del plan Coach Base.",
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    if (targetStudentId && !isTemplate) {
+      const { data: rel } = await adminClient
+        .from("coach_students")
+        .select("id")
+        .eq("coach_id", user.id)
+        .eq("student_id", targetStudentId)
+        .in("invite_status", ["active", "pending", "pending_signup", "pending_acceptance"])
+        .maybeSingle();
+
+      if (!rel) {
+        return NextResponse.json(
+          { error: "No tienes una relación activa con este alumno." },
+          { status: 403 }
+        );
+      }
+    }
 
     // Si se asigna a un alumno, desactivar rutinas activas previas de este coach para ese alumno
     if (targetStudentId && !isTemplate && isActive) {
@@ -393,40 +448,92 @@ export async function POST(request: Request) {
             rest_seconds: Number(ex.rest_seconds ?? 90) || 90,
             target_weight_or_rpe: ex.target_weight_or_rpe?.trim() || null,
             coach_notes: ex.coach_notes?.trim() || null,
+            instructions: ex.instructions?.trim() || null,
+            primary_muscles: Array.isArray(ex.primary_muscles)
+              ? ex.primary_muscles
+              : [],
+            secondary_muscles: Array.isArray(ex.secondary_muscles)
+              ? ex.secondary_muscles
+              : [],
             demo_url: resolvedDemoUrl,
             media_url: resolvedMediaUrl,
             media_type: sanitizeDbMediaType(ex.media_type),
           };
         });
 
-        const { data: insertedExs, error: exErr } = await adminClient
+        let insertedExs: Record<string, unknown>[] | null = null;
+        const { data: exWithMeta, error: exErr } = await adminClient
           .from("workout_exercises")
           .insert(exPayloads)
           .select("*");
 
         if (exErr) {
-          console.error("[api/workouts POST] exercises insert error:", exErr);
-        } else if (insertedExs) {
-          savedExercises = insertedExs.map((row) => ({
-            id: String(row.id),
-            workout_day_id: String(row.workout_day_id),
-            exercise_library_id: row.exercise_library_id
-              ? String(row.exercise_library_id)
-              : undefined,
-            sort_order: Number(row.sort_order ?? 1),
-            name: String(row.name),
-            muscle_group: String(row.muscle_group),
-            sets: Number(row.sets ?? 3),
-            reps: String(row.reps || "10-12"),
-            rest_seconds: Number(row.rest_seconds ?? 90),
-            target_weight_or_rpe: row.target_weight_or_rpe
-              ? String(row.target_weight_or_rpe)
-              : undefined,
-            coach_notes: row.coach_notes ? String(row.coach_notes) : undefined,
-            demo_url: row.demo_url ? String(row.demo_url) : undefined,
-            media_url: row.media_url ? String(row.media_url) : undefined,
-            media_type: sanitizeDbMediaType(row.media_type),
-          }));
+          // Fallback si las columnas instructions/primary_muscles/secondary_muscles aún no existen en BD
+          const legacyPayloads = exPayloads.map(
+            ({
+              instructions: _i,
+              primary_muscles: _p,
+              secondary_muscles: _s,
+              ...rest
+            }) => rest
+          );
+          const { data: legacyExs, error: legacyErr } = await adminClient
+            .from("workout_exercises")
+            .insert(legacyPayloads)
+            .select("*");
+          if (legacyErr) {
+            console.error("[api/workouts POST] exercises insert error:", legacyErr);
+          } else {
+            insertedExs = (legacyExs || []) as Record<string, unknown>[];
+          }
+        } else {
+          insertedExs = (exWithMeta || []) as Record<string, unknown>[];
+        }
+
+        if (insertedExs) {
+          savedExercises = insertedExs.map((row) => {
+            const mediaUrl = row.media_url ? String(row.media_url) : undefined;
+            const demoUrl = row.demo_url ? String(row.demo_url) : undefined;
+            const reconstructedFrames = reconstructFramesFromMediaUrls(
+              mediaUrl,
+              demoUrl
+            );
+            return {
+              id: String(row.id),
+              workout_day_id: String(row.workout_day_id),
+              exercise_library_id: row.exercise_library_id
+                ? String(row.exercise_library_id)
+                : undefined,
+              sort_order: Number(row.sort_order ?? 1),
+              name: String(row.name),
+              muscle_group: String(row.muscle_group),
+              sets: Number(row.sets ?? 3),
+              reps: String(row.reps || "10-12"),
+              rest_seconds: Number(row.rest_seconds ?? 90),
+              target_weight_or_rpe: row.target_weight_or_rpe
+                ? String(row.target_weight_or_rpe)
+                : undefined,
+              coach_notes: row.coach_notes ? String(row.coach_notes) : undefined,
+              instructions: row.instructions
+                ? String(row.instructions)
+                : undefined,
+              primary_muscles: Array.isArray(row.primary_muscles)
+                ? (row.primary_muscles as string[])
+                : undefined,
+              secondary_muscles: Array.isArray(row.secondary_muscles)
+                ? (row.secondary_muscles as string[])
+                : undefined,
+              demo_url: demoUrl,
+              media_url: mediaUrl,
+              media_type: reconstructedFrames
+                ? "sequence"
+                : sanitizeDbMediaType(
+                    row.media_type ? String(row.media_type) : undefined
+                  ),
+              frames: reconstructedFrames,
+              frame_interval_ms: reconstructedFrames ? 850 : undefined,
+            };
+          });
         }
       }
 

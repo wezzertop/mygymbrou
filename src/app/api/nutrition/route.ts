@@ -4,6 +4,7 @@ import {
   createServerSupabaseClient,
 } from "@/lib/supabase/server";
 import type { MealItem, NutritionPlan } from "@/types/database";
+import { getPlanCapabilities } from "@/lib/saas-plans";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -156,6 +157,57 @@ export async function POST(request: Request) {
     const targetStudentId = asUuidOrNull(body.student_id);
     const isTemplate = Boolean(body.is_template) || !targetStudentId;
     const isActive = body.is_active !== false;
+
+    // Validar rol, tope de plantillas por plan SaaS y relación Coach-Alumno
+    const { data: coachProf } = await adminClient
+      .from("profiles")
+      .select("role, saas_plan_tier")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (coachProf && coachProf.role !== "coach" && coachProf.role !== "admin") {
+      return NextResponse.json(
+        { error: "Solo un Coach puede crear o asignar planes nutricionales." },
+        { status: 403 }
+      );
+    }
+
+    if (isTemplate) {
+      const caps = getPlanCapabilities(coachProf?.saas_plan_tier);
+      if (caps.maxDietTemplates !== null) {
+        const { count: tplCount } = await adminClient
+          .from("nutrition_plans")
+          .select("id", { count: "exact", head: true })
+          .eq("coach_id", user.id)
+          .eq("is_template", true);
+
+        if ((tplCount ?? 0) >= caps.maxDietTemplates) {
+          return NextResponse.json(
+            {
+              error: `Alcanzaste el límite de ${caps.maxDietTemplates} plantillas de dieta de tu plan actual. Mejora tu plan para crear más.`,
+            },
+            { status: 403 }
+          );
+        }
+      }
+    }
+
+    if (targetStudentId && !isTemplate) {
+      const { data: rel } = await adminClient
+        .from("coach_students")
+        .select("id")
+        .eq("coach_id", user.id)
+        .eq("student_id", targetStudentId)
+        .in("invite_status", ["active", "pending", "pending_signup", "pending_acceptance"])
+        .maybeSingle();
+
+      if (!rel) {
+        return NextResponse.json(
+          { error: "No tienes una relación activa con este alumno." },
+          { status: 403 }
+        );
+      }
+    }
 
     if (targetStudentId && !isTemplate && isActive) {
       await adminClient

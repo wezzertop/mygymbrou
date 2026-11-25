@@ -37,12 +37,22 @@ function CoachAgendaContent() {
   const [studentId, setStudentId] = useState(
     preselectedStudent || activeStudents[0]?.student_id || ""
   );
+
+  React.useEffect(() => {
+    if (!studentId && activeStudents[0]?.student_id) {
+      setStudentId(activeStudents[0].student_id);
+    }
+  }, [activeStudents, studentId]);
+
   const [title, setTitle] = useState("Toma de Medidas Mensuales");
   const [dateTime, setDateTime] = useState(() => {
     const next = new Date();
     next.setDate(next.getDate() + 2);
     next.setHours(17, 0, 0, 0);
-    return next.toISOString().slice(0, 16);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${next.getFullYear()}-${pad(next.getMonth() + 1)}-${pad(
+      next.getDate()
+    )}T${pad(next.getHours())}:${pad(next.getMinutes())}`;
   });
   const [location, setLocation] = useState(
     `${coachProfile.brand_name || "Estudio"} — Consultorio`

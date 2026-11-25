@@ -1,12 +1,42 @@
 import { NextResponse } from "next/server";
-import { createAdminSupabaseClient } from "@/lib/supabase/server";
+import {
+  createAdminSupabaseClient,
+  createServerSupabaseClient,
+} from "@/lib/supabase/server";
 import { DEFAULT_PROMO_CODES } from "@/lib/referrals";
+
+async function assertAdminSession(
+  adminClient: NonNullable<ReturnType<typeof createAdminSupabaseClient>>
+): Promise<NextResponse | null> {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "No autenticado." }, { status: 401 });
+  }
+  const { data: prof } = await adminClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (prof?.role !== "admin") {
+    return NextResponse.json(
+      { error: "Acceso restringido a administradores." },
+      { status: 403 }
+    );
+  }
+  return null;
+}
 
 export async function GET() {
   const adminClient = createAdminSupabaseClient();
   if (!adminClient) {
     return NextResponse.json({ codes: DEFAULT_PROMO_CODES, mode: "demo" });
   }
+
+  const denied = await assertAdminSession(adminClient);
+  if (denied) return denied;
 
   try {
     const { data, error } = await adminClient
@@ -75,6 +105,9 @@ export async function POST(request: Request) {
       });
     }
 
+    const denied = await assertAdminSession(adminClient);
+    if (denied) return denied;
+
     const { data, error } = await adminClient
       .from("promo_codes")
       .insert({
@@ -116,6 +149,9 @@ export async function PATCH(request: Request) {
     if (!adminClient) {
       return NextResponse.json({ updated: true, mode: "demo" });
     }
+
+    const denied = await assertAdminSession(adminClient);
+    if (denied) return denied;
 
     const { data, error } = await adminClient
       .from("promo_codes")

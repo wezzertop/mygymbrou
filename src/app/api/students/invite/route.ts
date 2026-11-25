@@ -140,26 +140,19 @@ export async function POST(request: Request) {
       });
     }
 
-    // Determinar coachId autenticado (priorizar sesión real sobre body)
-    let resolvedCoachId = body.coachId || "";
-    try {
-      const serverClient = await createServerSupabaseClient();
-      const {
-        data: { user },
-      } = await serverClient.auth.getUser();
-      if (user?.id) {
-        resolvedCoachId = user.id;
-      }
-    } catch {
-      // Fallback al coachId del body si no hay cookies de sesión
-    }
+    // Determinar coachId autenticado estrictamente desde la sesión del servidor
+    const serverClient = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await serverClient.auth.getUser();
 
-    if (!resolvedCoachId) {
+    if (!user?.id) {
       return NextResponse.json(
-        { error: "No se pudo identificar al Coach autenticado." },
+        { error: "Debes iniciar sesión como Coach para invitar alumnos." },
         { status: 401 }
       );
     }
+    const resolvedCoachId = user.id;
 
     // 1. Validar cupo del plan SaaS del Coach (Free 5, Base 15, Pro 50, Studio 150)
     const [{ data: coachProfile }, { count: rosterCount }, { data: existingRelation }] =
@@ -461,6 +454,9 @@ export async function POST(request: Request) {
         existingUserId
       );
 
+      // Enviar también notificación in-app para cuando complete su activación e inicie sesión
+      await sendInAppInviteNotification(existingUserId, relationId);
+
       return NextResponse.json({
         mode: "supabase",
         sent: true,
@@ -471,7 +467,7 @@ export async function POST(request: Request) {
         inviteToken,
         activationLink,
         message:
-          "Invitación lista. Comparte el enlace de activación para que el alumno cree su contraseña y entre directo a su cuenta.",
+          "Invitación lista. Se registró la notificación interna y puedes compartir el enlace de activación para que el alumno defina su contraseña.",
       });
     }
 

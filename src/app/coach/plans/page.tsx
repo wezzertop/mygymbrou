@@ -65,7 +65,11 @@ function CoachPlansContent() {
   const [tab, setTab] = useState<"subscriptions" | "diets" | "saas">(initialTab);
   const currentSaasPlan = getSaasPlanById(coachProfile.saas_plan_tier);
   const occupiedSlots = students.filter(
-    (s) => s.invite_status === "active" || s.invite_status === "pending"
+    (s) =>
+      s.invite_status === "active" ||
+      s.invite_status === "pending" ||
+      s.invite_status === "pending_acceptance" ||
+      s.invite_status === "pending_signup"
   ).length;
   const quota = canInviteMoreStudents(
     occupiedSlots,
@@ -644,7 +648,18 @@ function CoachPlansContent() {
               </div>
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  try {
+                    await fetch("/api/stripe/change-plan", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        action: "cancel_scheduled_downgrade",
+                      }),
+                    });
+                  } catch {
+                    // Fallback local
+                  }
                   updateCoachProfile({ scheduled_downgrade_plan_tier: null });
                   notify("Cambio programado cancelado. Mantienes tu plan actual.");
                 }}

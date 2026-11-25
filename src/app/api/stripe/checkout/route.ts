@@ -8,7 +8,7 @@ import {
   getStripeClient,
   getStripePriceIdForTier,
 } from "@/lib/stripe";
-import { SaasPlanTier } from "@/lib/saas-plans";
+import { getSaasPlanById, SaasPlanTier } from "@/lib/saas-plans";
 
 export async function POST(request: Request) {
   try {
@@ -42,14 +42,15 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const coachId = user?.id || (body.coach_id as string | undefined) || "";
-    const coachEmail = (
-      user?.email ||
-      (body.coach_email as string | undefined) ||
-      ""
-    )
-      .trim()
-      .toLowerCase();
+    if (adminClient && !user?.id) {
+      return NextResponse.json(
+        { error: "Inicia sesión con tu cuenta de Coach para continuar al pago." },
+        { status: 401 }
+      );
+    }
+
+    const coachId = user?.id || "";
+    const coachEmail = (user?.email || "").trim().toLowerCase();
     const coachName = (
       (body.coach_name as string | undefined) ||
       (user?.user_metadata?.full_name as string | undefined) ||
@@ -106,10 +107,16 @@ export async function POST(request: Request) {
 
       if (redemption) {
         referralCodeId = redemption.id;
+        const planConfig = getSaasPlanById(targetPlan);
+        const maxFixedOffMxn = Math.max(0, planConfig.priceMxn - 10);
+        const safeFixedOffMxn = Math.min(
+          maxFixedOffMxn,
+          Math.max(10, Number(redemption.discount_value || 0))
+        );
         const coupon = await stripe.coupons.create(
           redemption.discount_type === "fixed_mxn"
             ? {
-                amount_off: Math.round(Number(redemption.discount_value) * 100),
+                amount_off: Math.round(safeFixedOffMxn * 100),
                 currency: "mxn",
                 duration: "once",
                 name: `Descuento 1er mes (${redemption.code})`,

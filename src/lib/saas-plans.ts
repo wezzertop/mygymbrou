@@ -216,18 +216,33 @@ export function getPlanCapabilities(
       hasAds: false,
     };
   }
-  // Estudio / Gym: hasta 150 alumnos, 5 coaches base, plantillas y evaluaciones ilimitadas
+  if (normalized === "studio") {
+    // Estudio / Gym: hasta 150 alumnos, 5 coaches base, plantillas y evaluaciones ilimitadas
+    return {
+      canUseReusableTemplates: true,
+      canScheduleUnlimitedAppointments: true,
+      canUseVisualComparisons: true,
+      hasPrioritySupport: true,
+      maxCoaches: 5,
+      maxActiveAppointments: null,
+      maxSubscriptionPackages: null,
+      maxDietTemplates: null,
+      maxAssessmentsPerStudentPerMonth: null,
+      hasAds: false,
+    };
+  }
+  // Fallback seguro: cualquier tier desconocido recibe límites Free
   return {
-    canUseReusableTemplates: true,
-    canScheduleUnlimitedAppointments: true,
-    canUseVisualComparisons: true,
-    hasPrioritySupport: true,
-    maxCoaches: 5,
-    maxActiveAppointments: null,
-    maxSubscriptionPackages: null,
-    maxDietTemplates: null,
-    maxAssessmentsPerStudentPerMonth: null,
-    hasAds: false,
+    canUseReusableTemplates: false,
+    canScheduleUnlimitedAppointments: false,
+    canUseVisualComparisons: false,
+    hasPrioritySupport: false,
+    maxCoaches: 1,
+    maxActiveAppointments: 2,
+    maxSubscriptionPackages: 1,
+    maxDietTemplates: 2,
+    maxAssessmentsPerStudentPerMonth: 1,
+    hasAds: true,
   };
 }
 

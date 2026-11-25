@@ -58,6 +58,33 @@ function RegisterCoachContent() {
   const [codeError, setCodeError] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
+  // Auto-validar código si llegó desde un enlace de referido (?ref=CODE o ?code=CODE)
+  React.useEffect(() => {
+    const initialRef = (
+      searchParams.get("ref") ||
+      searchParams.get("code") ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+    if (!initialRef) return;
+    fetch(`/api/referrals?code=${encodeURIComponent(initialRef)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.valid) {
+          setValidatedCode({
+            code: data.code,
+            codeKind: data.codeKind,
+            sponsorCoachId: data.sponsorCoachId,
+            discountType: data.discountType,
+            discountValue: data.discountValue,
+            description: data.description,
+          });
+        }
+      })
+      .catch(() => {});
+  }, [searchParams]);
+
   const handleValidateCode = async () => {
     const clean = promoCodeInput.trim().toUpperCase();
     if (!clean) {
@@ -171,7 +198,7 @@ function RegisterCoachContent() {
       }
 
       if (validatedCode) {
-        fetch("/api/referrals", {
+        await fetch("/api/referrals", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

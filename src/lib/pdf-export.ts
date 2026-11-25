@@ -58,8 +58,17 @@ function fmtNum(val?: number, suffix = ""): string {
   return `${val}${suffix}`;
 }
 
-function fmtDelta(current?: number, initial?: number, unit = ""): string {
-  if (current === undefined || initial === undefined) return "";
+function fmtDelta(current?: number | null, initial?: number | null, unit = ""): string {
+  if (
+    current === undefined ||
+    current === null ||
+    initial === undefined ||
+    initial === null ||
+    Number.isNaN(current) ||
+    Number.isNaN(initial)
+  ) {
+    return "";
+  }
   const diff = Number((current - initial).toFixed(1));
   if (diff === 0) return "Sin cambio";
   return `${diff > 0 ? "+" : ""}${diff}${unit}`;
@@ -81,22 +90,26 @@ function renderWorkoutHtml(workout?: WorkoutPlan): string {
         .filter(Boolean)
         .join(", ");
 
-      const rows = day.exercises
-        .map(
-          (ex, idx) => `
+      const rows =
+        day.exercises.length > 0
+          ? day.exercises
+              .map(
+                (ex, idx) => `
           <tr>
             <td class="num">${idx + 1}</td>
             <td>
               <strong>${esc(ex.name)}</strong>
-              ${ex.coach_notes ? `<div class="note">${esc(ex.coach_notes)}</div>` : ""}
+              ${ex.coach_notes ? `<div class="note">Nota coach: ${esc(ex.coach_notes)}</div>` : ""}
+              ${ex.instructions ? `<div class="note">${esc(ex.instructions)}</div>` : ""}
             </td>
             <td><span class="tag">${esc(ex.muscle_group)}</span></td>
             <td class="mono">${esc(ex.sets)} × ${esc(ex.reps)}</td>
             <td class="mono">${esc(ex.rest_seconds)}s</td>
             <td>${esc(ex.target_weight_or_rpe || "—")}</td>
           </tr>`
-        )
-        .join("");
+              )
+              .join("")
+          : `<tr><td colspan="6" class="empty">Sin ejercicios registrados para este día.</td></tr>`;
 
       return `
         <div class="subcard">
@@ -267,9 +280,9 @@ function renderDietHtml(
           ${m.exchange_options ? `<div class="note">Equivalencias: ${esc(m.exchange_options)}</div>` : ""}
         </td>
         <td class="mono" style="white-space:nowrap">
-          ${m.calories ? `${m.calories} kcal` : "—"}
+          ${m.calories !== undefined && m.calories !== null ? `${m.calories} kcal` : "—"}
           ${
-            m.protein_g !== undefined
+            m.protein_g !== undefined && m.protein_g !== null
               ? `<div class="note">P:${m.protein_g}g · C:${m.carbs_g ?? 0}g · G:${m.fats_g ?? 0}g</div>`
               : ""
           }
@@ -382,7 +395,11 @@ function renderProgressHtml(assessments: BodyAssessment[]): string {
     { label: "Muslo Izq.", init: initial.thigh_left_cm, curr: latest.thigh_left_cm },
     { label: "Muslo Der.", init: initial.thigh_right_cm, curr: latest.thigh_right_cm },
     { label: "Pantorrilla", init: initial.calf_cm, curr: latest.calf_cm },
-  ].filter((p) => p.init !== undefined || p.curr !== undefined);
+  ].filter(
+    (p) =>
+      (p.init !== undefined && p.init !== null) ||
+      (p.curr !== undefined && p.curr !== null)
+  );
 
   const perimeterCompareHtml =
     perimeters.length > 0
@@ -794,16 +811,36 @@ export function exportStudentPdf(payload: StudentPdfPayload): void {
     </footer>
   </div>
   <script>
-    window.addEventListener('load', function() {
-      setTimeout(function() { window.print(); }, 250);
-    });
+    (function() {
+      function triggerPrint() {
+        var imgs = Array.prototype.slice.call(document.images || []);
+        var pending = imgs.filter(function(img) { return !img.complete; });
+        if (pending.length === 0) {
+          setTimeout(function() { window.print(); }, 250);
+          return;
+        }
+        var done = false;
+        function finish() {
+          if (done) return;
+          done = true;
+          setTimeout(function() { window.print(); }, 200);
+        }
+        var left = pending.length;
+        pending.forEach(function(img) {
+          img.addEventListener('load', function() { if (--left <= 0) finish(); });
+          img.addEventListener('error', function() { if (--left <= 0) finish(); });
+        });
+        setTimeout(finish, 2500);
+      }
+      window.addEventListener('load', triggerPrint);
+    })();
   </script>
 </body>
 </html>`;
 
   const win = window.open("", "_blank", "width=920,height=780");
   if (!win) {
-    // Fallback con iframe oculto si el navegador bloqueó popups
+    // Fallback con iframe oculto si el navegador bloqueó popups (el script interno dispara print())
     const iframe = document.createElement("iframe");
     iframe.style.position = "fixed";
     iframe.style.right = "0";
@@ -818,10 +855,8 @@ export function exportStudentPdf(payload: StudentPdfPayload): void {
       doc.write(html);
       doc.close();
       setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-        setTimeout(() => document.body.removeChild(iframe), 1500);
-      }, 300);
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+      }, 60000);
     }
     return;
   }
@@ -844,11 +879,12 @@ export function buildFriendlyShareSummary(payload: StudentPdfPayload): string {
   if (latest) {
     lines.push(
       `📊 Progreso (${latest.assessment_date}): Peso ${latest.weight_kg} kg${
-        latest.body_fat_percentage !== undefined
+        latest.body_fat_percentage !== undefined &&
+        latest.body_fat_percentage !== null
           ? ` · Grasa ${latest.body_fat_percentage}%`
           : ""
       }${
-        latest.muscle_mass_kg !== undefined
+        latest.muscle_mass_kg !== undefined && latest.muscle_mass_kg !== null
           ? ` · Músculo ${latest.muscle_mass_kg} kg`
           : ""
       }`

@@ -341,14 +341,13 @@ export async function POST(request: Request) {
           (sum, d) => sum + (d.amount || 0),
           0
         );
-        await finalizeAppliedRewardAndQueueNext({
-          coachId: coach.id,
-          invoiceId: invoice.id,
-          discountAmountMxn:
-            totalDiscountCents > 0
-              ? Number((totalDiscountCents / 100).toFixed(2))
-              : undefined,
-        });
+        if (totalDiscountCents > 0) {
+          await finalizeAppliedRewardAndQueueNext({
+            coachId: coach.id,
+            invoiceId: invoice.id,
+            discountAmountMxn: Number((totalDiscountCents / 100).toFixed(2)),
+          });
+        }
         break;
       }
 
@@ -425,6 +424,8 @@ export async function POST(request: Request) {
         }
         if (sub.cancel_at_period_end) {
           updatePayload.scheduled_downgrade_plan_tier = "free";
+        } else if (!sub.metadata?.scheduled_downgrade_plan) {
+          updatePayload.scheduled_downgrade_plan_tier = null;
         }
 
         await admin

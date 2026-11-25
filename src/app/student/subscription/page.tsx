@@ -64,10 +64,17 @@ export default function StudentSubscriptionPage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [selectedUpgrade]);
 
-  const relation = students.find((s) => s.student_id === studentProfile.id);
-  const currentPlan = subscriptionPlans.find(
-    (p) => p.id === relation?.plan_id
-  );
+  const relation =
+    students.find(
+      (s) =>
+        s.student_id === studentProfile.id &&
+        s.invite_status === "active" &&
+        (!coachProfile.id || s.coach_id === coachProfile.id)
+    ) || students.find((s) => s.student_id === studentProfile.id);
+  const coachPlans = coachProfile.id
+    ? subscriptionPlans.filter((p) => p.coach_id === coachProfile.id)
+    : subscriptionPlans;
+  const currentPlan = coachPlans.find((p) => p.id === relation?.plan_id);
   const expiresAt = relation?.expires_at || relation?.next_billing_date;
   const daysLeft = getDaysRemaining(expiresAt);
 
@@ -112,7 +119,7 @@ export default function StudentSubscriptionPage() {
             <div>
               <p className="text-xs text-zinc-400">Plan Activo Actual</p>
               <h2 className="text-xl font-black text-white">
-                {relation?.subscription_plan_name || "Plan Oro"}
+                {relation?.subscription_plan_name || "Sin plan asignado"}
               </h2>
               <p className="text-xs font-medium text-emerald-400">
                 {coachProfile.brand_name}
@@ -170,7 +177,7 @@ export default function StudentSubscriptionPage() {
               Inversión
             </p>
             <p className="mt-0.5 text-2xl font-black text-emerald-400">
-              ${(relation?.subscription_price || 1250).toLocaleString("es-MX")}
+              ${(relation?.subscription_price ?? 0).toLocaleString("es-MX")}
             </p>
           </div>
           <div>
@@ -179,7 +186,7 @@ export default function StudentSubscriptionPage() {
             </p>
             <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-white">
               <Calendar className="h-4 w-4 text-emerald-400" />
-              {expiresAt || "2026-12-05"}
+              {expiresAt || "Por definir"}
             </p>
           </div>
           <div className="flex items-center sm:justify-end">
@@ -284,7 +291,7 @@ Planes Disponibles de {coachProfile.full_name}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {subscriptionPlans.map((plan) => {
+          {coachPlans.map((plan) => {
             const isCurrent = plan.id === relation?.plan_id;
             return (
               <div

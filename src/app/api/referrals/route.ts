@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     }
 
     try {
-      const [codeRes, queueRes, redRes] = await Promise.all([
+      const [codeRes, queueRes, redRes, coachProfRes] = await Promise.all([
         adminClient
           .from("referral_codes")
           .select("*")
@@ -42,14 +42,44 @@ export async function GET(request: Request) {
           .from("referral_redemptions")
           .select("id")
           .eq("sponsor_coach_id", coachIdParam),
+        adminClient
+          .from("profiles")
+          .select("full_name")
+          .eq("id", coachIdParam)
+          .maybeSingle(),
       ]);
 
+      let resolvedCode = codeRes.data?.code as string | undefined;
+      let resolvedCap =
+        codeRes.data?.max_rewards_cap || REFERRAL_RULES.defaultRewardCap;
+
+      // Auto-provisionar fila en public.referral_codes si el coach aún no la tiene en BD
+      if (!resolvedCode && coachProfRes.data) {
+        const generated = generateCoachReferralCode(
+          coachProfRes.data.full_name || "COACH",
+          coachIdParam
+        );
+        const { data: insertedCode } = await adminClient
+          .from("referral_codes")
+          .upsert(
+            {
+              coach_id: coachIdParam,
+              code: generated,
+              is_active: true,
+              max_rewards_cap: REFERRAL_RULES.defaultRewardCap,
+            },
+            { onConflict: "coach_id" }
+          )
+          .select("code, max_rewards_cap")
+          .maybeSingle();
+        resolvedCode = insertedCode?.code || generated;
+        resolvedCap =
+          insertedCode?.max_rewards_cap || REFERRAL_RULES.defaultRewardCap;
+      }
+
       return NextResponse.json({
-        code:
-          codeRes.data?.code ||
-          generateCoachReferralCode("COACH", coachIdParam),
-        maxRewardsCap:
-          codeRes.data?.max_rewards_cap || REFERRAL_RULES.defaultRewardCap,
+        code: resolvedCode || generateCoachReferralCode("COACH", coachIdParam),
+        maxRewardsCap: resolvedCap,
         queue: queueRes.data || [],
         redemptionsCount: (redRes.data || []).length,
         mode: "live",
@@ -208,10 +238,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const code = String(body.code || "").trim().toUpperCase();
     const invitedEmail = String(body.invited_email || "").trim().toLowerCase();
-    const codeKind = body.code_kind === "promo" ? "promo" : "referral";
-    const discountType = body.discount_type === "fixed_mxn" ? "fixed_mxn" : "percent";
-    const discountValue = Number(body.discount_value || 25);
-    const sponsorCoachId = body.sponsor_coach_id || null;
 
     if (!code || !invitedEmail) {
       return NextResponse.json(
@@ -225,18 +251,99 @@ export async function POST(request: Request) {
       return NextResponse.json({ recorded: true, mode: "demo" });
     }
 
-    await adminClient
+    // Re-validar estrictamente en servidor contra promo_codes o referral_codes (nunca confiar en discount_value del cliente)
+    let resolvedKind: "promo" | "referral" | null = null;
+    let resolvedDiscountType: "percent" | "fixed_mxn" = "percent";
+    let resolvedDiscountValue = REFERRAL_RULES.inviteeDefaultDiscountPercent;
+    let resolvedSponsorCoachId: string | null = null;
+    let promoIdToIncrement: string | null = null;
+    let currentPromoUses = 0;
+
+    const { data: promo } = await adminClient
+      .from("promo_codes")
+      .select("*")
+      .eq("code", code)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (promo) {
+      const expired =
+        promo.expires_at && new Date(promo.expires_at).getTime() < Date.now();
+      const maxed =
+        promo.max_uses !== null &&
+        promo.max_uses !== undefined &&
+        Number(promo.used_count || 0) >= Number(promo.max_uses);
+      if (expired || maxed) {
+        return NextResponse.json(
+          { error: "El código promocional expiró o alcanzó su límite de usos." },
+          { status: 400 }
+        );
+      }
+      resolvedKind = "promo";
+      resolvedDiscountType =
+        promo.discount_type === "fixed_mxn" ? "fixed_mxn" : "percent";
+      resolvedDiscountValue = Number(promo.discount_value || 25);
+      promoIdToIncrement = promo.id;
+      currentPromoUses = Number(promo.used_count || 0);
+    } else {
+      const { data: refRow } = await adminClient
+        .from("referral_codes")
+        .select("*")
+        .eq("code", code)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (refRow) {
+        resolvedKind = "referral";
+        resolvedDiscountType = "percent";
+        resolvedDiscountValue = REFERRAL_RULES.inviteeDefaultDiscountPercent;
+        resolvedSponsorCoachId = refRow.coach_id || null;
+      }
+    }
+
+    if (!resolvedKind) {
+      return NextResponse.json(
+        { error: "Código no válido o inactivo." },
+        { status: 400 }
+      );
+    }
+
+    // Evitar doble redención del mismo correo
+    const { data: existingRedemption } = await adminClient
+      .from("referral_redemptions")
+      .select("id")
+      .eq("invited_coach_email", invitedEmail)
+      .maybeSingle();
+
+    if (existingRedemption) {
+      return NextResponse.json({ recorded: true, duplicate: true });
+    }
+
+    const { error: insertErr } = await adminClient
       .from("referral_redemptions")
       .insert({
         code,
-        code_kind: codeKind,
-        sponsor_coach_id: sponsorCoachId,
+        code_kind: resolvedKind,
+        sponsor_coach_id: resolvedSponsorCoachId,
         invited_coach_email: invitedEmail,
-        discount_type: discountType,
-        discount_value: discountValue,
+        discount_type: resolvedDiscountType,
+        discount_value: resolvedDiscountValue,
         first_month_applied: false,
-      })
-      .then(() => {});
+      });
+
+    if (insertErr) {
+      return NextResponse.json(
+        { error: insertErr.message },
+        { status: 400 }
+      );
+    }
+
+    if (promoIdToIncrement) {
+      await adminClient
+        .from("promo_codes")
+        .update({ used_count: currentPromoUses + 1 })
+        .eq("id", promoIdToIncrement);
+    }
 
     return NextResponse.json({ recorded: true });
   } catch {

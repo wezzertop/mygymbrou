@@ -517,10 +517,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       is_verified_identity: Boolean(profileRes.data?.is_verified_identity),
       verification_status: profileRes.data?.verification_status || "unverified",
       verified_at: profileRes.data?.verified_at || undefined,
+      verification_deadline_at:
+        profileRes.data?.verification_deadline_at || undefined,
       identity_document_url: profileRes.data?.identity_document_url || undefined,
       identity_document_name: profileRes.data?.identity_document_name || undefined,
       identity_document_type: profileRes.data?.identity_document_type || undefined,
+      identity_back_url: profileRes.data?.identity_back_url || undefined,
+      face_verification_url: profileRes.data?.face_verification_url || undefined,
+      face_verification_name: profileRes.data?.face_verification_name || undefined,
+      liveness_left_url: profileRes.data?.liveness_left_url || undefined,
+      liveness_right_url: profileRes.data?.liveness_right_url || undefined,
+      verification_confidence_score:
+        profileRes.data?.verification_confidence_score ?? undefined,
+      verification_checks: profileRes.data?.verification_checks || undefined,
       verification_notes: profileRes.data?.verification_notes || undefined,
+      saas_subscription_status:
+        profileRes.data?.saas_subscription_status || undefined,
+      saas_period_start: profileRes.data?.saas_period_start || undefined,
+      saas_period_end: profileRes.data?.saas_period_end || undefined,
+      scheduled_downgrade_plan_tier:
+        profileRes.data?.scheduled_downgrade_plan_tier ?? null,
+      stripe_customer_id: profileRes.data?.stripe_customer_id || undefined,
+      stripe_subscription_id:
+        profileRes.data?.stripe_subscription_id || undefined,
       has_completed_onboarding: Boolean(
         profileRes.data?.onboarding_completed ||
           profileRes.data?.has_completed_onboarding
@@ -550,11 +569,34 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       created_at: profileRes.data?.created_at || new Date().toISOString(),
     };
 
+    // Si es coach, enriquecer alumnos con datos públicos/verificación de profiles
+    const studentProfileIds =
+      userRole === "coach"
+        ? (studentsRes.data || [])
+            .map((r) => r.student_id as string | null)
+            .filter((id): id is string => Boolean(id))
+        : [];
+    const studentProfilesMap = new Map<string, Record<string, unknown>>();
+    if (studentProfileIds.length > 0) {
+      const { data: stProfRows } = await supabase
+        .from("profiles")
+        .select(
+          "id, avatar_url, gender, fitness_goal, is_verified_identity, verification_status, verified_at, identity_document_url, verification_notes"
+        )
+        .in("id", studentProfileIds);
+      for (const row of stProfRows || []) {
+        studentProfilesMap.set(String(row.id), row as Record<string, unknown>);
+      }
+    }
+
     const studentsList: CoachStudentRelation[] = (studentsRes.data || []).map(
       (row) => {
         const goalsArr = Array.isArray(row.initial_goals)
           ? (row.initial_goals as string[])
           : [];
+        const prof = row.student_id
+          ? studentProfilesMap.get(String(row.student_id))
+          : undefined;
         return {
           id: row.id,
           coach_id: row.coach_id,
@@ -564,6 +606,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           invited_email: row.invited_email,
           invited_phone: row.invited_phone || undefined,
           phone: row.invited_phone || undefined,
+          avatar_url: (prof?.avatar_url as string) || undefined,
+          gender: (prof?.gender as Profile["gender"]) || undefined,
+          is_verified_identity: Boolean(prof?.is_verified_identity),
+          verification_status:
+            (prof?.verification_status as Profile["verification_status"]) ||
+            undefined,
+          verified_at: (prof?.verified_at as string) || undefined,
+          identity_document_url:
+            (prof?.identity_document_url as string) || undefined,
+          verification_notes: (prof?.verification_notes as string) || undefined,
           invite_token: row.invite_token || "",
           invite_status:
             row.invite_status === "inactive" ||
@@ -573,7 +625,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               : row.invite_status,
           initial_goals: goalsArr,
           fitness_goal:
-            goalsArr.length > 0 ? goalsArr.join(" · ") : undefined,
+            goalsArr.length > 0
+              ? goalsArr.join(" · ")
+              : (prof?.fitness_goal as string) || undefined,
           ended_at: row.ended_at || null,
           end_reason: row.end_reason || null,
           subscription_status: row.subscription_status,
@@ -625,8 +679,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       active_students_count: 0,
     }));
 
-    const linkedCoachId =
-      userRole === "student" ? studentsList[0]?.coach_id : undefined;
+    const activeStudentRel =
+      userRole === "student"
+        ? studentsList.find((s) => s.invite_status === "active") ||
+          studentsList[0]
+        : undefined;
+    const linkedCoachId = activeStudentRel?.coach_id;
     let resolvedCoachProfile: Profile = emptyRealState.coachProfile;
     if (userRole === "coach") {
       resolvedCoachProfile = builtProfile;
@@ -699,7 +757,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         coachInquiries: (inquiriesRes.data || []) as CoachInquiry[],
         students: studentsList,
         studentRecords: recordsList,
-        subscriptionPlans: allPlans,
+        subscriptionPlans:
+          userRole === "coach"
+            ? allPlans.filter((p) => p.coach_id === user.id)
+            : linkedCoachId
+            ? allPlans.filter((p) => p.coach_id === linkedCoachId)
+            : [],
         studentGoals: (goalsRes.data || []) as StudentGoal[],
         assessments: (assessmentsRes.data || []) as BodyAssessment[],
         workouts: enrichedWorkouts,
@@ -710,7 +773,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           id: l.id,
           student_id: l.student_id,
           workout_day_id: l.workout_day_id,
-          workout_day_title: "Sesión completada",
+          workout_day_title: l.notes || "Sesión completada",
           completed_date: l.completed_date,
           status: l.status || "completed",
           exercises_completed: l.completed_sets || 1,
@@ -990,6 +1053,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (!isDemoMode && coachId && targetRel) {
+      const existingRec = state.studentRecords.find(
+        (r) => r.coach_student_id === coachStudentId
+      );
+      const merged = { ...existingRec, ...patch };
       const supabase = createClient();
       supabase
         .from("coach_student_records")
@@ -999,25 +1066,42 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             coach_id: coachId,
             student_id: targetRel.student_id,
             invited_email: targetRel.invited_email,
-            phone: patch.phone ?? targetRel.phone ?? null,
-            goals: patch.goals ?? targetRel.initial_goals ?? [],
-            has_injuries: Boolean(patch.has_injuries),
-            injuries_detail: patch.injuries_detail ?? null,
-            has_chronic_conditions: Boolean(patch.has_chronic_conditions),
-            chronic_conditions_detail: patch.chronic_conditions_detail ?? null,
-            takes_medications: Boolean(patch.takes_medications),
-            medications_detail: patch.medications_detail ?? null,
-            allergies: patch.allergies ?? null,
-            current_supplements: patch.current_supplements ?? null,
-            gym_experience: patch.gym_experience ?? null,
-            available_days_per_week: patch.available_days_per_week ?? null,
-            session_duration_hours: patch.session_duration_hours ?? null,
-            initial_coach_notes: patch.initial_coach_notes ?? null,
+            phone: merged.phone ?? targetRel.phone ?? null,
+            goals: merged.goals ?? targetRel.initial_goals ?? [],
+            has_injuries: Boolean(merged.has_injuries),
+            injuries_detail: merged.injuries_detail ?? null,
+            has_chronic_conditions: Boolean(merged.has_chronic_conditions),
+            chronic_conditions_detail: merged.chronic_conditions_detail ?? null,
+            takes_medications: Boolean(merged.takes_medications),
+            medications_detail: merged.medications_detail ?? null,
+            allergies: merged.allergies ?? null,
+            current_supplements: merged.current_supplements ?? null,
+            gym_experience: merged.gym_experience ?? null,
+            available_days_per_week: merged.available_days_per_week ?? null,
+            session_duration_hours: merged.session_duration_hours ?? null,
+            initial_coach_notes: merged.initial_coach_notes ?? null,
             updated_at: nowIso,
           },
           { onConflict: "coach_student_id" }
         )
-        .then(() => {});
+        .then(({ error }) => {
+          if (error) console.error("[updateStudentRecord] error:", error.message);
+        });
+
+      // Sincronizar también objetivos y teléfono a coach_students para mantener coherencia tras recarga
+      const csPatch: Record<string, unknown> = { updated_at: nowIso };
+      if (patch.goals !== undefined) csPatch.initial_goals = patch.goals;
+      if (patch.phone !== undefined) csPatch.invited_phone = patch.phone || null;
+      if (Object.keys(csPatch).length > 1) {
+        supabase
+          .from("coach_students")
+          .update(csPatch)
+          .eq("id", coachStudentId)
+          .then(({ error }) => {
+            if (error)
+              console.error("[updateStudentRecord->coach_students] error:", error.message);
+          });
+      }
     }
   };
 
@@ -1172,8 +1256,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           subscription_started_at: updates.subscription_started_at,
           expires_at: updates.expires_at || updates.next_billing_date,
           next_billing_date: updates.next_billing_date,
+          updated_at: new Date().toISOString(),
         })
-        .eq("id", relationId);
+        .eq("id", relationId)
+        .then(({ error }) => {
+          if (error)
+            console.error("[updateStudentSubscription] error:", error.message);
+        });
     }
 
     if (targetStudentId) {
@@ -1348,9 +1437,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     studentId: string,
     targetPlan: CoachSubscriptionPlan
   ) => {
+    const targetCoachId = targetPlan.coach_id || state.coachProfile.id;
+    const studentName = state.studentProfile.full_name || "Un alumno";
+    if (targetCoachId) {
+      pushNotification({
+        user_id: targetCoachId,
+        title: `Solicitud de cambio a ${targetPlan.name}`,
+        message: `${studentName} solicitó actualizar su paquete a ${targetPlan.name} ($${targetPlan.price} / ${targetPlan.duration_days} días).`,
+        type: "subscription",
+      });
+    }
     pushNotification({
       user_id: studentId,
-      title: `Solicitud de cambio a ${targetPlan.name}`,
+      title: `Solicitud enviada: ${targetPlan.name}`,
       message: `Enviamos tu solicitud a tu Coach para actualizar a ${targetPlan.name} ($${targetPlan.price} / ${targetPlan.duration_days} días).`,
       type: "subscription",
     });
@@ -1422,7 +1521,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     assessment,
     notifyStudent = true
   ) => {
-    const coachId = authUserId || assessment.coach_id;
+    // Si el alumno registra su propio avance, conservar el coach_id del coach asignado (nunca pisarlo con el ID del alumno)
+    const activeRelForStudent =
+      authUserRole === "student"
+        ? state.students.find(
+            (s) =>
+              s.student_id === assessment.student_id &&
+              s.invite_status === "active"
+          ) || state.students.find((s) => s.student_id === assessment.student_id)
+        : undefined;
+    const coachId =
+      authUserRole === "student"
+        ? assessment.coach_id ||
+          activeRelForStudent?.coach_id ||
+          state.coachProfile.id
+        : authUserId || assessment.coach_id;
     const newAssess: BodyAssessment = {
       ...assessment,
       coach_id: coachId,
@@ -2142,7 +2255,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }));
         if (!isDemoMode && authUserId) {
           const supabase = createClient();
-          supabase.from("profiles").update(updates).eq("id", authUserId);
+          supabase
+            .from("profiles")
+            .update(updates)
+            .eq("id", authUserId)
+            .then(({ error }) => {
+              if (error)
+                console.error(
+                  "[submitIdentityVerification:student] error:",
+                  error.message
+                );
+            });
         }
       }
     };
@@ -2267,7 +2390,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       supabase
         .from("coach_inquiries")
         .update({ status: decision })
-        .eq("id", inquiryId);
+        .eq("id", inquiryId)
+        .then(({ error }) => {
+          if (error)
+            console.error("[respondToCoachInquiry] error:", error.message);
+        });
     }
 
     if (inquiry && decision === "accepted") {
