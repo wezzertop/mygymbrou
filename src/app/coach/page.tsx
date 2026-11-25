@@ -49,8 +49,13 @@ export default function CoachDashboardPage() {
     setTimeout(() => setToast(null), 3200);
   };
 
+  const isPendingInvite = (status: string) =>
+    status === "pending" ||
+    status === "pending_signup" ||
+    status === "pending_acceptance";
+
   const activeStudents = students.filter((s) => s.invite_status === "active");
-  const pendingInvites = students.filter((s) => s.invite_status === "pending");
+  const pendingInvites = students.filter((s) => isPendingInvite(s.invite_status));
   const firstActiveStudentId = activeStudents.find((s) => s.student_id)?.student_id;
   const newAssessmentHref = firstActiveStudentId
     ? `/coach/students/${firstActiveStudentId}?tab=assessment`
@@ -80,18 +85,31 @@ export default function CoachDashboardPage() {
         return s.invite_status === "active" && !isExpired(s) && !isExpiringSoon(s);
       if (rosterFilter === "expiring") return isExpiringSoon(s);
       if (rosterFilter === "expired") return isExpired(s);
-      if (rosterFilter === "pending") return s.invite_status === "pending";
+      if (rosterFilter === "pending") return isPendingInvite(s.invite_status);
       return true;
     });
   }, [students, rosterFilter]);
 
+  const nowMs = Date.now();
   const upcomingAppointments = appointments
-    .filter((a) => a.status === "scheduled")
+    .filter(
+      (a) =>
+        a.status === "scheduled" &&
+        (!coachProfile.id || a.coach_id === coachProfile.id) &&
+        new Date(a.scheduled_at).getTime() >= nowMs - 3600_000
+    )
     .sort((a, b) => a.scheduled_at.localeCompare(b.scheduled_at));
 
+  const coachAssessments = coachProfile.id
+    ? assessments.filter((a) => a.coach_id === coachProfile.id)
+    : assessments;
+
   const monthlyRevenue = students
-    .filter((s) => s.subscription_status === "active")
-    .reduce((sum, s) => sum + s.subscription_price, 0);
+    .filter(
+      (s) =>
+        s.invite_status === "active" && s.subscription_status === "active"
+    )
+    .reduce((sum, s) => sum + Number(s.subscription_price || 0), 0);
 
   const currentSaasPlan = getSaasPlanById(coachProfile.saas_plan_tier);
   const occupiedSlots = activeStudents.length + pendingInvites.length;
@@ -107,11 +125,16 @@ export default function CoachDashboardPage() {
   ) => {
     const firstActive = activeStudents[0];
     setTargetStudentId(firstActive?.student_id || "");
-    setTargetRelationId(preselectedRelationId || students[0]?.id || "");
+    setTargetRelationId(
+      preselectedRelationId || firstActive?.id || students[0]?.id || ""
+    );
     if (mode === "workout") {
-      setSelectedTemplateId(workouts[0]?.id || "");
+      const tpl = workouts.find((w) => w.is_template) || workouts[0];
+      setSelectedTemplateId(tpl?.id || "");
     } else if (mode === "diet") {
-      setSelectedTemplateId(nutritionPlans[0]?.id || "");
+      const tpl =
+        nutritionPlans.find((n) => n.is_template) || nutritionPlans[0];
+      setSelectedTemplateId(tpl?.id || "");
     } else if (mode === "renew") {
       setSelectedTemplateId(subscriptionPlans[0]?.id || "");
     }
@@ -224,7 +247,7 @@ export default function CoachDashboardPage() {
         >
           <p className="text-[11px] font-medium text-zinc-500">Evaluaciones</p>
           <p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums text-white sm:text-3xl">
-            {assessments.length}
+            {coachAssessments.length}
           </p>
           <p className="mt-1 text-[11px] text-zinc-400">
             Historial antropométrico

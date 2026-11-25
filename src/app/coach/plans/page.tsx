@@ -79,6 +79,13 @@ function CoachPlansContent() {
   const [selectedRelationId, setSelectedRelationId] = useState(
     students.find((s) => s.invite_status === "active")?.id || students[0]?.id || ""
   );
+
+  React.useEffect(() => {
+    if (!selectedRelationId && students.length > 0) {
+      const firstActive = students.find((s) => s.invite_status === "active");
+      setSelectedRelationId(firstActive?.id || students[0]?.id || "");
+    }
+  }, [students, selectedRelationId]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [editingPlan, setEditingPlan] = useState<CoachSubscriptionPlan | null>(null);
   const [editName, setEditName] = useState("");
@@ -123,7 +130,7 @@ function CoachPlansContent() {
   // New Subscription Plan Form
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("1200");
+  const [price, setPrice] = useState("");
   const [durationDays, setDurationDays] = useState("30");
   const [includesNutrition, setIncludesNutrition] = useState(true);
   const [includesWorkouts, setIncludesWorkouts] = useState(true);

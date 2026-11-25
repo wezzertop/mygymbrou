@@ -1282,7 +1282,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   ) => {
     const plan = state.subscriptionPlans.find((p) => p.id === planId);
     if (!plan) return;
-    const start = startDate || new Date().toISOString().split("T")[0];
+    const nowLocal = new Date();
+    const localToday = `${nowLocal.getFullYear()}-${String(
+      nowLocal.getMonth() + 1
+    ).padStart(2, "0")}-${String(nowLocal.getDate()).padStart(2, "0")}`;
+    const start = startDate || localToday;
     const expires = addDaysToDate(start, plan.duration_days);
 
     updateStudentSubscription(relationId, {
@@ -1340,6 +1344,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       subscriptionPlans: prev.subscriptionPlans.map((p) =>
         p.id === planId ? { ...p, ...patch } : p
       ),
+      students: prev.students.map((s) =>
+        s.plan_id === planId && s.invite_status !== "finalizado"
+          ? {
+              ...s,
+              ...(patch.name !== undefined
+                ? { subscription_plan_name: patch.name }
+                : {}),
+              ...(patch.price !== undefined
+                ? { subscription_price: patch.price }
+                : {}),
+            }
+          : s
+      ),
       directoryCoaches: prev.directoryCoaches.map((c) => ({
         ...c,
         plans: c.plans.map((p) => (p.id === planId ? { ...p, ...patch } : p)),
@@ -1352,7 +1369,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .from("coach_subscription_plans")
         .update(patch)
         .eq("id", planId)
-        .then(() => {});
+        .then(({ error }) => {
+          if (error)
+            console.error("[updateSubscriptionPlan] error:", error.message);
+        });
+
+      // Mantener fuente única de verdad en alumnos activos vinculados a este paquete
+      if (patch.name !== undefined || patch.price !== undefined) {
+        const studentSync: Record<string, unknown> = {
+          updated_at: new Date().toISOString(),
+        };
+        if (patch.name !== undefined)
+          studentSync.subscription_plan_name = patch.name;
+        if (patch.price !== undefined)
+          studentSync.subscription_price = patch.price;
+        supabase
+          .from("coach_students")
+          .update(studentSync)
+          .eq("plan_id", planId)
+          .neq("invite_status", "finalizado")
+          .then(({ error }) => {
+            if (error)
+              console.error(
+                "[updateSubscriptionPlan->coach_students] error:",
+                error.message
+              );
+          });
+      }
     }
   };
 
@@ -2186,8 +2229,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           file_size_bytes: created.file_size_bytes,
           is_verified: true,
         })
-        .then(({ error }) => {
-          if (error) console.error("[addCoachCertification] error:", error.message);
+        .select("id")
+        .single()
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("[addCoachCertification] error:", error.message);
+          } else if (data?.id) {
+            setState((prev) => ({
+              ...prev,
+              coachCertifications: prev.coachCertifications.map((c) =>
+                c.id === created.id ? { ...c, id: data.id } : c
+              ),
+              directoryCoaches: prev.directoryCoaches.map((coach) =>
+                coach.id === coachId
+                  ? {
+                      ...coach,
+                      certifications: coach.certifications.map((c) =>
+                        c.id === created.id ? { ...c, id: data.id } : c
+                      ),
+                    }
+                  : coach
+              ),
+            }));
+          }
         });
     }
     return created;

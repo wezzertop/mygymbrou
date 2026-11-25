@@ -48,7 +48,7 @@ export default function CoachProfilePage() {
       setTab(t);
     }
   }, []);
-  const [fullName, setFullName] = useState(coachProfile.full_name);
+  const [fullName, setFullName] = useState(coachProfile.full_name || "");
   const [brandName, setBrandName] = useState(coachProfile.brand_name || "");
   const [isCustomGym, setIsCustomGym] = useState(false);
   const [customGymCity, setCustomGymCity] = useState("");
@@ -56,7 +56,10 @@ export default function CoachProfilePage() {
   const [phone, setPhone] = useState(coachProfile.phone || "");
   const [city, setCity] = useState(coachProfile.city || "");
   const [yearsExperience, setYearsExperience] = useState(
-    String(coachProfile.years_experience ?? 5)
+    coachProfile.years_experience !== undefined &&
+      coachProfile.years_experience !== null
+      ? String(coachProfile.years_experience)
+      : ""
   );
   const [bio, setBio] = useState(coachProfile.bio || "");
   const [acceptingStudents, setAcceptingStudents] = useState(
@@ -64,6 +67,33 @@ export default function CoachProfilePage() {
   );
   const [saved, setSaved] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+
+  // Sincronizar formulario al hidratar datos reales desde Supabase (evita campos vacíos tras F5)
+  useEffect(() => {
+    setFullName(coachProfile.full_name || "");
+    setBrandName(coachProfile.brand_name || "");
+    setSpecialty(coachProfile.specialty || "");
+    setPhone(coachProfile.phone || "");
+    setCity(coachProfile.city || "");
+    setYearsExperience(
+      coachProfile.years_experience !== undefined &&
+        coachProfile.years_experience !== null
+        ? String(coachProfile.years_experience)
+        : ""
+    );
+    setBio(coachProfile.bio || "");
+    setAcceptingStudents(coachProfile.accepting_students ?? true);
+  }, [
+    coachProfile.id,
+    coachProfile.full_name,
+    coachProfile.brand_name,
+    coachProfile.specialty,
+    coachProfile.phone,
+    coachProfile.city,
+    coachProfile.years_experience,
+    coachProfile.bio,
+    coachProfile.accepting_students,
+  ]);
 
   const myDiplomasCount = coachCertifications.filter(
     (c) => c.coach_id === coachProfile.id || !coachProfile.id

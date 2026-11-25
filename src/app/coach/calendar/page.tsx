@@ -23,9 +23,11 @@ function toIsoDate(d: Date) {
 }
 
 export default function CoachCalendarPage() {
-  const { students, workouts, workoutLogs, appointments } = useApp();
+  const { coachProfile, students, workouts, workoutLogs, appointments } = useApp();
 
-  const activeStudents = students.filter((s) => s.student_id);
+  const activeStudents = students.filter(
+    (s) => s.student_id && s.invite_status === "active"
+  );
   const [selectedStudentId, setSelectedStudentId] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
 
@@ -116,9 +118,24 @@ export default function CoachCalendarPage() {
     visibleStudents.forEach((st) => {
       if (!st.student_id) return;
       const w = workouts.find(
-        (wk) => wk.student_id === st.student_id && wk.is_active
+        (wk) =>
+          wk.student_id === st.student_id &&
+          wk.is_active &&
+          (!coachProfile.id || wk.coach_id === coachProfile.id)
       );
       if (!w) return;
+
+      // Respetar estrictamente la vigencia de la rutina: nunca marcar días previos al inicio o creación
+      const createdLocalIso = w.created_at
+        ? (() => {
+            const dt = new Date(w.created_at);
+            return Number.isNaN(dt.getTime()) ? null : toIsoDate(dt);
+          })()
+        : null;
+      const effectiveStart = w.start_date || createdLocalIso;
+      if (effectiveStart && dateIso < effectiveStart) return;
+      if (w.end_date && dateIso > w.end_date) return;
+
       const matchingDay = w.days.find((d) =>
         d.assigned_weekdays?.includes(weekday)
       );
@@ -138,10 +155,14 @@ export default function CoachCalendarPage() {
     });
 
     const dayApts = appointments.filter((a) => {
-      const aptIso = a.scheduled_at.split("T")[0];
+      const dt = new Date(a.scheduled_at);
+      const aptIso = Number.isNaN(dt.getTime())
+        ? a.scheduled_at.split("T")[0]
+        : toIsoDate(dt);
       const matchSt =
         selectedStudentId === "all" || a.student_id === selectedStudentId;
-      return aptIso === dateIso && matchSt && a.status !== "cancelled";
+      const matchCoach = !coachProfile.id || a.coach_id === coachProfile.id;
+      return aptIso === dateIso && matchSt && matchCoach && a.status !== "cancelled";
     });
 
     const expiring = visibleStudents.filter(
@@ -223,8 +244,12 @@ export default function CoachCalendarPage() {
           Cumplió rutina
         </span>
         <span className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-zinc-400" />
+          Rutina programada
+        </span>
+        <span className="flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
-          Faltó / Pendiente
+          Faltó (día pasado)
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-cyan-400" />
@@ -293,6 +318,10 @@ export default function CoachCalendarPage() {
                 dayObj.getDay()
               );
               const completedCnt = assigned.filter((a) => a.completed).length;
+              const scheduledCnt =
+                iso >= todayIso
+                  ? assigned.filter((a) => !a.completed).length
+                  : 0;
               const missedCnt =
                 iso < todayIso
                   ? assigned.filter((a) => !a.completed).length
@@ -322,6 +351,9 @@ export default function CoachCalendarPage() {
                   <div className="flex flex-wrap gap-1">
                     {completedCnt > 0 && (
                       <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    )}
+                    {scheduledCnt > 0 && (
+                      <span className="h-2 w-2 rounded-full bg-zinc-400" />
                     )}
                     {missedCnt > 0 && (
                       <span className="h-2 w-2 rounded-full bg-rose-400" />

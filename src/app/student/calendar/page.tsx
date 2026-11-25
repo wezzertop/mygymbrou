@@ -114,7 +114,14 @@ export default function StudentCalendarPage() {
 
   const isWithinWorkoutRange = (iso: string) => {
     if (!activeWorkout) return false;
-    if (activeWorkout.start_date && iso < activeWorkout.start_date) {
+    const createdLocalIso = activeWorkout.created_at
+      ? (() => {
+          const dt = new Date(activeWorkout.created_at);
+          return Number.isNaN(dt.getTime()) ? null : toIsoDate(dt);
+        })()
+      : null;
+    const effectiveStart = activeWorkout.start_date || createdLocalIso;
+    if (effectiveStart && iso < effectiveStart) {
       return false;
     }
     if (activeWorkout.end_date && iso > activeWorkout.end_date) {
