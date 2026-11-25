@@ -422,6 +422,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       certsRes,
       inquiriesRes,
       publicCoachesRes,
+      workoutsApiData,
+      nutritionApiData,
     ] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
       supabase
@@ -467,6 +469,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .select("*")
         .eq("role", "coach")
         .eq("accepting_students", true),
+      fetch("/api/workouts")
+        .then((r) => (r.ok ? r.json() : { workouts: [] }))
+        .catch(() => ({ workouts: [] })),
+      fetch("/api/nutrition")
+        .then((r) => (r.ok ? r.json() : { nutritionPlans: [] }))
+        .catch(() => ({ nutritionPlans: [] })),
     ]);
 
     const userRole =
@@ -638,37 +646,79 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    setState((prev) => ({
-      ...emptyRealState,
-      exerciseLibrary: prev.exerciseLibrary,
-      coachProfile: resolvedCoachProfile,
-      studentProfile:
-        userRole === "student" ? builtProfile : emptyRealState.studentProfile,
-      coachCertifications:
-        userRole === "coach"
-          ? allCerts.filter((c) => c.coach_id === user.id)
-          : allCerts,
-      directoryCoaches: builtDirectoryCoaches,
-      coachInquiries: (inquiriesRes.data || []) as CoachInquiry[],
-      students: studentsList,
-      studentRecords: recordsList,
-      subscriptionPlans: allPlans,
-      studentGoals: (goalsRes.data || []) as StudentGoal[],
-      assessments: (assessmentsRes.data || []) as BodyAssessment[],
-      appointments: mappedAppointments,
-      notifications: (notificationsRes.data || []) as AppNotification[],
-      workoutLogs: (logsRes.data || []).map((l) => ({
-        id: l.id,
-        student_id: l.student_id,
-        workout_day_id: l.workout_day_id,
-        workout_day_title: "Sesión completada",
-        completed_date: l.completed_date,
-        status: l.status || "completed",
-        exercises_completed: l.completed_sets || 1,
-        total_exercises: l.completed_sets || 1,
-        created_at: l.created_at,
-      })),
-    }));
+    const loadedWorkouts: WorkoutPlan[] = Array.isArray(workoutsApiData?.workouts)
+      ? (workoutsApiData.workouts as WorkoutPlan[])
+      : [];
+    const loadedNutritionPlans: NutritionPlan[] = Array.isArray(
+      nutritionApiData?.nutritionPlans
+    )
+      ? (nutritionApiData.nutritionPlans as NutritionPlan[])
+      : [];
+
+    setState((prev) => {
+      const enrichedWorkouts: WorkoutPlan[] = loadedWorkouts.map((w) => ({
+        ...w,
+        days: w.days.map((d) => ({
+          ...d,
+          exercises: d.exercises.map((ex) => {
+            const libMatch = prev.exerciseLibrary.find(
+              (lib) =>
+                (ex.exercise_library_id && lib.id === ex.exercise_library_id) ||
+                lib.name.toLowerCase() === ex.name.toLowerCase()
+            );
+            if (!libMatch) return ex;
+            return {
+              ...ex,
+              instructions: ex.instructions || libMatch.instructions,
+              primary_muscles: ex.primary_muscles || libMatch.primary_muscles,
+              secondary_muscles:
+                ex.secondary_muscles || libMatch.secondary_muscles,
+              frames: ex.frames || libMatch.frames,
+              frame_interval_ms:
+                ex.frame_interval_ms || libMatch.frame_interval_ms,
+              animation_key: ex.animation_key || libMatch.animation_key,
+              media_type: libMatch.frames
+                ? "sequence"
+                : ex.media_type || libMatch.media_type,
+            };
+          }),
+        })),
+      }));
+
+      return {
+        ...emptyRealState,
+        exerciseLibrary: prev.exerciseLibrary,
+        coachProfile: resolvedCoachProfile,
+        studentProfile:
+          userRole === "student" ? builtProfile : emptyRealState.studentProfile,
+        coachCertifications:
+          userRole === "coach"
+            ? allCerts.filter((c) => c.coach_id === user.id)
+            : allCerts,
+        directoryCoaches: builtDirectoryCoaches,
+        coachInquiries: (inquiriesRes.data || []) as CoachInquiry[],
+        students: studentsList,
+        studentRecords: recordsList,
+        subscriptionPlans: allPlans,
+        studentGoals: (goalsRes.data || []) as StudentGoal[],
+        assessments: (assessmentsRes.data || []) as BodyAssessment[],
+        workouts: enrichedWorkouts,
+        nutritionPlans: loadedNutritionPlans,
+        appointments: mappedAppointments,
+        notifications: (notificationsRes.data || []) as AppNotification[],
+        workoutLogs: (logsRes.data || []).map((l) => ({
+          id: l.id,
+          student_id: l.student_id,
+          workout_day_id: l.workout_day_id,
+          workout_day_title: "Sesión completada",
+          completed_date: l.completed_date,
+          status: l.status || "completed",
+          exercises_completed: l.completed_sets || 1,
+          total_exercises: l.completed_sets || 1,
+          created_at: l.created_at,
+        })),
+      };
+    });
     setHydrated(true);
 
     // Si es alumno y tiene invitaciones pending_signup sin vincular, auto-vincular en segundo plano
@@ -754,12 +804,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     if (!isDemoMode) {
       const supabase = createClient();
-      supabase.from("notifications").insert({
-        user_id: input.user_id,
-        title: input.title,
-        message: input.message,
-        type: input.type,
-      });
+      supabase
+        .from("notifications")
+        .insert({
+          user_id: input.user_id,
+          title: input.title,
+          message: input.message,
+          type: input.type,
+        })
+        .then(({ error }) => {
+          if (error) console.error("[pushNotification] error:", error.message);
+        });
     }
   };
 
@@ -1219,7 +1274,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }));
     if (!isDemoMode) {
       const supabase = createClient();
-      supabase.from("coach_subscription_plans").delete().eq("id", planId);
+      supabase
+        .from("coach_subscription_plans")
+        .delete()
+        .eq("id", planId)
+        .then(({ error }) => {
+          if (error) console.error("[deleteSubscriptionPlan] error:", error.message);
+        });
     }
   };
 
@@ -1325,18 +1386,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     if (!isDemoMode && goal.student_id) {
       const supabase = createClient();
-      supabase.from("student_goals").upsert(
-        {
-          student_id: goal.student_id,
-          primary_goal: goal.primary_goal,
-          priority_zones: goal.priority_zones,
-          target_weight_kg: goal.target_weight_kg ?? null,
-          days_per_week: goal.days_per_week,
-          limitations_or_injuries: goal.limitations_or_injuries ?? null,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "student_id" }
-      );
+      supabase
+        .from("student_goals")
+        .upsert(
+          {
+            student_id: goal.student_id,
+            primary_goal: goal.primary_goal,
+            priority_zones: goal.priority_zones,
+            target_weight_kg: goal.target_weight_kg ?? null,
+            days_per_week: goal.days_per_week,
+            limitations_or_injuries: goal.limitations_or_injuries ?? null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "student_id" }
+        )
+        .then(({ error }) => {
+          if (error) console.error("[updateStudentGoal] error:", error.message);
+        });
     }
   };
 
@@ -1370,28 +1436,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     if (!isDemoMode && coachId) {
       const supabase = createClient();
-      supabase.from("body_assessments").insert({
-        student_id: assessment.student_id,
-        coach_id: coachId,
-        assessment_date: assessment.assessment_date,
-        weight_kg: assessment.weight_kg,
-        height_cm: assessment.height_cm,
-        body_fat_percentage: assessment.body_fat_percentage,
-        muscle_mass_kg: assessment.muscle_mass_kg,
-        chest_cm: assessment.chest_cm,
-        back_width_cm: assessment.back_width_cm,
-        waist_cm: assessment.waist_cm,
-        abdomen_cm: assessment.abdomen_cm,
-        hip_cm: assessment.hip_cm,
-        bicep_left_cm: assessment.bicep_left_cm,
-        bicep_right_cm: assessment.bicep_right_cm,
-        thigh_left_cm: assessment.thigh_left_cm,
-        thigh_right_cm: assessment.thigh_right_cm,
-        calf_cm: assessment.calf_cm,
-        coach_analysis_notes: assessment.coach_analysis_notes,
-        goal_tag: assessment.goal_tag,
-        progress_photos: assessment.progress_photos || [],
-      });
+      supabase
+        .from("body_assessments")
+        .insert({
+          student_id: assessment.student_id,
+          coach_id: coachId,
+          assessment_date: assessment.assessment_date,
+          weight_kg: assessment.weight_kg,
+          height_cm: assessment.height_cm,
+          body_fat_percentage: assessment.body_fat_percentage,
+          muscle_mass_kg: assessment.muscle_mass_kg,
+          chest_cm: assessment.chest_cm,
+          back_width_cm: assessment.back_width_cm,
+          waist_cm: assessment.waist_cm,
+          abdomen_cm: assessment.abdomen_cm,
+          hip_cm: assessment.hip_cm,
+          bicep_left_cm: assessment.bicep_left_cm,
+          bicep_right_cm: assessment.bicep_right_cm,
+          thigh_left_cm: assessment.thigh_left_cm,
+          thigh_right_cm: assessment.thigh_right_cm,
+          calf_cm: assessment.calf_cm,
+          coach_analysis_notes: assessment.coach_analysis_notes,
+          goal_tag: assessment.goal_tag,
+          progress_photos: assessment.progress_photos || [],
+        })
+        .select("id")
+        .single()
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("[addAssessment] error:", error.message);
+          } else if (data?.id) {
+            setState((prev) => ({
+              ...prev,
+              assessments: prev.assessments.map((a) =>
+                a.id === newAssess.id ? { ...a, id: data.id } : a
+              ),
+            }));
+          }
+        });
     }
 
     if (notifyStudent) {
@@ -1406,9 +1488,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addWorkoutPlan: AppContextValue["addWorkoutPlan"] = (plan) => {
+    const coachId = authUserId || plan.coach_id;
+    const tempId = uid("workout");
     const created: WorkoutPlan = {
       ...plan,
-      id: uid("workout"),
+      coach_id: coachId,
+      id: tempId,
       created_at: new Date().toISOString(),
     };
     setState((prev) => ({
@@ -1422,7 +1507,53 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ),
       ],
     }));
-    if (plan.student_id) {
+
+    if (!isDemoMode) {
+      fetch("/api/workouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: created.title,
+          description: created.description,
+          goal: created.goal,
+          level: created.level,
+          student_id: created.student_id,
+          is_template: created.is_template,
+          is_active: created.is_active,
+          days: created.days,
+        }),
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((res) => {
+          if (res?.workout?.id) {
+            const persisted = res.workout as WorkoutPlan;
+            setState((prev) => ({
+              ...prev,
+              workouts: prev.workouts.map((w) =>
+                w.id === tempId
+                  ? {
+                      ...persisted,
+                      days: persisted.days.map((d, dIdx) => ({
+                        ...d,
+                        exercises: d.exercises.map((ex, eIdx) => {
+                          const orig = created.days[dIdx]?.exercises[eIdx];
+                          return orig
+                            ? {
+                                ...orig,
+                                id: ex.id,
+                                workout_day_id: ex.workout_day_id,
+                              }
+                            : ex;
+                        }),
+                      })),
+                    }
+                  : w
+              ),
+            }));
+          }
+        })
+        .catch((err) => console.error("[addWorkoutPlan] error:", err));
+    } else if (plan.student_id) {
       pushNotification({
         user_id: plan.student_id,
         title: "Nueva rutina visual asignada",
@@ -1436,9 +1567,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const assignWorkoutToStudent = (templateId: string, studentId: string) => {
     const template = state.workouts.find((w) => w.id === templateId);
     if (!template) return;
+    const coachId = authUserId || template.coach_id;
     const clonedId = uid("workout");
     const cloned: WorkoutPlan = {
       ...template,
+      coach_id: coachId,
       id: clonedId,
       student_id: studentId,
       is_template: false,
@@ -1468,27 +1601,76 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ),
       ],
     }));
-    pushNotification({
-      user_id: studentId,
-      title: "Rutina actualizada por tu Coach",
-      message: `Se te asignó la rutina "${cloned.title}". ¡A entrenar!`,
-      type: "workout",
-    });
+
+    if (!isDemoMode) {
+      fetch("/api/workouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: cloned.title,
+          description: cloned.description,
+          goal: cloned.goal,
+          level: cloned.level,
+          student_id: studentId,
+          is_template: false,
+          is_active: true,
+          days: cloned.days,
+        }),
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((res) => {
+          if (res?.workout?.id) {
+            const persisted = res.workout as WorkoutPlan;
+            setState((prev) => ({
+              ...prev,
+              workouts: prev.workouts.map((w) =>
+                w.id === clonedId
+                  ? {
+                      ...persisted,
+                      days: persisted.days.map((d, dIdx) => ({
+                        ...d,
+                        exercises: d.exercises.map((ex, eIdx) => {
+                          const orig = cloned.days[dIdx]?.exercises[eIdx];
+                          return orig
+                            ? {
+                                ...orig,
+                                id: ex.id,
+                                workout_day_id: ex.workout_day_id,
+                              }
+                            : ex;
+                        }),
+                      })),
+                    }
+                  : w
+              ),
+            }));
+          }
+        })
+        .catch((err) => console.error("[assignWorkoutToStudent] error:", err));
+    } else {
+      pushNotification({
+        user_id: studentId,
+        title: "Rutina actualizada por tu Coach",
+        message: `Se te asignó la rutina "${cloned.title}". ¡A entrenar!`,
+        type: "workout",
+      });
+    }
   };
 
   const logWorkoutCompleted: AppContextValue["logWorkoutCompleted"] = (input) => {
     const today =
       input.completed_date || new Date().toISOString().split("T")[0];
+    const logStatus =
+      input.exercises_completed >= input.total_exercises
+        ? "completed"
+        : "partial";
     const log: WorkoutSessionLog = {
       id: uid("wlog"),
       student_id: input.student_id,
       workout_day_id: input.workout_day_id,
       workout_day_title: input.workout_day_title,
       completed_date: today,
-      status:
-        input.exercises_completed >= input.total_exercises
-          ? "completed"
-          : "partial",
+      status: logStatus,
       exercises_completed: input.exercises_completed,
       total_exercises: input.total_exercises,
       created_at: new Date().toISOString(),
@@ -1507,20 +1689,85 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         workoutLogs: [log, ...filtered],
       };
     });
+
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        input.workout_day_id
+      );
+    if (!isDemoMode && isUuid) {
+      const supabase = createClient();
+      supabase
+        .from("workout_logs")
+        .insert({
+          student_id: input.student_id,
+          workout_day_id: input.workout_day_id,
+          completed_date: today,
+          status: logStatus,
+          completed_sets: input.exercises_completed,
+          notes: input.workout_day_title,
+        })
+        .then(({ error }) => {
+          if (error) console.error("[logWorkoutCompleted] error:", error.message);
+        });
+    }
+
     return log;
   };
 
   const addNutritionPlan: AppContextValue["addNutritionPlan"] = (plan) => {
+    const coachId = authUserId || plan.coach_id;
+    const tempId = uid("diet");
     const created: NutritionPlan = {
       ...plan,
-      id: uid("diet"),
+      coach_id: coachId,
+      id: tempId,
       created_at: new Date().toISOString(),
     };
     setState((prev) => ({
       ...prev,
-      nutritionPlans: [created, ...prev.nutritionPlans],
+      nutritionPlans: [
+        created,
+        ...prev.nutritionPlans.map((n) =>
+          plan.student_id && n.student_id === plan.student_id
+            ? { ...n, is_active: false }
+            : n
+        ),
+      ],
     }));
-    if (plan.student_id) {
+
+    if (!isDemoMode) {
+      fetch("/api/nutrition", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: created.title,
+          notes: created.notes,
+          image_url: created.image_url,
+          daily_calories: created.daily_calories,
+          protein_g: created.protein_g,
+          carbs_g: created.carbs_g,
+          fats_g: created.fats_g,
+          water_liters: created.water_liters,
+          student_id: created.student_id,
+          is_template: created.is_template,
+          is_active: created.is_active,
+          meals: created.meals,
+        }),
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((res) => {
+          if (res?.nutritionPlan?.id) {
+            const persisted = res.nutritionPlan as NutritionPlan;
+            setState((prev) => ({
+              ...prev,
+              nutritionPlans: prev.nutritionPlans.map((n) =>
+                n.id === tempId ? persisted : n
+              ),
+            }));
+          }
+        })
+        .catch((err) => console.error("[addNutritionPlan] error:", err));
+    } else if (plan.student_id) {
       pushNotification({
         user_id: plan.student_id,
         title: "Nuevo plan nutricional",
@@ -1534,9 +1781,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const assignNutritionToStudent = (templateId: string, studentId: string) => {
     const template = state.nutritionPlans.find((n) => n.id === templateId);
     if (!template) return;
+    const coachId = authUserId || template.coach_id;
     const clonedId = uid("diet");
     const cloned: NutritionPlan = {
       ...template,
+      coach_id: coachId,
       id: clonedId,
       student_id: studentId,
       is_template: false,
@@ -1558,12 +1807,47 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ),
       ],
     }));
-    pushNotification({
-      user_id: studentId,
-      title: "Dieta actualizada",
-      message: `Se te asignó "${cloned.title}" (${cloned.daily_calories} kcal diarias).`,
-      type: "diet",
-    });
+
+    if (!isDemoMode) {
+      fetch("/api/nutrition", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: cloned.title,
+          notes: cloned.notes,
+          image_url: cloned.image_url,
+          daily_calories: cloned.daily_calories,
+          protein_g: cloned.protein_g,
+          carbs_g: cloned.carbs_g,
+          fats_g: cloned.fats_g,
+          water_liters: cloned.water_liters,
+          student_id: studentId,
+          is_template: false,
+          is_active: true,
+          meals: cloned.meals,
+        }),
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((res) => {
+          if (res?.nutritionPlan?.id) {
+            const persisted = res.nutritionPlan as NutritionPlan;
+            setState((prev) => ({
+              ...prev,
+              nutritionPlans: prev.nutritionPlans.map((n) =>
+                n.id === clonedId ? persisted : n
+              ),
+            }));
+          }
+        })
+        .catch((err) => console.error("[assignNutritionToStudent] error:", err));
+    } else {
+      pushNotification({
+        user_id: studentId,
+        title: "Dieta actualizada",
+        message: `Se te asignó "${cloned.title}" (${cloned.daily_calories} kcal diarias).`,
+        type: "diet",
+      });
+    }
   };
 
   const addAppointment: AppContextValue["addAppointment"] = (apt) => {
@@ -1581,15 +1865,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     if (!isDemoMode && coachId) {
       const supabase = createClient();
-      supabase.from("appointments").insert({
-        coach_id: coachId,
-        student_id: apt.student_id,
-        title: apt.title,
-        scheduled_at: apt.scheduled_at,
-        location_or_link: apt.location_or_link,
-        status: apt.status,
-        notes: apt.notes,
-      });
+      supabase
+        .from("appointments")
+        .insert({
+          coach_id: coachId,
+          student_id: apt.student_id,
+          title: apt.title,
+          scheduled_at: apt.scheduled_at,
+          location_or_link: apt.location_or_link,
+          status: apt.status,
+          notes: apt.notes,
+        })
+        .select("id")
+        .single()
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("[addAppointment] error:", error.message);
+          } else if (data?.id) {
+            setState((prev) => ({
+              ...prev,
+              appointments: prev.appointments.map((a) =>
+                a.id === created.id ? { ...a, id: data.id } : a
+              ),
+            }));
+          }
+        });
     }
 
     pushNotification({
@@ -1613,7 +1913,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }));
     if (!isDemoMode) {
       const supabase = createClient();
-      supabase.from("appointments").update({ status }).eq("id", id);
+      supabase
+        .from("appointments")
+        .update({ status })
+        .eq("id", id)
+        .then(({ error }) => {
+          if (error) console.error("[updateAppointmentStatus] error:", error.message);
+        });
     }
   };
 
@@ -1626,7 +1932,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }));
     if (!isDemoMode) {
       const supabase = createClient();
-      supabase.from("notifications").update({ is_read: true }).eq("id", id);
+      supabase
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("id", id)
+        .then(({ error }) => {
+          if (error) console.error("[markNotificationRead] error:", error.message);
+        });
     }
   };
 
@@ -1642,7 +1954,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       supabase
         .from("notifications")
         .update({ is_read: true })
-        .eq("user_id", userId);
+        .eq("user_id", userId)
+        .then(({ error }) => {
+          if (error) console.error("[markAllNotificationsRead] error:", error.message);
+        });
     }
   };
 
@@ -1679,7 +1994,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
     if (!isDemoMode && authUserId) {
       const supabase = createClient();
-      supabase.from("profiles").update(updates).eq("id", authUserId);
+      supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", authUserId)
+        .then(({ error }) => {
+          if (error) console.error("[updateProfile] error:", error.message);
+        });
     }
   };
 
@@ -1701,7 +2022,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }));
     if (!isDemoMode && authUserId) {
       const supabase = createClient();
-      supabase.from("profiles").update(updates).eq("id", authUserId);
+      supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", authUserId)
+        .then(({ error }) => {
+          if (error) console.error("[updateProfile] error:", error.message);
+        });
     }
   };
 
@@ -1727,19 +2054,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }));
     if (!isDemoMode && coachId) {
       const supabase = createClient();
-      supabase.from("coach_certifications").insert({
-        coach_id: coachId,
-        title: created.title,
-        institution: created.institution,
-        issue_year: created.issue_year,
-        credential_id: created.credential_id,
-        category: created.category,
-        file_name: created.file_name,
-        file_url: created.file_url,
-        file_type: created.file_type,
-        file_size_bytes: created.file_size_bytes,
-        is_verified: true,
-      });
+      supabase
+        .from("coach_certifications")
+        .insert({
+          coach_id: coachId,
+          title: created.title,
+          institution: created.institution,
+          issue_year: created.issue_year,
+          credential_id: created.credential_id,
+          category: created.category,
+          file_name: created.file_name,
+          file_url: created.file_url,
+          file_type: created.file_type,
+          file_size_bytes: created.file_size_bytes,
+          is_verified: true,
+        })
+        .then(({ error }) => {
+          if (error) console.error("[addCoachCertification] error:", error.message);
+        });
     }
     return created;
   };
@@ -1757,7 +2089,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }));
     if (!isDemoMode) {
       const supabase = createClient();
-      supabase.from("coach_certifications").delete().eq("id", certId);
+      supabase
+        .from("coach_certifications")
+        .delete()
+        .eq("id", certId)
+        .then(({ error }) => {
+          if (error) console.error("[deleteCoachCertification] error:", error.message);
+        });
     }
   };
 
@@ -1850,7 +2188,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             verified_at: isVerified ? now : null,
             verification_notes: noteText,
           })
-          .eq("id", studentId);
+          .eq("id", studentId)
+          .then(({ error }) => {
+            if (error) console.error("[reviewStudentVerification] error:", error.message);
+          });
       }
 
       pushNotification({
@@ -1877,17 +2218,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     if (!isDemoMode) {
       const supabase = createClient();
-      supabase.from("coach_inquiries").insert({
-        coach_id: input.coach_id,
-        student_id: input.student_id || authUserId || null,
-        student_name: input.student_name,
-        student_email: input.student_email,
-        student_is_verified: input.student_is_verified,
-        goal: input.goal,
-        preferred_plan_name: input.preferred_plan_name,
-        message: input.message,
-        status: "pending",
-      });
+      supabase
+        .from("coach_inquiries")
+        .insert({
+          coach_id: input.coach_id,
+          student_id: input.student_id || authUserId || null,
+          student_name: input.student_name,
+          student_email: input.student_email,
+          student_is_verified: input.student_is_verified,
+          goal: input.goal,
+          preferred_plan_name: input.preferred_plan_name,
+          message: input.message,
+          status: "pending",
+        })
+        .then(({ error }) => {
+          if (error) console.error("[sendCoachInquiry] error:", error.message);
+        });
     }
 
     pushNotification({
