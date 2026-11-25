@@ -446,6 +446,8 @@ export interface WorkoutPlan {
   description?: string;
   goal?: string;
   level: "principiante" | "intermedio" | "avanzado";
+  start_date?: string | null; // YYYY-MM-DD
+  end_date?: string | null; // YYYY-MM-DD
   is_active: boolean;
   days: WorkoutDay[];
   created_at: string;

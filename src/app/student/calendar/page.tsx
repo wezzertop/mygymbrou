@@ -112,12 +112,25 @@ export default function StudentCalendarPage() {
     return cells;
   }, [currentMonth, viewMode, selectedDate]);
 
+  const isWithinWorkoutRange = (iso: string) => {
+    if (!activeWorkout) return false;
+    if (activeWorkout.start_date && iso < activeWorkout.start_date) {
+      return false;
+    }
+    if (activeWorkout.end_date && iso > activeWorkout.end_date) {
+      return false;
+    }
+    return true;
+  };
+
   const getDayInfo = (iso: string, weekday: number) => {
-    const dayIndex = activeWorkout
-      ? activeWorkout.days.findIndex((d) =>
-          d.assigned_weekdays?.includes(weekday)
-        )
-      : -1;
+    const inRange = isWithinWorkoutRange(iso);
+    const dayIndex =
+      activeWorkout && inRange
+        ? activeWorkout.days.findIndex((d) =>
+            d.assigned_weekdays?.includes(weekday)
+          )
+        : -1;
     const assignedDay =
       dayIndex >= 0 && activeWorkout ? activeWorkout.days[dayIndex] : null;
     const completedLog = myLogs.find((l) => l.completed_date === iso);
@@ -127,6 +140,12 @@ export default function StudentCalendarPage() {
     const isExpirationDay = expiresIso === iso;
 
     return { assignedDay, dayIndex, completedLog, dayApts, isExpirationDay };
+  };
+
+  const formatRangeDate = (iso: string) => {
+    const d = new Date(`${iso}T12:00:00`);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString("es-MX", { day: "numeric", month: "short" });
   };
 
   const selWeekday = new Date(`${selectedDate}T12:00:00`).getDay();
@@ -183,23 +202,39 @@ export default function StudentCalendarPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-[11px] text-zinc-300">
-        <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-          Rutina completada
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-slate-400" />
-          Día de entreno asignado
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-cyan-400" />
-          Cita con Coach
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-          Corte de Plan
-        </span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-3 text-[11px] text-zinc-300">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            Rutina completada
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-slate-400" />
+            Día de entreno asignado
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-cyan-400" />
+            Cita con Coach
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+            Corte de Plan
+          </span>
+        </div>
+
+        {activeWorkout && (activeWorkout.start_date || activeWorkout.end_date) && (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold text-emerald-300">
+            <Dumbbell className="h-3 w-3" />
+            Vigencia:{" "}
+            {activeWorkout.start_date
+              ? formatRangeDate(activeWorkout.start_date)
+              : "Inicio"}
+            {" – "}
+            {activeWorkout.end_date
+              ? formatRangeDate(activeWorkout.end_date)
+              : "Sin fin"}
+          </span>
+        )}
       </div>
 
       {/* Calendar */}

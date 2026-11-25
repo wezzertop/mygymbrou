@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
+  CalendarDays,
   CheckCircle2,
   Dumbbell,
   Layers,
@@ -53,6 +54,62 @@ const WEEKDAYS = [
   { num: 0, label: "Dom" },
 ];
 
+const ROUTINE_GOALS = [
+  "Hipertrofia",
+  "Fuerza",
+  "Pérdida de grasa",
+  "Recomposición corporal",
+  "Resistencia / Cardio",
+  "Personalizado",
+];
+
+const DURATION_PRESETS = [
+  { label: "1 sem", days: 6 },
+  { label: "2 sem", days: 13 },
+  { label: "4 sem", days: 27 },
+  { label: "8 sem", days: 55 },
+];
+
+function toLocalIsoDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+    d.getDate()
+  ).padStart(2, "0")}`;
+}
+
+function addDaysToIso(iso: string, days: number): string {
+  const base = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(base.getTime())) return iso;
+  base.setDate(base.getDate() + days);
+  return toLocalIsoDate(base);
+}
+
+function formatShortEsDate(iso: string): string {
+  const d = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("es-MX", { day: "numeric", month: "short" });
+}
+
+function countSessionsInRange(
+  startIso: string,
+  endIso: string,
+  weekdays: number[]
+): number {
+  if (!startIso || !endIso || weekdays.length === 0 || endIso < startIso) {
+    return 0;
+  }
+  const cur = new Date(`${startIso}T12:00:00`);
+  const end = new Date(`${endIso}T12:00:00`);
+  if (Number.isNaN(cur.getTime()) || Number.isNaN(end.getTime())) return 0;
+  let count = 0;
+  let guard = 0;
+  while (cur <= end && guard < 400) {
+    if (weekdays.includes(cur.getDay())) count += 1;
+    cur.setDate(cur.getDate() + 1);
+    guard += 1;
+  }
+  return count;
+}
+
 export default function CoachWorkoutsPage() {
   const {
     coachProfile,
@@ -100,13 +157,32 @@ export default function CoachWorkoutsPage() {
 
   // Routine Builder state
   const [targetStudentId, setTargetStudentId] = useState(
-    activeStudents[0]?.student_id || "student-1"
+    activeStudents[0]?.student_id || ""
   );
   const [routineTitle, setRoutineTitle] = useState("Rutina Personalizada Visual");
   const [dayTitle, setDayTitle] = useState("Día 1: Fuerza y Tonificación");
+  const [routineGoal, setRoutineGoal] = useState("Hipertrofia");
+  const [routineLevel, setRoutineLevel] = useState<
+    "principiante" | "intermedio" | "avanzado"
+  >("intermedio");
+  const [routineDescription, setRoutineDescription] = useState("");
+  const [startDate, setStartDate] = useState(() => toLocalIsoDate(new Date()));
+  const [endDate, setEndDate] = useState(() =>
+    addDaysToIso(toLocalIsoDate(new Date()), 27)
+  );
   const [selectedWeekdays, setSelectedWeekdays] = useState<number[]>([1, 3, 5]);
   const [draftExercises, setDraftExercises] = useState<WorkoutExercise[]>([]);
+  const [dateError, setDateError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!targetStudentId && activeStudents[0]?.student_id) {
+      setTargetStudentId(activeStudents[0].student_id);
+      if (activeStudents[0].gender) {
+        setPreviewGender(activeStudents[0].gender);
+      }
+    }
+  }, [activeStudents, targetStudentId]);
 
   // Custom Exercise Modal (3-4 Frame Sequence + Muscle Highlights)
   const [customModalOpen, setCustomModalOpen] = useState(false);
@@ -212,7 +288,13 @@ export default function CoachWorkoutsPage() {
 
   const handlePublishRoutine = (e: React.FormEvent) => {
     e.preventDefault();
+    setDateError(null);
     if (draftExercises.length === 0) return;
+    if (!saveAsTemplate && !targetStudentId) return;
+    if (!saveAsTemplate && startDate && endDate && endDate < startDate) {
+      setDateError("La fecha de fin debe ser igual o posterior a la fecha de inicio.");
+      return;
+    }
     const dayId = `day-${Date.now()}`;
     addWorkoutPlan({
       coach_id: coachProfile.id,
@@ -220,9 +302,12 @@ export default function CoachWorkoutsPage() {
       is_template: saveAsTemplate,
       title: saveAsTemplate ? `Plantilla: ${routineTitle}` : routineTitle,
       description:
-        "Rutina armada desde el Catálogo Anatómico Visual con días asignados.",
-      goal: "Personalizado",
-      level: "intermedio",
+        routineDescription.trim() ||
+        "Rutina armada desde el Catálogo Anatómico Visual con vigencia y días asignados.",
+      goal: routineGoal,
+      level: routineLevel,
+      start_date: saveAsTemplate ? null : startDate || null,
+      end_date: saveAsTemplate ? null : endDate || null,
       is_active: true,
       days: [
         {
@@ -243,14 +328,27 @@ export default function CoachWorkoutsPage() {
       ],
     });
     setDraftExercises([]);
+    setRoutineDescription("");
     setBuilderModalOpen(false);
     setToast(
       saveAsTemplate
         ? "Plantilla guardada. Ya puedes asignarla en 1 clic desde Mis Plantillas."
-        : "Rutina asignada y enviada al alumno al instante."
+        : "Rutina asignada con su vigencia en el calendario del alumno."
     );
     setTimeout(() => setToast(null), 3500);
   };
+
+  const applyDurationPreset = (days: number) => {
+    const base = startDate || toLocalIsoDate(new Date());
+    setStartDate(base);
+    setEndDate(addDaysToIso(base, days));
+    setDateError(null);
+  };
+
+  const scheduledSessionsCount =
+    startDate && endDate
+      ? countSessionsInRange(startDate, endDate, selectedWeekdays)
+      : null;
 
   const handleCreateCustomExercise = (e: React.FormEvent) => {
     e.preventDefault();
@@ -323,6 +421,443 @@ export default function CoachWorkoutsPage() {
     setToast("Ejercicio con secuencia de fotogramas guardado y agregado.");
     setTimeout(() => setToast(null), 3000);
   };
+
+  const renderBuilderFields = () => (
+    <div className="space-y-4">
+      {/* Destino: Alumno vs Plantilla */}
+      <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-white/10 bg-[#060607] p-1">
+        <button
+          type="button"
+          onClick={() => setSaveAsTemplate(false)}
+          className={`min-h-[38px] rounded-lg text-xs font-semibold transition ${
+            !saveAsTemplate
+              ? "bg-emerald-500 text-zinc-950"
+              : "text-zinc-400 hover:text-white"
+          }`}
+        >
+          Asignar a alumno
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (!capabilities.canUseReusableTemplates) return;
+            setSaveAsTemplate(true);
+          }}
+          className={`inline-flex min-h-[38px] items-center justify-center gap-1 rounded-lg text-xs font-semibold transition ${
+            !capabilities.canUseReusableTemplates
+              ? "cursor-not-allowed text-zinc-600"
+              : saveAsTemplate
+              ? "bg-emerald-500 text-zinc-950"
+              : "text-zinc-400 hover:text-white"
+          }`}
+        >
+          {!capabilities.canUseReusableTemplates && (
+            <Lock className="h-3 w-3" />
+          )}
+          Guardar plantilla
+        </button>
+      </div>
+
+      {!capabilities.canUseReusableTemplates && (
+        <div className="flex flex-col gap-2 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3.5 py-2.5 text-[11px] text-amber-200 sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            <strong className="text-amber-300">Requiere plan mayor:</strong> las
+            plantillas reutilizables se desbloquean en{" "}
+            <strong className="text-white">Coach Base ($449 MXN/mes)</strong>.
+          </span>
+          <Link
+            href="/coach/plans?tab=saas&reason=workouts"
+            className="w-fit shrink-0 rounded-full bg-emerald-500 px-3 py-1 font-bold text-[#0a0a0a] hover:bg-emerald-400"
+          >
+            Subir plan →
+          </Link>
+        </div>
+      )}
+
+      {/* 1. Alumno y Datos de Rutina */}
+      <div className="space-y-3 rounded-xl border border-white/[0.06] bg-[#060607]/70 p-3.5">
+        {!saveAsTemplate && (
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-zinc-300">
+              Alumno destino
+            </label>
+            <select
+              value={targetStudentId}
+              onChange={(e) => handleSelectStudent(e.target.value)}
+              className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-sm font-medium text-white outline-none focus:border-emerald-500/60"
+            >
+              {activeStudents.length === 0 ? (
+                <option value="">Sin alumnos activos aún</option>
+              ) : (
+                activeStudents.map((s) => (
+                  <option key={s.id} value={s.student_id || ""}>
+                    {s.invited_name} ({s.gender === "male" ? "Hombre" : "Mujer"}{" "}
+                    · {s.subscription_plan_name})
+                  </option>
+                ))
+              )}
+            </select>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-3">
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-zinc-300">
+              Nombre de la rutina
+            </label>
+            <input
+              type="text"
+              required
+              value={routineTitle}
+              onChange={(e) => setRoutineTitle(e.target.value)}
+              placeholder="Ej. Hipertrofia Tren Superior · Mes 1"
+              className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3.5 py-2 text-sm text-white outline-none focus:border-emerald-500/60"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-zinc-300">
+              Sesión / Día
+            </label>
+            <input
+              type="text"
+              required
+              value={dayTitle}
+              onChange={(e) => setDayTitle(e.target.value)}
+              placeholder="Ej. Día 1: Fuerza y Tonificación"
+              className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3.5 py-2 text-sm text-white outline-none focus:border-emerald-500/60"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+              Objetivo
+            </label>
+            <select
+              value={routineGoal}
+              onChange={(e) => setRoutineGoal(e.target.value)}
+              className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/60"
+            >
+              {ROUTINE_GOALS.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+              Nivel
+            </label>
+            <select
+              value={routineLevel}
+              onChange={(e) =>
+                setRoutineLevel(
+                  e.target.value as "principiante" | "intermedio" | "avanzado"
+                )
+              }
+              className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/60"
+            >
+              <option value="principiante">Principiante</option>
+              <option value="intermedio">Intermedio</option>
+              <option value="avanzado">Avanzado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Vigencia y Días en Calendario */}
+      <div className="space-y-3.5 rounded-xl border border-white/[0.06] bg-[#060607]/70 p-3.5">
+        {!saveAsTemplate && (
+          <div className="space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200">
+                <CalendarDays className="h-3.5 w-3.5 text-emerald-400" />
+                Vigencia en calendario
+              </label>
+              <div className="flex flex-wrap gap-1">
+                {DURATION_PRESETS.map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => applyDurationPreset(preset.days)}
+                    className="rounded-lg border border-white/10 bg-[#0e0f12] px-2 py-1 text-[10px] font-semibold text-zinc-300 transition hover:border-emerald-500/50 hover:text-emerald-300"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEndDate("");
+                    setDateError(null);
+                  }}
+                  className={`rounded-lg border px-2 py-1 text-[10px] font-semibold transition ${
+                    !endDate
+                      ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
+                      : "border-white/10 bg-[#0e0f12] text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Sin fin
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-[11px] font-medium text-zinc-400">
+                  Fecha de inicio
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    setDateError(null);
+                  }}
+                  className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/60"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-[11px] font-medium text-zinc-400">
+                  Fecha de fin
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={startDate || undefined}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    setDateError(null);
+                  }}
+                  className="min-h-[44px] w-full rounded-xl border border-white/15 bg-[#0e0f12] px-3 py-2 text-sm text-white outline-none focus:border-emerald-500/60"
+                />
+              </div>
+            </div>
+
+            {dateError && (
+              <p className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-[11px] text-rose-300">
+                {dateError}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Días de la semana */}
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <label className="text-xs font-semibold text-zinc-200">
+              Días asignados en calendario
+            </label>
+            <div className="flex flex-wrap gap-1">
+              <button
+                type="button"
+                onClick={() => setSelectedWeekdays([1, 3, 5])}
+                className="rounded-md border border-white/10 bg-[#0e0f12] px-2 py-0.5 text-[10px] font-medium text-zinc-400 hover:text-white"
+              >
+                L-M-V
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedWeekdays([1, 2, 4, 5])}
+                className="rounded-md border border-white/10 bg-[#0e0f12] px-2 py-0.5 text-[10px] font-medium text-zinc-400 hover:text-white"
+              >
+                L-M-J-V
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedWeekdays([1, 2, 3, 4, 5])}
+                className="rounded-md border border-white/10 bg-[#0e0f12] px-2 py-0.5 text-[10px] font-medium text-zinc-400 hover:text-white"
+              >
+                Lun-Vie
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-7 gap-1.5">
+            {WEEKDAYS.map((wd) => {
+              const active = selectedWeekdays.includes(wd.num);
+              return (
+                <button
+                  key={wd.num}
+                  type="button"
+                  onClick={() => toggleWeekday(wd.num)}
+                  className={`flex min-h-[40px] items-center justify-center rounded-xl text-xs font-bold transition active:scale-95 ${
+                    active
+                      ? "bg-emerald-500 text-zinc-950 shadow-sm"
+                      : "border border-white/10 bg-[#0e0f12] text-zinc-400 hover:border-white/25 hover:text-white"
+                  }`}
+                >
+                  {wd.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Resumen visual de vigencia */}
+        {!saveAsTemplate && (
+          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.07] px-3 py-2 text-[11px] text-emerald-200">
+            {startDate && endDate ? (
+              <span>
+                Se iluminará en el calendario del{" "}
+                <strong className="text-white">
+                  {formatShortEsDate(startDate)}
+                </strong>{" "}
+                al{" "}
+                <strong className="text-white">
+                  {formatShortEsDate(endDate)}
+                </strong>{" "}
+                ·{" "}
+                <strong className="text-emerald-300">
+                  {scheduledSessionsCount} sesiones
+                </strong>
+              </span>
+            ) : startDate ? (
+              <span>
+                Activa desde el{" "}
+                <strong className="text-white">
+                  {formatShortEsDate(startDate)}
+                </strong>{" "}
+                sin fecha de cierre ({selectedWeekdays.length} días/sem).
+              </span>
+            ) : (
+              <span>
+                Sin rango fijo ({selectedWeekdays.length} días/sem).
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 3. Notas del Coach */}
+      <div>
+        <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+          Indicaciones del Coach (opcional)
+        </label>
+        <textarea
+          rows={2}
+          value={routineDescription}
+          onChange={(e) => setRoutineDescription(e.target.value)}
+          placeholder="Ej. Calentar 8 min antes de empezar, controlar fase excéntrica en 3 segundos..."
+          className="w-full rounded-xl border border-white/15 bg-[#060607] px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500/60"
+        />
+      </div>
+
+      {/* 4. Lista de ejercicios seleccionados */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold text-zinc-300">
+            Ejercicios en la rutina ({draftExercises.length})
+          </p>
+          {draftExercises.length > 0 && (
+            <span className="text-[11px] text-zinc-500">
+              ~{Math.max(35, draftExercises.length * 12)} min aprox.
+            </span>
+          )}
+        </div>
+
+        <div className="max-h-72 space-y-2.5 overflow-y-auto pr-1">
+          {draftExercises.map((ex, idx) => (
+            <div
+              key={ex.id}
+              className="space-y-2.5 rounded-xl border border-white/[0.08] bg-[#060607] p-3"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="truncate text-xs font-bold text-white">
+                  {idx + 1}. {ex.name}
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraftExercises((prev) =>
+                      prev.filter((i) => i.id !== ex.id)
+                    )
+                  }
+                  aria-label="Quitar ejercicio"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-zinc-500 hover:bg-rose-500/10 hover:text-rose-400"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-1.5">
+                <div>
+                  <label className="mb-0.5 block text-[10px] text-zinc-500">
+                    Series
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="12"
+                    value={ex.sets}
+                    onChange={(e) =>
+                      updateDraftExercise(ex.id, {
+                        sets: Number(e.target.value) || 3,
+                      })
+                    }
+                    className="min-h-[38px] w-full rounded-lg border border-white/10 bg-[#0e0f12] px-2.5 py-1 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="mb-0.5 block text-[10px] text-zinc-500">
+                    Reps
+                  </label>
+                  <input
+                    type="text"
+                    value={ex.reps}
+                    onChange={(e) =>
+                      updateDraftExercise(ex.id, { reps: e.target.value })
+                    }
+                    className="min-h-[38px] w-full rounded-lg border border-white/10 bg-[#0e0f12] px-2.5 py-1 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="mb-0.5 block text-[10px] text-zinc-500">
+                    Descanso (s)
+                  </label>
+                  <input
+                    type="number"
+                    min="15"
+                    max="300"
+                    value={ex.rest_seconds}
+                    onChange={(e) =>
+                      updateDraftExercise(ex.id, {
+                        rest_seconds: Number(e.target.value) || 90,
+                      })
+                    }
+                    className="min-h-[38px] w-full rounded-lg border border-white/10 bg-[#0e0f12] px-2.5 py-1 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="mb-0.5 block text-[10px] text-zinc-500">
+                    Peso / RPE
+                  </label>
+                  <input
+                    type="text"
+                    value={ex.target_weight_or_rpe || ""}
+                    onChange={(e) =>
+                      updateDraftExercise(ex.id, {
+                        target_weight_or_rpe: e.target.value,
+                      })
+                    }
+                    placeholder="RPE 8"
+                    className="min-h-[38px] w-full rounded-lg border border-white/10 bg-[#0e0f12] px-2.5 py-1 text-xs text-white"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+          {draftExercises.length === 0 && (
+            <div className="rounded-xl border border-dashed border-white/10 px-4 py-6 text-center text-xs text-zinc-400">
+              Toca <strong className="text-white">&ldquo;Agregar a la Rutina&rdquo;</strong>{" "}
+              en cualquier ejercicio del catálogo anatómico.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -558,216 +1093,24 @@ export default function CoachWorkoutsPage() {
               </button>
             </div>
 
-            <div className="flex-1 space-y-4 overflow-y-auto p-5">
-              {/* Toggle: Assign to Student vs Save as Template */}
-              <div className="grid grid-cols-2 gap-1.5 rounded-lg border border-white/10 bg-[#060607] p-1">
-                <button
-                  type="button"
-                  onClick={() => setSaveAsTemplate(false)}
-                  className={`h-9 rounded-md text-xs font-medium transition ${
-                    !saveAsTemplate
-                      ? "bg-emerald-500 text-zinc-950 font-semibold"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  Asignar a alumno
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!capabilities.canUseReusableTemplates) return;
-                    setSaveAsTemplate(true);
-                  }}
-                  className={`inline-flex h-9 items-center justify-center gap-1 rounded-md text-xs font-medium transition ${
-                    !capabilities.canUseReusableTemplates
-                      ? "cursor-not-allowed text-zinc-600"
-                      : saveAsTemplate
-                      ? "bg-emerald-500 text-zinc-950 font-semibold"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  {!capabilities.canUseReusableTemplates && (
-                    <Lock className="h-3 w-3" />
-                  )}
-                  Guardar plantilla
-                </button>
-              </div>
-
-              {!capabilities.canUseReusableTemplates && (
-                <div className="flex items-center justify-between gap-2 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3.5 py-2.5 text-[11px] text-amber-200">
-                  <span>
-                    <strong className="text-amber-300">Requiere plan mayor:</strong>{" "}
-                    las plantillas reutilizables de rutinas se desbloquean en{" "}
-                    <strong className="text-white">Coach Base ($449 MXN/mes)</strong>.
-                  </span>
-                  <Link
-                    href="/coach/plans?tab=saas&reason=workouts"
-                    className="shrink-0 rounded-full bg-emerald-500 px-3 py-1 font-bold text-[#0a0a0a] hover:bg-emerald-400"
-                  >
-                    Subir plan →
-                  </Link>
-                </div>
-              )}
-
-              {!saveAsTemplate && (
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-zinc-400">
-                    Alumno destino
-                  </label>
-                  <select
-                    value={targetStudentId}
-                    onChange={(e) => handleSelectStudent(e.target.value)}
-                    className="min-h-[44px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-sm text-white outline-none focus:border-emerald-500/60"
-                  >
-                    {activeStudents.map((s) => (
-                      <option key={s.id} value={s.student_id!}>
-                        {s.invited_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-zinc-400">
-                    Nombre de la rutina
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={routineTitle}
-                    onChange={(e) => setRoutineTitle(e.target.value)}
-                    className="min-h-[42px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-xs text-white"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-zinc-400">
-                    Título del día
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={dayTitle}
-                    onChange={(e) => setDayTitle(e.target.value)}
-                    className="min-h-[42px] w-full rounded-xl border border-white/10 bg-[#060607] px-3 text-xs text-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-zinc-400">
-                  Días asignados
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {WEEKDAYS.map((d) => {
-                    const active = selectedWeekdays.includes(d.num);
-                    return (
-                      <button
-                        key={d.num}
-                        type="button"
-                        onClick={() => toggleWeekday(d.num)}
-                        className={`h-8 rounded-full px-3 text-xs font-medium transition ${
-                          active
-                            ? "bg-emerald-500 text-zinc-950"
-                            : "border border-white/10 bg-[#060607] text-zinc-400"
-                        }`}
-                      >
-                        {d.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-xs font-medium text-zinc-400">
-                  Ejercicios seleccionados ({draftExercises.length})
-                </p>
-                {draftExercises.length === 0 ? (
-                  <p className="rounded-xl border border-dashed border-white/10 py-6 text-center text-xs text-zinc-500">
-                    Agrega ejercicios desde el catálogo y luego pulsa &ldquo;Asignar ahora&rdquo;.
-                  </p>
-                ) : (
-                  <div className="space-y-2">
-                    {draftExercises.map((ex) => (
-                      <div
-                        key={ex.id}
-                        className="rounded-xl border border-white/[0.08] bg-[#060607] p-3"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="truncate text-xs font-semibold text-white">
-                            {ex.name}
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setDraftExercises((prev) =>
-                                prev.filter((item) => item.id !== ex.id)
-                              )
-                            }
-                            aria-label="Quitar ejercicio"
-                            className="text-zinc-500 hover:text-rose-400"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                        <div className="mt-2 grid grid-cols-3 gap-2">
-                          <input
-                            type="number"
-                            min="1"
-                            max="12"
-                            value={ex.sets}
-                            onChange={(e) =>
-                              updateDraftExercise(ex.id, {
-                                sets: Number(e.target.value) || 3,
-                              })
-                            }
-                            aria-label="Series"
-                            className="h-9 rounded-lg border border-white/10 bg-[#0e0f12] px-2 text-xs text-white"
-                            placeholder="Series"
-                          />
-                          <input
-                            type="text"
-                            value={ex.reps}
-                            onChange={(e) =>
-                              updateDraftExercise(ex.id, { reps: e.target.value })
-                            }
-                            aria-label="Repeticiones"
-                            className="h-9 rounded-lg border border-white/10 bg-[#0e0f12] px-2 text-xs text-white"
-                            placeholder="Reps"
-                          />
-                          <input
-                            type="number"
-                            min="15"
-                            max="300"
-                            value={ex.rest_seconds}
-                            onChange={(e) =>
-                              updateDraftExercise(ex.id, {
-                                rest_seconds: Number(e.target.value) || 90,
-                              })
-                            }
-                            aria-label="Descanso en segundos"
-                            className="h-9 rounded-lg border border-white/10 bg-[#0e0f12] px-2 text-xs text-white"
-                            placeholder="Descanso s"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+              {renderBuilderFields()}
             </div>
 
             <div className="border-t border-white/[0.08] p-4">
               <button
                 type="submit"
-                disabled={draftExercises.length === 0}
-                className="h-11 w-full rounded-full bg-white text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-40"
+                disabled={
+                  draftExercises.length === 0 ||
+                  (!saveAsTemplate && activeStudents.length === 0)
+                }
+                className="min-h-[46px] w-full rounded-xl bg-white text-sm font-bold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-40"
               >
                 {saveAsTemplate
                   ? "Guardar como Plantilla"
-                  : "Publicar y asignar al alumno"}
+                  : activeStudents.length === 0
+                  ? "Activa un alumno primero para publicar"
+                  : "Publicar Rutina Visual al Alumno"}
               </button>
             </div>
           </form>
@@ -925,168 +1268,19 @@ export default function CoachWorkoutsPage() {
             </span>
           </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-zinc-300">
-              Alumno destino (adapta figura Mujer/Hombre automáticamente)
-            </label>
-            <select
-              value={targetStudentId}
-              onChange={(e) => handleSelectStudent(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs font-semibold text-white"
-            >
-              {activeStudents.map((s) => (
-                <option key={s.id} value={s.student_id || ""}>
-                  {s.invited_name} ({s.gender === "male" ? "Hombre" : "Mujer"} ·{" "}
-                  {s.subscription_plan_name})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-[11px] text-zinc-400">
-                Nombre de rutina
-              </label>
-              <input
-                type="text"
-                required
-                value={routineTitle}
-                onChange={(e) => setRoutineTitle(e.target.value)}
-                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-[11px] text-zinc-400">
-                Sesión / Día
-              </label>
-              <input
-                type="text"
-                required
-                value={dayTitle}
-                onChange={(e) => setDayTitle(e.target.value)}
-                className="w-full rounded-xl border border-white/15 bg-[#060607] px-3 py-2 text-xs text-white"
-              />
-            </div>
-          </div>
-
-          {/* Weekday Picker */}
-          <div>
-            <label className="mb-1.5 block text-[11px] font-semibold text-zinc-300">
-              Días asignados en calendario
-            </label>
-            <div className="grid grid-cols-7 gap-1">
-              {WEEKDAYS.map((wd) => {
-                const active = selectedWeekdays.includes(wd.num);
-                return (
-                  <button
-                    key={wd.num}
-                    type="button"
-                    onClick={() => toggleWeekday(wd.num)}
-                    className={`rounded-lg py-1.5 text-[11px] font-bold transition ${
-                      active
-                        ? "bg-emerald-500 text-zinc-950"
-                        : "border border-white/[0.08] bg-[#060607] text-zinc-400 hover:text-white"
-                    }`}
-                  >
-                    {wd.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Draft Exercise List */}
-          <div className="max-h-72 space-y-2.5 overflow-y-auto pr-1">
-            {draftExercises.map((ex, idx) => (
-              <div
-                key={ex.id}
-                className="space-y-2 rounded-xl border border-white/[0.08] bg-[#060607] p-3"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-bold text-white">
-                    {idx + 1}. {ex.name}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setDraftExercises((prev) =>
-                        prev.filter((i) => i.id !== ex.id)
-                      )
-                    }
-                    className="text-zinc-500 hover:text-rose-400"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-1.5">
-                  <div>
-                    <label className="text-[9px] text-zinc-500">Series</label>
-                    <input
-                      type="number"
-                      value={ex.sets}
-                      onChange={(e) =>
-                        updateDraftExercise(ex.id, {
-                          sets: Number(e.target.value) || 3,
-                        })
-                      }
-                      className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-2 py-1 text-xs text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[9px] text-zinc-500">Reps</label>
-                    <input
-                      type="text"
-                      value={ex.reps}
-                      onChange={(e) =>
-                        updateDraftExercise(ex.id, { reps: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-2 py-1 text-xs text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[9px] text-zinc-500">Desc(s)</label>
-                    <input
-                      type="number"
-                      value={ex.rest_seconds}
-                      onChange={(e) =>
-                        updateDraftExercise(ex.id, {
-                          rest_seconds: Number(e.target.value) || 60,
-                        })
-                      }
-                      className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-2 py-1 text-xs text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[9px] text-zinc-500">Peso/RPE</label>
-                    <input
-                      type="text"
-                      value={ex.target_weight_or_rpe || ""}
-                      onChange={(e) =>
-                        updateDraftExercise(ex.id, {
-                          target_weight_or_rpe: e.target.value,
-                        })
-                      }
-                      className="w-full rounded-lg border border-white/[0.08] bg-[#0e0f12] px-2 py-1 text-xs text-white"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-            {draftExercises.length === 0 && (
-              <div className="rounded-xl border border-dashed border-white/[0.08] p-5 text-center text-xs text-zinc-500">
-                Toca &ldquo;Agregar a la Rutina&rdquo; en cualquier ejercicio
-                del catálogo anatómico.
-              </div>
-            )}
-          </div>
+          {renderBuilderFields()}
 
           <button
             type="submit"
-            disabled={draftExercises.length === 0 || activeStudents.length === 0}
-            className="min-h-[44px] w-full rounded-xl bg-white hover:bg-zinc-200 py-3 text-xs font-bold text-zinc-950 shadow-lg shadow-none transition  active:scale-[0.98] disabled:opacity-40"
+            disabled={
+              draftExercises.length === 0 ||
+              (!saveAsTemplate && activeStudents.length === 0)
+            }
+            className="min-h-[46px] w-full rounded-xl bg-white py-3 text-sm font-bold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-40"
           >
-            {activeStudents.length === 0
+            {saveAsTemplate
+              ? "Guardar como Plantilla"
+              : activeStudents.length === 0
               ? "Activa un alumno primero para publicar"
               : "Publicar Rutina Visual al Alumno"}
           </button>

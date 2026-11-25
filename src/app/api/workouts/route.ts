@@ -7,7 +7,45 @@ import type { WorkoutDay, WorkoutExercise, WorkoutPlan } from "@/types/database"
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const VALID_DB_MEDIA_TYPES = new Set(["gif", "video", "lottie", "svg_anim"]);
+const RANGE_MARKER_REGEX = /\n?\[VIGENCIA:(\d{4}-\d{2}-\d{2})?\.\.(\d{4}-\d{2}-\d{2})?\]$/;
+
+function asIsoDateOrNull(val?: string | null): string | null {
+  if (!val || typeof val !== "string") return null;
+  const trimmed = val.trim();
+  return ISO_DATE_REGEX.test(trimmed) ? trimmed : null;
+}
+
+function extractEmbeddedRange(description?: string | null): {
+  cleanDescription?: string;
+  startDate: string | null;
+  endDate: string | null;
+} {
+  if (!description) {
+    return { cleanDescription: undefined, startDate: null, endDate: null };
+  }
+  const match = description.match(RANGE_MARKER_REGEX);
+  if (!match) {
+    return { cleanDescription: description, startDate: null, endDate: null };
+  }
+  const clean = description.replace(RANGE_MARKER_REGEX, "").trim();
+  return {
+    cleanDescription: clean || undefined,
+    startDate: match[1] || null,
+    endDate: match[2] || null,
+  };
+}
+
+function embedRangeInDescription(
+  description: string | null,
+  startDate: string | null,
+  endDate: string | null
+): string | null {
+  if (!startDate && !endDate) return description;
+  const marker = `[VIGENCIA:${startDate || ""}..${endDate || ""}]`;
+  return description ? `${description}\n${marker}` : marker;
+}
 
 function asUuidOrNull(val?: string | null): string | null {
   if (!val || typeof val !== "string") return null;
@@ -131,22 +169,33 @@ export async function GET() {
       daysByWorkout.set(wId, list);
     }
 
-    const workouts: WorkoutPlan[] = workoutRows.map((w) => ({
-      id: String(w.id),
-      coach_id: String(w.coach_id),
-      student_id: w.student_id ? String(w.student_id) : null,
-      is_template: Boolean(w.is_template),
-      title: String(w.title || "Rutina"),
-      description: w.description ? String(w.description) : undefined,
-      goal: w.goal ? String(w.goal) : undefined,
-      level:
-        w.level === "principiante" || w.level === "avanzado"
-          ? w.level
-          : "intermedio",
-      is_active: Boolean(w.is_active),
-      days: daysByWorkout.get(String(w.id)) || [],
-      created_at: String(w.created_at || new Date().toISOString()),
-    }));
+    const workouts: WorkoutPlan[] = workoutRows.map((w) => {
+      const embedded = extractEmbeddedRange(
+        w.description ? String(w.description) : null
+      );
+      return {
+        id: String(w.id),
+        coach_id: String(w.coach_id),
+        student_id: w.student_id ? String(w.student_id) : null,
+        is_template: Boolean(w.is_template),
+        title: String(w.title || "Rutina"),
+        description: embedded.cleanDescription,
+        goal: w.goal ? String(w.goal) : undefined,
+        level:
+          w.level === "principiante" || w.level === "avanzado"
+            ? w.level
+            : "intermedio",
+        start_date:
+          asIsoDateOrNull(w.start_date ? String(w.start_date) : null) ||
+          embedded.startDate,
+        end_date:
+          asIsoDateOrNull(w.end_date ? String(w.end_date) : null) ||
+          embedded.endDate,
+        is_active: Boolean(w.is_active),
+        days: daysByWorkout.get(String(w.id)) || [],
+        created_at: String(w.created_at || new Date().toISOString()),
+      };
+    });
 
     return NextResponse.json({ mode: "supabase", workouts });
   } catch (err) {
@@ -179,6 +228,8 @@ export async function POST(request: Request) {
       description?: string;
       goal?: string;
       level?: "principiante" | "intermedio" | "avanzado";
+      start_date?: string | null;
+      end_date?: string | null;
       student_id?: string | null;
       is_template?: boolean;
       is_active?: boolean;
@@ -216,6 +267,9 @@ export async function POST(request: Request) {
     const targetStudentId = asUuidOrNull(body.student_id);
     const isTemplate = Boolean(body.is_template) || !targetStudentId;
     const isActive = body.is_active !== false;
+    const startDate = asIsoDateOrNull(body.start_date);
+    const endDate = asIsoDateOrNull(body.end_date);
+    const cleanDesc = body.description?.trim() || null;
 
     // Si se asigna a un alumno, desactivar rutinas activas previas de este coach para ese alumno
     if (targetStudentId && !isTemplate && isActive) {
@@ -227,29 +281,51 @@ export async function POST(request: Request) {
         .eq("is_active", true);
     }
 
-    const { data: insertedWorkout, error: insertWorkoutErr } = await adminClient
-      .from("workouts")
-      .insert({
-        coach_id: user.id,
-        student_id: isTemplate ? null : targetStudentId,
-        is_template: isTemplate,
-        title,
-        description: body.description?.trim() || null,
-        goal: body.goal?.trim() || null,
-        level:
-          body.level === "principiante" || body.level === "avanzado"
-            ? body.level
-            : "intermedio",
-        is_active: isActive,
-      })
-      .select("*")
-      .single();
+    const baseWorkoutPayload = {
+      coach_id: user.id,
+      student_id: isTemplate ? null : targetStudentId,
+      is_template: isTemplate,
+      title,
+      description: cleanDesc,
+      goal: body.goal?.trim() || null,
+      level:
+        body.level === "principiante" || body.level === "avanzado"
+          ? body.level
+          : "intermedio",
+      is_active: isActive,
+    };
 
-    if (insertWorkoutErr || !insertedWorkout) {
-      return NextResponse.json(
-        { error: insertWorkoutErr?.message || "No se pudo guardar la rutina." },
-        { status: 400 }
-      );
+    let insertedWorkout: Record<string, unknown> | null = null;
+    const { data: workoutWithDates, error: insertWithDatesErr } =
+      await adminClient
+        .from("workouts")
+        .insert({
+          ...baseWorkoutPayload,
+          start_date: startDate,
+          end_date: endDate,
+        })
+        .select("*")
+        .single();
+
+    if (insertWithDatesErr) {
+      // Fallback si las columnas start_date/end_date aún no existen en BD
+      const { data: workoutFallback, error: fbErr } = await adminClient
+        .from("workouts")
+        .insert({
+          ...baseWorkoutPayload,
+          description: embedRangeInDescription(cleanDesc, startDate, endDate),
+        })
+        .select("*")
+        .single();
+      if (fbErr || !workoutFallback) {
+        return NextResponse.json(
+          { error: fbErr?.message || "No se pudo guardar la rutina." },
+          { status: 400 }
+        );
+      }
+      insertedWorkout = workoutFallback as Record<string, unknown>;
+    } else {
+      insertedWorkout = workoutWithDates as Record<string, unknown>;
     }
 
     const createdDays: WorkoutDay[] = [];
@@ -365,15 +441,15 @@ export async function POST(request: Request) {
         : null,
       is_template: Boolean(insertedWorkout.is_template),
       title: String(insertedWorkout.title),
-      description: insertedWorkout.description
-        ? String(insertedWorkout.description)
-        : undefined,
+      description: cleanDesc || undefined,
       goal: insertedWorkout.goal ? String(insertedWorkout.goal) : undefined,
       level:
         insertedWorkout.level === "principiante" ||
         insertedWorkout.level === "avanzado"
           ? insertedWorkout.level
           : "intermedio",
+      start_date: startDate,
+      end_date: endDate,
       is_active: Boolean(insertedWorkout.is_active),
       days: createdDays,
       created_at: String(
