@@ -57,7 +57,7 @@ export function getAppUrl(): string {
   if (configured && configured.startsWith("http") && !isLocal(configured)) {
     return configured;
   }
-  return "https://mygymbrou.nocodepy.com";
+  return "https://migymbrou.com";
 }
 
 export function createClient() {

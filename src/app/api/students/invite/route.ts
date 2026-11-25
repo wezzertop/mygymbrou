@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
 import { canInviteMoreStudents, getSaasPlanById } from "@/lib/saas-plans";
 
-const PROD_FALLBACK_URL = "https://mygymbrou.nocodepy.com";
+const PROD_FALLBACK_URL = "https://migymbrou.com";
 
 function isLocalUrl(url?: string | null): boolean {
   if (!url) return true;
@@ -15,7 +15,13 @@ function isLocalUrl(url?: string | null): boolean {
 }
 
 function resolvePublicAppUrl(request: Request): string {
-  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/+$/, "");
+  const envUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    ""
+  )
+    .trim()
+    .replace(/\/+$/, "");
   if (envUrl && envUrl.startsWith("http") && !isLocalUrl(envUrl)) {
     return envUrl;
   }

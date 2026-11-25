@@ -43,7 +43,7 @@ export async function GET(request: Request) {
       ? envUrl
       : !isLocal(origin)
       ? origin
-      : origin || "https://mygymbrou.nocodepy.com";
+      : origin || "https://migymbrou.com";
 
   const supabase = await createServerSupabaseClient();
 

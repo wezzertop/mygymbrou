@@ -65,5 +65,5 @@ export function getServerAppUrl(request?: Request): string {
   }
 
   if (envUrl && !isLocal(envUrl)) return envUrl;
-  return "https://mygymbrou.nocodepy.com";
+  return "https://migymbrou.com";
 }
