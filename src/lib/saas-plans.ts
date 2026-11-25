@@ -31,15 +31,15 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
       "Trabaja cómodo con tus primeros 5 alumnos y prueba la plataforma sin costo fijo.",
     features: [
       "Hasta 5 alumnos activos",
+      "1 paquete de asesoría configurable",
       "Hasta 2 plantillas de dieta (con imagen)",
       "1 evaluación antropométrica por alumno al mes",
-      "Hasta 2 citas activas y 1 paquete de asesoría",
-      "App móvil gratuita para tus alumnos",
+      "Hasta 2 citas activas · App móvil gratuita para alumnos",
     ],
     excludedFeatures: [
       "Incluye publicidad en la app (Plan Free)",
-      "Sin plantillas reutilizables de rutinas",
-      "Sin soporte prioritario ni multi-coach",
+      "Máx. 1 paquete y 2 citas (sin paquetes ni citas ilimitadas)",
+      "Sin plantillas reutilizables de rutinas ni soporte prioritario",
     ],
     featured: false,
     ctaLabel: "Empezar Gratis",
@@ -57,10 +57,10 @@ export const SAAS_PLANS_MXN: SaasPlanConfig[] = [
     features: [
       "Hasta 15 alumnos activos",
       "0% publicidad para ti y tus alumnos",
+      "Paquetes de asesoría y citas ilimitadas",
       "Hasta 10 plantillas de dieta (con imagen)",
       "Hasta 2 evaluaciones antropométricas/alumno al mes",
-      "Agenda de citas, paquetes y plantillas de rutinas",
-      "App móvil gratuita para tus alumnos",
+      "Plantillas reutilizables de rutinas · App móvil gratuita",
     ],
     excludedFeatures: [
       "Sin comparativas visuales 360° ni soporte prioritario",

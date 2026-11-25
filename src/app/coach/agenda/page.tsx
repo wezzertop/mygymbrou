@@ -128,10 +128,10 @@ function CoachAgendaContent() {
                 Mejora a <strong>Coach Base</strong> para agendar citas ilimitadas y eliminar la publicidad.
               </p>
               <Link
-                href="/coach/plans?tab=saas"
-                className="inline-flex h-8 items-center rounded-full bg-white px-3.5 text-[11px] font-semibold text-zinc-950"
+                href="/coach/plans?tab=saas&reason=appointments"
+                className="inline-flex h-8 items-center rounded-full bg-emerald-500 px-3.5 text-[11px] font-bold text-[#0a0a0a] hover:bg-emerald-400"
               >
-                Ver planes en MXN →
+                Subir a Coach Base →
               </Link>
             </div>
           )}

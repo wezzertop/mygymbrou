@@ -594,16 +594,17 @@ export default function CoachWorkoutsPage() {
               </div>
 
               {!capabilities.canUseReusableTemplates && (
-                <div className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.08] bg-[#060607] px-3.5 py-2.5 text-[11px] text-zinc-400">
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3.5 py-2.5 text-[11px] text-amber-200">
                   <span>
-                    Plantillas reutilizables disponibles desde{" "}
-                    <strong className="text-white">Coach Base</strong>.
+                    <strong className="text-amber-300">Requiere plan mayor:</strong>{" "}
+                    las plantillas reutilizables de rutinas se desbloquean en{" "}
+                    <strong className="text-white">Coach Base ($449 MXN/mes)</strong>.
                   </span>
                   <Link
-                    href="/coach/plans?tab=saas"
-                    className="shrink-0 font-semibold text-emerald-400 hover:underline"
+                    href="/coach/plans?tab=saas&reason=workouts"
+                    className="shrink-0 rounded-full bg-emerald-500 px-3 py-1 font-bold text-[#0a0a0a] hover:bg-emerald-400"
                   >
-                    Mejorar →
+                    Subir plan →
                   </Link>
                 </div>
               )}

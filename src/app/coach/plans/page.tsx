@@ -8,6 +8,7 @@ import {
   CreditCard,
   Crown,
   Image as ImageIcon,
+  Lock,
   Pencil,
   Plus,
   Trash2,
@@ -143,6 +144,53 @@ function CoachPlansContent() {
   const [acceptChangeTerms, setAcceptChangeTerms] = useState(false);
   const [submittingChange, setSubmittingChange] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<string | null>(
+    searchParams.get("reason")
+  );
+
+  const UPGRADE_REASON_COPY: Record<string, { title: string; detail: string; recommended: SaasPlanTier }> = {
+    packages: {
+      title: "Límite de paquetes alcanzado en tu plan actual",
+      detail:
+        "Tu plan Inicio / Free permite configurar máximo 1 paquete de asesoría. Sube a Coach Base ($449 MXN/mes) para crear paquetes ilimitados y quitar anuncios.",
+      recommended: "base",
+    },
+    diets: {
+      title: "Límite de plantillas de dieta alcanzado",
+      detail:
+        "Alcanzaste el máximo de plantillas de dieta de tu plan actual. Sube de plan para crear 10, 30 o plantillas ilimitadas con imagen.",
+      recommended: currentSaasPlan.id === "free" ? "base" : currentSaasPlan.id === "base" ? "pro" : "studio",
+    },
+    workouts: {
+      title: "Plantillas reutilizables de rutinas disponibles desde Coach Base",
+      detail:
+        "En Inicio / Free puedes asignar rutinas directas; para guardar plantillas reutilizables en 1 clic sube a Coach Base ($449 MXN/mes) o superior.",
+      recommended: "base",
+    },
+    appointments: {
+      title: "Límite de 2 citas activas alcanzado en Inicio / Free",
+      detail:
+        "Sube a Coach Base ($449 MXN/mes) o superior para agendar citas ilimitadas con tus alumnos.",
+      recommended: "base",
+    },
+    assessments: {
+      title: "Límite mensual de evaluaciones antropométricas alcanzado",
+      detail:
+        "Cada plan incluye un tope mensual de evaluaciones por alumno (1 en Free, 2 en Base, 4 en Pro, ilimitadas en Estudio). Sube de plan para registrar más.",
+      recommended: currentSaasPlan.id === "free" ? "base" : currentSaasPlan.id === "base" ? "pro" : "studio",
+    },
+    students: {
+      title: "Cupo máximo de alumnos activos alcanzado",
+      detail:
+        "Sube a un plan superior para ampliar tu límite de alumnos activos (15 en Base, 50 en Pro, 150 en Estudio / Gym).",
+      recommended: currentSaasPlan.id === "free" ? "base" : currentSaasPlan.id === "base" ? "pro" : "studio",
+    },
+  };
+
+  const planCaps = getPlanCapabilities(coachProfile.saas_plan_tier);
+  const packageLimitReached =
+    planCaps.maxSubscriptionPackages !== null &&
+    subscriptionPlans.length >= planCaps.maxSubscriptionPackages;
 
   const paymentStatusParam = searchParams.get("payment");
 
@@ -265,7 +313,6 @@ function CoachPlansContent() {
     }
   };
 
-  const planCaps = getPlanCapabilities(coachProfile.saas_plan_tier);
   const dietTemplatesCount = nutritionPlans.filter((n) => n.is_template).length;
   const dietLimitReached =
     planCaps.maxDietTemplates !== null &&
@@ -315,15 +362,12 @@ function CoachPlansContent() {
   const handleCreateSubPlan = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    const caps = getPlanCapabilities(coachProfile.saas_plan_tier);
-    if (
-      caps.maxSubscriptionPackages !== null &&
-      subscriptionPlans.length >= caps.maxSubscriptionPackages
-    ) {
-      notify(
-        "El plan Inicio / Free permite 1 paquete. Mejora a Coach Base para crear paquetes ilimitados sin publicidad."
-      );
+    if (packageLimitReached) {
+      setUpgradeReason("packages");
       setTab("saas");
+      notify(
+        "Tu plan Inicio / Free permite 1 paquete. Sube a Coach Base para crear paquetes ilimitados."
+      );
       return;
     }
     addSubscriptionPlan({
@@ -348,10 +392,11 @@ function CoachPlansContent() {
     e.preventDefault();
     if (!dTitle.trim()) return;
     if (dietLimitReached && planCaps.maxDietTemplates !== null) {
+      setUpgradeReason("diets");
+      setTab("saas");
       notify(
         `Alcanzaste el límite de ${planCaps.maxDietTemplates} plantillas de dieta de tu plan ${currentSaasPlan.name}. Mejora tu plan para agregar más.`
       );
-      setTab("saas");
       return;
     }
     addNutritionPlan({
@@ -466,6 +511,30 @@ function CoachPlansContent() {
 
       {tab === "saas" ? (
         <div className="space-y-6">
+          {upgradeReason && UPGRADE_REASON_COPY[upgradeReason] && (
+            <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-amber-500/40 bg-amber-500/15 p-4 text-xs text-amber-100">
+              <div className="flex items-start gap-2.5">
+                <Lock className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+                <div>
+                  <p className="font-bold text-amber-300">
+                    {UPGRADE_REASON_COPY[upgradeReason].title}
+                  </p>
+                  <p className="mt-0.5 leading-relaxed text-amber-100/90">
+                    {UPGRADE_REASON_COPY[upgradeReason].detail}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setUpgradeReason(null)}
+                aria-label="Cerrar aviso"
+                className="rounded-lg p-1 text-amber-300 hover:bg-amber-500/20"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+
           {paymentStatusParam === "success" && (
             <div className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-xs font-semibold text-emerald-300">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
@@ -678,10 +747,41 @@ function CoachPlansContent() {
             onSubmit={handleCreateSubPlan}
             className="min-w-0 space-y-3.5 rounded-xl border border-white/[0.08] bg-[#0e0f12] p-4 sm:space-y-4 sm:p-5 lg:col-span-5"
           >
-            <h2 className="flex items-center gap-2 text-base font-bold text-white">
-              <Plus className="h-4 w-4 text-emerald-400" />
-              Nuevo plan
-            </h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="flex items-center gap-2 text-base font-bold text-white">
+                <Plus className="h-4 w-4 text-emerald-400" />
+                Nuevo plan
+              </h2>
+              <span className="rounded-full border border-white/10 bg-[#060607] px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+                {planCaps.maxSubscriptionPackages === null
+                  ? `${subscriptionPlans.length} / ∞`
+                  : `${subscriptionPlans.length}/${planCaps.maxSubscriptionPackages} (${currentSaasPlan.name})`}
+              </span>
+            </div>
+
+            {packageLimitReached && (
+              <div className="space-y-2 rounded-xl border border-amber-500/35 bg-amber-500/10 p-3.5 text-xs text-amber-100">
+                <p className="flex items-center gap-1.5 font-bold text-amber-300">
+                  <Lock className="h-3.5 w-3.5 shrink-0" />
+                  Requiere plan Coach Base o superior
+                </p>
+                <p className="text-[11px] leading-relaxed text-amber-200/90">
+                  Tu plan <strong>{currentSaasPlan.name}</strong> incluye 1 paquete
+                  de asesoría (ya creado). Para configurar múltiples paquetes necesitas
+                  subir a <strong>Coach Base ($449 MXN/mes)</strong>.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUpgradeReason("packages");
+                    setTab("saas");
+                  }}
+                  className="inline-flex h-8 items-center rounded-full bg-emerald-500 px-3.5 text-[11px] font-bold text-[#0a0a0a] transition hover:bg-emerald-400"
+                >
+                  Subir a Coach Base →
+                </button>
+              </div>
+            )}
 
             <div>
               <label className="mb-1 block text-xs text-zinc-300">
@@ -940,17 +1040,25 @@ function CoachPlansContent() {
             </div>
 
             {dietLimitReached && (
-              <div className="flex items-center justify-between gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">
-                <span>
-                  Límite de {planCaps.maxDietTemplates} plantillas alcanzado en{" "}
-                  <strong>{currentSaasPlan.name}</strong>.
-                </span>
+              <div className="space-y-2 rounded-xl border border-amber-500/35 bg-amber-500/10 p-3.5 text-xs text-amber-100">
+                <p className="flex items-center gap-1.5 font-bold text-amber-300">
+                  <Lock className="h-3.5 w-3.5 shrink-0" />
+                  Requiere un plan superior
+                </p>
+                <p className="text-[11px] leading-relaxed text-amber-200/90">
+                  Alcanzaste el límite de {planCaps.maxDietTemplates} plantillas de
+                  dieta en <strong>{currentSaasPlan.name}</strong>. Sube de plan para
+                  desbloquear 10, 30 o plantillas ilimitadas con imagen.
+                </p>
                 <button
                   type="button"
-                  onClick={() => setTab("saas")}
-                  className="shrink-0 rounded-full bg-white px-3 py-1 text-[11px] font-bold text-zinc-950"
+                  onClick={() => {
+                    setUpgradeReason("diets");
+                    setTab("saas");
+                  }}
+                  className="inline-flex h-8 items-center rounded-full bg-emerald-500 px-3.5 text-[11px] font-bold text-[#0a0a0a] transition hover:bg-emerald-400"
                 >
-                  Mejorar
+                  Subir de plan →
                 </button>
               </div>
             )}

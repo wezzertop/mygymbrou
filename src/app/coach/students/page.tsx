@@ -271,10 +271,18 @@ function CoachStudentsContent() {
             </div>
           )}
           <Link
-            href="/coach/plans?tab=saas"
-            className="shrink-0 whitespace-nowrap rounded-lg border border-white/15 bg-[#060607] px-3 py-1.5 text-[11px] font-semibold text-emerald-300 transition hover:border-white/25"
+            href={
+              quota.allowed
+                ? "/coach/plans?tab=saas"
+                : "/coach/plans?tab=saas&reason=students"
+            }
+            className={`shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-[11px] font-bold transition ${
+              quota.allowed
+                ? "border border-white/15 bg-[#060607] text-emerald-300 hover:border-white/25"
+                : "bg-emerald-500 text-[#0a0a0a] hover:bg-emerald-400"
+            }`}
           >
-            {quota.allowed ? "Mi plan" : "Ampliar"}
+            {quota.allowed ? "Mi plan" : "Subir de plan →"}
           </Link>
         </div>
       </div>
